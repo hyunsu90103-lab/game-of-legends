@@ -401,7 +401,7 @@ function TitleScreen({onNew,onLoad}){
           <button onClick={onLoad} style={{width:"100%",background:"linear-gradient(135deg, #0f121a 0%, #0a0b10 100%)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:6,
             padding:"18px 20px",cursor:"pointer",display:"flex",alignItems:"center",gap:16,color:C.t1,textAlign:"left",transition:"all 0.25s"}}
             onMouseEnter={e=>{e.currentTarget.style.border="1px solid rgba(255,255,255,0.15)"; e.currentTarget.style.background="#121620";}}
-            onMouseLeave={e=>{e.currentTarget.style.border="1px solid rgba(255,255,255,0.06)"; e.currentTarget.style.background:"linear-gradient(135deg, #0f121a 0%, #0a0b10 100%)";}}>
+            onMouseLeave={e=>{e.currentTarget.style.border="1px solid rgba(255,255,255,0.06)"; e.currentTarget.style.background="linear-gradient(135deg, #0f121a 0%, #0a0b10 100%)";}}>
             <div style={{width:40,height:40,borderRadius:4,flexShrink:0,background:"#1b2030",
               border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,color:C.t2}}>↺</div>
             <div>
