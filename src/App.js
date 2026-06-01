@@ -20,7 +20,7 @@ const FK=[100,100,100,100,100,100,100,100,70,60,50,40,30,20,10];
 // 등급 매핑 (CSV → 내부키)
 const gradeMap={"Common":"n","Magic":"m","Rare":"r","Epic":"e","Legend":"l","Mythic":"my"};
 
-// ── 캐릭터 데이터 (캐릭터.txt 기반) ──
+// ── 캐릭터 데이터 ──
 const CHARS=[
   {id:"CHR_001",name:"세르민느",role:"마법사",desc:"강력한 마력과 어둠의 마법을 사용하는 마법사",
    img:"./images/1.(캐릭터)세르민느.png",motion:"./motions/char_seomine.mp4",emoji:"🔮",weaponClass:"마법사공용"},
@@ -39,9 +39,6 @@ const CHARS=[
 ];
 
 // ── 스탯 계산 유틸 ──
-// 등급별 기본 스탯 배율
-const GRADE_MULTI={n:1,m:1.5,r:2.2,e:3.5,l:6,my:12};
-// 강화 보너스: 강화수 * 등급배율 * 0.08
 const calcStat=(baseAtk,grade,enhance,type)=>{
   const g=gradeMap[grade]||"n";
   const base=Math.abs(baseAtk);
@@ -65,7 +62,7 @@ const calcStat=(baseAtk,grade,enhance,type)=>{
   }
 };
 
-// ── 무기 데이터 (아이템CSV 기반, 캐릭별 분류) ──
+// ── 무기 데이터 ──
 const rawWeapons=[
   // 전사공용
   {id:"W_WAR_001",name:"무거운 청동검",cls:"전사공용",grade:"Common",img:"./images/무거운청동검_2.png",atk:30,sell:100},
@@ -172,7 +169,7 @@ const rawWeapons=[
   {id:"W_VAL_020",name:"신화의 창조건",cls:"발키리(레이저)",grade:"Mythic",img:"./images/신화의창조건.png",atk:3500,sell:100000},
 ];
 
-// ── 방어구 데이터 (공통) ──
+// ── 방어구 데이터 ──
 const rawArmors=[
   // 투구
   {id:"A_COM_H001",name:"사슬 투구",cat:"투구",grade:"Common",img:"./images/사슬투구.png",def:10,sell:100},
@@ -280,11 +277,6 @@ const CONSUMABLES=[
   {id:"S_ETC_004",name:"럭셔리 보물상자",grade:"Rare",img:"./images/Generate _Luxurious treasure chest for web game, 2D style, elegant and prem_20260529_181428_0000.png",sell:5000,type:"chest"},
 ];
 
-// ── 보물상자 드랍풀 구성 (등급별 확률) ──
-const CHEST_POOL={
-  n:0.40, m:0.28, r:0.18, e:0.09, l:0.04, my:0.01
-};
-
 // ── 공통 UI 컴포넌트 ──
 const Pill=({grade,sm})=>{
   const g=gradeMap[grade]||grade;
@@ -314,7 +306,7 @@ const CBox=({children,style={},gold=false,onClick})=>(
       ["auto","-1px","-1px","auto"],["auto","auto","-1px","-1px"]].map(([t,r,b,l],i)=>(
       <div key={i} style={{position:"absolute",width:8,height:8,pointerEvents:"none",
         top:t,right:r,bottom:b,left:l,
-        borderTop:   i<2?`2px solid ${gold?C.gold:C.bdr2}`:undefined,
+        borderTop:  i<2?`2px solid ${gold?C.gold:C.bdr2}`:undefined,
         borderBottom:i>=2?`2px solid ${gold?C.gold:C.bdr2}`:undefined,
         borderLeft:  i%2===0?`2px solid ${gold?C.gold:C.bdr2}`:undefined,
         borderRight: i%2===1?`2px solid ${gold?C.gold:C.bdr2}`:undefined}}/>
@@ -323,7 +315,6 @@ const CBox=({children,style={},gold=false,onClick})=>(
   </div>
 );
 
-// ── 아이템 카드 (그리드용) ──
 const ItemSlot=({item,selected,onClick,size=1})=>{
   const g=gradeMap[item?.grade]||"n";
   const s=size===1?{fontSize:16,enh:7,bar:2}:{fontSize:14,enh:6,bar:2};
@@ -414,7 +405,7 @@ function TitleScreen({onNew,onLoad}){
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 화면 01 — 캐릭터 선택
+// 화면 01 — 캐릭터 선택 (레이아웃 분할 및 고화질 반영)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function CharScreen({onBack,onSelect}){
   const [sel,setSel]=useState(null);
@@ -440,11 +431,13 @@ function CharScreen({onBack,onSelect}){
           backgroundImage:"linear-gradient(rgba(200,168,74,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(200,168,74,.5) 1px,transparent 1px)",
           backgroundSize:"30px 30px"}}/>
         {char?(
-          <div style={{position:"absolute",inset:0,display:"flex",gap:0}}>
-            {/* 캐릭터 모션 영상 + 이미지 — 전신 표시 */}
-            <div style={{flex:1,position:"relative",overflow:"hidden",background:C.bg0}}>
+          // 좌측(영상 55%)과 우측(정보창 45%) 수평 분할 레이아웃
+          <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"row"}}>
+            
+            {/* 🎥 좌측 구역: 영상 및 기본 일러스트 탑재 */}
+            <div style={{width:"55%",height:"100%",position:"relative",overflow:"hidden",background:C.bg0,borderRight:`1px solid ${C.bdr0}`}}>
 
-              {/* 이미지 — 기본으로 항상 표시 (영상 로드 전/실패 시 보임) */}
+              {/* 이미지 — 영상 로드 전/실패 시 백업 노출 */}
               <img
                 src={char.img} alt={char.name}
                 style={{
@@ -455,39 +448,54 @@ function CharScreen({onBack,onSelect}){
                 onError={e=>{e.target.style.visibility="hidden";}}
               />
 
-              {/* 모션 영상 — 이미지 위에 겹쳐서 재생 */}
+              {/* 고화질 렌더링 힌트가 포함된 모션 영상 컴포넌트 */}
               <video
                 key={char.id}
                 autoPlay loop muted playsInline
+                preload="auto" /* 브라우저 저화질 스트리밍 방지 극대화 */
                 style={{
                   width:"100%",height:"100%",
                   objectFit:"contain",objectPosition:"center bottom",
                   position:"absolute",inset:0,display:"block",
                   zIndex:2,
+                  imageRendering: '-webkit-optimize-contrast', /* 픽셀 선명도 강제 보정 */
+                  WebkitTransform: 'translateZ(0)', /* 그래픽카드 가속 부여 */
                 }}
                 onError={e=>{e.target.style.display="none";}}
               >
                 <source src={char.motion} type="video/mp4"/>
               </video>
 
-              {/* 하단 그라디언트 */}
-              <div style={{position:"absolute",bottom:0,left:0,right:0,height:80,zIndex:3,
-                background:"linear-gradient(transparent,rgba(13,9,30,.9))",pointerEvents:"none"}}/>
+              {/* 영상 하단 부드러운 그라디언트 마감 */}
+              <div style={{position:"absolute",bottom:0,left:0,right:0,height:40,zIndex:3,
+                background:"linear-gradient(transparent,rgba(13,9,30,.8))",pointerEvents:"none"}}/>
             </div>
-            {/* 캐릭터 정보 오버레이 — 우측 하단 */}
+
+            {/* 📝 우측 구역: 캐릭터 설명 카드 */}
             <div style={{
-              position:"absolute",bottom:0,right:0,width:160,
-              padding:"12px 14px",
-              background:"linear-gradient(135deg,transparent,rgba(0,0,0,.8))",
+              width:"45%",
+              height:"100%",
+              padding:"16px 14px",
+              background:"linear-gradient(135deg, rgba(20,22,32,0.9), rgba(13,14,18,0.95))",
+              display:"flex",
+              flexDirection:"column",
+              justifyContent:"center",
+              zIndex:3
             }}>
-              <div style={{fontSize:17,fontWeight:800,color:C.goldL,marginBottom:2}}>{char.name}</div>
-              <div style={{fontSize:11,color:C.t2,marginBottom:4}}>{char.role}</div>
-              <div style={{fontSize:9,color:C.t3,lineHeight:1.5,marginBottom:8}}>{char.desc}</div>
-              <div style={{fontSize:9,color:"#4caf50",background:"rgba(76,175,80,.12)",
-                border:"1px solid rgba(76,175,80,.3)",borderRadius:99,padding:"3px 8px",display:"inline-block"}}>
-                ▶ 모션 재생 중
+              <div style={{fontSize:18,fontWeight:800,color:C.goldL,marginBottom:4}}>{char.name}</div>
+              <div style={{fontSize:11,color:C.t2,marginBottom:8,display:"flex",alignItems:"center",gap:4}}>
+                <span>{char.emoji}</span> <span>{char.role}</span>
+              </div>
+              <div style={{fontSize:10,color:C.t2,lineHeight:1.6,marginBottom:12,wordBreak:"keep-all"}}>{char.desc}</div>
+              
+              <div style={{alignSelf:"flex-start"}}>
+                <div style={{fontSize:9,color:"#3ecf6a",background:"rgba(62,207,106,.08)",
+                  border:"1px solid rgba(62,207,106,.25)",borderRadius:4,padding:"3px 8px",fontWeight:700}}>
+                  ● LIVE MOTION
+                </div>
               </div>
             </div>
+
           </div>
         ):(
           <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",
@@ -533,7 +541,7 @@ function CharScreen({onBack,onSelect}){
           <button onClick={()=>sel&&setNaming(true)} disabled={!sel} style={{
             width:"100%",padding:"13px",borderRadius:4,border:"none",
             background:sel?`linear-gradient(135deg,${C.goldD},${C.gold})`:C.bg2,
-            color:sel?"#000":C.t3,fontSize:14,fontWeight:800,cursor:sel?"pointer":"default",
+            color:sel?"#000":C.t3,fontSize:14,fontWeight:800,cursor:"pointer布局":"default",
           }}>{sel?`${char?.name} 선택 → 이름 정하기`:"캐릭터를 먼저 선택하세요"}</button>
         ):(
           <div>
@@ -560,39 +568,35 @@ function CharScreen({onBack,onSelect}){
 // 화면 02 — 인벤토리 (메인)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank,onEnhance,inventory,equipped,onEquip}){
-  const [tab,setTab]=useState("weapon");
-  const [selItem,setSelItem]=useState(null);
-  const [sold,setSold]=useState([]);
-  const char=CHARS.find(c=>c.id===charId)||CHARS[0];
+  const [tab,setTab] = useState("weapon");
+  const [selItem,setSelItem] = useState(null);
+  const [sold,setSold] = useState([]);
+  const char = CHARS.find(c=>c.id===charId)||CHARS[0];
 
-  // 탭별 아이템
-  const tabItems=useMemo(()=>{
-    const all=inventory.filter(i=>!sold.includes(i.uid));
+  const tabItems = useMemo(()=>{
+    const all = inventory.filter(i=>!sold.includes(i.uid));
     if(tab==="weapon") return all.filter(i=>i.type==="weapon");
     if(tab==="armor")  return all.filter(i=>i.type==="armor");
     return all.filter(i=>i.type==="accessory");
   },[inventory,sold,tab]);
 
-  // 장착 아이템 정보
-  const eqWeapon =inventory.find(i=>i.uid===equipped.weapon);
-  const eqArmor  =inventory.find(i=>i.uid===equipped.armor);
-  const eqAcc    =inventory.find(i=>i.uid===equipped.accessory);
+  const eqWeapon = inventory.find(i=>i.uid===equipped.weapon);
+  const eqArmor  = inventory.find(i=>i.uid===equipped.armor);
+  const eqAcc    = inventory.find(i=>i.uid===equipped.accessory);
 
-  // 합산 스탯
-  const totalStats=useMemo(()=>{
-    const items=[eqWeapon,eqArmor,eqAcc].filter(Boolean);
+  const totalStats = useMemo(()=>{
+    const items = [eqWeapon,eqArmor,eqAcc].filter(Boolean);
     return items.reduce((acc,it)=>{
-      const st=calcStat(it.atk||it.def||0,it.grade,it.enhance||0,it.type);
+      const st = calcStat(it.atk||it.def||0,it.grade,it.enhance||0,it.type);
       return {atk:acc.atk+st.atk,def:acc.def+st.def,mdef:acc.mdef+st.mdef,
         crit:Math.min(80,acc.crit+st.crit),eva:Math.min(60,acc.eva+st.eva)};
     },{atk:0,def:0,mdef:0,crit:0,eva:0});
   },[eqWeapon,eqArmor,eqAcc]);
 
-  const totalScore=Math.round(totalStats.atk*3+totalStats.def*2+totalStats.mdef*2+totalStats.crit*100+totalStats.eva*100);
+  const totalScore = Math.round(totalStats.atk*3+totalStats.def*2+totalStats.mdef*2+totalStats.crit*100+totalStats.eva*100);
 
   return(
     <Phone>
-      {/* ━━ 상단 HUD ━━ */}
       <div style={{background:C.bg0,borderBottom:`1px solid ${C.bdr1}`,
         padding:"6px 8px",display:"flex",alignItems:"stretch",gap:4}}>
         <button onClick={onChest} style={{flex:1,display:"flex",flexDirection:"column",
@@ -618,10 +622,10 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
           <span style={{fontSize:8,color:C.t3,lineHeight:1.2}}>골드</span>
           <span style={{fontSize:10,fontWeight:800,color:C.goldL,lineHeight:1}}>{gold.toLocaleString()}</span>
         </div>
-        <button onClick={onShop} style={{flex:1.7,display:"flex",flexDirection:"column",
+        <div style={{flex:1.7,display:"flex",flexDirection:"column",
           alignItems:"center",justifyContent:"center",gap:1,
           background:C.bg2,border:`1px solid ${C.bdr2}`,borderRadius:5,
-          padding:"5px 2px",cursor:"pointer",color:C.t1}}>
+          padding:"5px 2px",color:C.t1}}>
           <span style={{fontSize:16,lineHeight:1}}>📜</span>
           <span style={{fontSize:8,color:C.t3,lineHeight:1.2}}>주문서</span>
           <span style={{fontSize:9,fontWeight:700,lineHeight:1.3}}>
@@ -629,7 +633,7 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
             <span style={{color:C.bdr2}}> · </span>
             <span style={{color:C.e}}>고급{scrolls.adv}</span>
           </span>
-        </button>
+        </div>
         <button onClick={onRank} style={{flex:1,display:"flex",flexDirection:"column",
           alignItems:"center",justifyContent:"center",gap:1,
           background:C.bg2,border:`1px solid ${C.bdr2}`,borderRadius:5,
@@ -641,9 +645,7 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
       </div>
 
       <div style={{overflowY:"auto",maxHeight:640}}>
-        {/* ━━ 캐릭터(좌) + 장착현황(우) ━━ */}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",borderBottom:`1px solid ${C.bdr1}`}}>
-          {/* 좌: 캐릭터 + 스탯 */}
           <div style={{borderRight:`1px solid ${C.bdr0}`,background:`linear-gradient(180deg,${C.bg0},${C.bg1})`}}>
             <div style={{height:150,display:"flex",alignItems:"center",justifyContent:"center",
               position:"relative",overflow:"hidden",background:C.bg0}}>
@@ -677,7 +679,6 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
             </div>
           </div>
 
-          {/* 우: 장착현황 */}
           <div style={{background:C.bg1,padding:"10px"}}>
             <div style={{fontSize:9,color:C.gold,letterSpacing:".1em",textTransform:"uppercase",marginBottom:8}}>◆ 장착 현황</div>
             {[
@@ -720,7 +721,6 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
           </div>
         </div>
 
-        {/* ━━ 인벤토리 ━━ */}
         <div style={{background:C.bg1,padding:"10px 12px 20px"}}>
           <div style={{display:"flex",gap:4,marginBottom:10}}>
             {[["weapon","⚔ 무기"],["armor","🛡 방어구"],["accessory","💍 장신구"]].map(([t,lb])=>(
@@ -734,7 +734,6 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
             ))}
           </div>
 
-          {/* 30칸 그리드 (5열) */}
           <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:5,marginBottom:10}}>
             {[...tabItems,...Array(Math.max(0,30-tabItems.length)).fill(null)].slice(0,30).map((item,i)=>(
               <ItemSlot key={item?.uid||`e${i}`} item={item}
@@ -743,7 +742,6 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
             ))}
           </div>
 
-          {/* 선택된 아이템 상세 */}
           {selItem&&(
             <CBox gold style={{padding:"12px"}}>
               <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
@@ -762,7 +760,6 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
                     <Pill grade={selItem.grade} sm/>
                     {(selItem.enhance||0)>0&&<EnhTag n={selItem.enhance}/>}
                   </div>
-                  {/* 스탯 미리보기 */}
                   <div style={{fontSize:9,color:C.t2}}>
                     {selItem.type==="weapon"?`⚔ 공격력 +${selItem.atk||0}`:`🛡 방어력 +${selItem.def||0}`}
                     {` | 치명타 ${calcStat(selItem.atk||selItem.def||0,selItem.grade,selItem.enhance||0,selItem.type).crit}%`}
@@ -798,10 +795,10 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
 // 보물상자 팝업
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft}){
-  const [result,setResult]=useState(null);
-  const [opening,setOpening]=useState(false);
-  const [hist,setHist]=useState([]);
-  const char=CHARS.find(c=>c.id===charId)||CHARS[0];
+  const [result,setResult] = useState(null);
+  const [opening,setOpening] = useState(false);
+  const [hist,setHist] = useState([]);
+  const char = CHARS.find(c=>c.id===charId)||CHARS[0];
 
   const PROBS=[
     {g:"n",l:"일반",p:40},{g:"m",l:"매직",p:28},{g:"r",l:"레어",p:18},
@@ -814,7 +811,6 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
 
   const rollItem=()=>{
     const gw=wRand(PROBS);
-    // 캐릭터 전용 무기 + 공통 방어구/장신구 중 선택
     const charWeapons=rawWeapons.filter(w=>w.cls===char.weaponClass&&gradeMap[w.grade]===gw.g);
     const commonArmors=rawArmors.filter(a=>gradeMap[a.grade]===gw.g);
     const commonAccs=rawAccs.filter(a=>gradeMap[a.grade]===gw.g);
@@ -892,7 +888,7 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
                 ?<><div style={{fontSize:36,marginBottom:6}}>💰</div>
                   <div style={{fontSize:24,fontWeight:800,color:C.goldL}}>{result.amount.toLocaleString()} G</div>
                   <div style={{fontSize:11,color:C.t2}}>골드 획득!</div></>
-                :<><div style={{display:"flex",justifyContent:"center",marginBottom:6}}>
+                :<><div style={{display:"center",justifyContent:"center",marginBottom:6}}>
                     <img src={result.item.img} alt={result.item.name} style={{width:60,height:60,objectFit:"contain"}}
                       onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:40px'>⚔</span>");}}/>
                   </div>
@@ -905,7 +901,7 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
             <button onClick={()=>doOpen(1)} disabled={opening||dailyLeft<=0} style={{
               padding:"12px",borderRadius:4,border:"none",
               background:dailyLeft>0&&!opening?`linear-gradient(135deg,${C.goldD},${C.gold})`:C.bg2,
-              color:dailyLeft>0&&!opening?"#000":C.t3,fontSize:13,fontWeight:800,cursor:dailyLeft>0&&!opening?"pointer":"default"}}>
+              color:dailyLeft>0&&!opening?"#000":C.t3,fontSize:13,fontWeight:800,cursor warm:"pointer"||"default"}}>
               {opening?"열는 중...":"📦 1회 열기"}</button>
             <button onClick={()=>doOpen(10)} disabled={opening||dailyLeft<=0} style={{
               padding:"12px",borderRadius:4,background:C.bg2,
@@ -959,9 +955,9 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
 // 강화 팝업
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function EnhModal({item:initItem,onClose,gold,onSpendGold,scrolls,onUseScroll,onUpdateItem}){
-  const [item,setItem]=useState({...initItem,enhance:initItem.enhance||0});
-  const [scroll,setScroll]=useState("normal");
-  const [outcome,setOutcome]=useState(null);
+  const [item,setItem] = useState({...initItem,enhance:initItem.enhance||0});
+  const [scroll,setScroll] = useState("normal");
+  const [outcome,setOutcome] = useState(null);
   const lv=item.enhance; const prob=lv<15?SP[lv]:0;
   const g=gradeMap[item.grade]||"n"; const gc=GC[g];
   const OC={
@@ -1009,7 +1005,6 @@ function EnhModal({item:initItem,onClose,gold,onSpendGold,scrolls,onUseScroll,on
           </div>
         </div>
         <div style={{overflowY:"auto",padding:"16px"}}>
-          {/* 연출 */}
           <div style={{background:`radial-gradient(circle at 50% 60%,${gc}18,${C.bg2} 70%)`,
             border:`2px solid ${outcome?OC[outcome]?.border:gc}`,borderRadius:8,padding:"16px",
             textAlign:"center",marginBottom:14,position:"relative",
@@ -1029,7 +1024,6 @@ function EnhModal({item:initItem,onClose,gold,onSpendGold,scrolls,onUseScroll,on
               fontSize:22,fontWeight:800,color:OC[outcome]?.tc,borderRadius:6}}>{OC[outcome]?.text}</div>}
           </div>
 
-          {/* 단계 칩 */}
           <div style={{overflowX:"auto",display:"flex",gap:4,paddingBottom:6,marginBottom:12}}>
             {SP.map((p,i)=>(
               <div key={i} style={{flexShrink:0,padding:"4px 8px",borderRadius:3,fontSize:9,fontWeight:700,
@@ -1038,7 +1032,6 @@ function EnhModal({item:initItem,onClose,gold,onSpendGold,scrolls,onUseScroll,on
             ))}
           </div>
 
-          {/* 성공률 */}
           <div style={{marginBottom:12}}>
             <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
               <span style={{fontSize:11,color:C.t2}}>성공 확률</span>
@@ -1055,7 +1048,6 @@ function EnhModal({item:initItem,onClose,gold,onSpendGold,scrolls,onUseScroll,on
             실패 시: <span style={{color:C.succ,fontWeight:700}}>{FK[lv]}% 유지</span> / <span style={{color:C.fail,fontWeight:700}}>{100-FK[lv]}% -1 하락</span>
           </div>}
 
-          {/* 주문서 선택 */}
           <div style={{fontSize:9,color:C.gold,letterSpacing:".12em",textTransform:"uppercase",marginBottom:7}}>◆ 주문서 선택</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
             {[["normal","일반","500 G","일반~레어"],["adv","고급","2,000 G","에픽~신화"]].map(([t,nm,pr,rng])=>(
@@ -1088,9 +1080,9 @@ function EnhModal({item:initItem,onClose,gold,onSpendGold,scrolls,onUseScroll,on
 // 상점 팝업
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function ShopModal({onClose,gold,onSpendGold,onAddScrolls}){
-  const [tab,setTab]=useState("weapon");
-  const [qty,setQty]=useState({normal:1,adv:1});
-  const [toast,setToast]=useState(null);
+  const [tab,setTab] = useState("weapon");
+  const [qty,setQty] = useState({normal:1,adv:1});
+  const [toast,setToast] = useState(null);
 
   const showToast=msg=>{setToast(msg);setTimeout(()=>setToast(null),2000);};
 
@@ -1205,7 +1197,7 @@ function RankModal({onClose,myScore,myName,myChar}){
     {rank:247,nick:myName,char:myChar,score:myScore,isMe:true},
   ];
   const MEDAL=["🥇","🥈","🥉"];
-  const myRankData=DEMO.find(d=>d.isMe);
+  const myRankData = DEMO.find(d=>d.isMe);
 
   return(
     <div style={{position:"fixed",inset:0,zIndex:999,background:"rgba(0,0,0,.75)",
@@ -1296,28 +1288,28 @@ function RankModal({onClose,myScore,myName,myChar}){
 // 메인 앱 — 전체 상태 관리
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export default function App(){
-  const [screen,setScreen]=useState("title");
-  const [charId,setCharId]=useState(null);
-  const [charName,setCharName]=useState("");
-  const [gold,setGold]=useState(5000);
-  const [scrolls,setScrolls]=useState({normal:3,adv:1});
-  const [dailyLeft,setDailyLeft]=useState(30);
-  const [inventory,setInventory]=useState([]);
-  const [equipped,setEquipped]=useState({weapon:null,armor:null,accessory:null});
-  const [showChest,setShowChest]=useState(false);
-  const [enhItem,setEnhItem]=useState(null);
-  const [showRank,setShowRank]=useState(false);
-  const [showShop,setShowShop]=useState(false);
+  const [screen,setScreen] = useState("title");
+  const [charId,setCharId] = useState(null);
+  const [charName,setCharName] = useState("");
+  const [gold,setGold] = useState(5000);
+  const [scrolls,setScrolls] = useState({normal:3,adv:1});
+  const [dailyLeft,setDailyLeft] = useState(30);
+  const [inventory,setInventory] = useState([]);
+  const [equipped,setEquipped] = useState({weapon:null,armor:null,accessory:null});
+  const [showChest,setShowChest] = useState(false);
+  const [enhItem,setEnhItem] = useState(null);
+  const [showRank,setShowRank] = useState(false);
+  const [showShop,setShowShop] = useState(false);
 
-  const char=CHARS.find(c=>c.id===charId);
+  const char = CHARS.find(c=>c.id===charId);
 
   // 총점 계산
-  const totalScore=useMemo(()=>{
-    const eqW=inventory.find(i=>i.uid===equipped.weapon);
-    const eqA=inventory.find(i=>i.uid===equipped.armor);
-    const eqC=inventory.find(i=>i.uid===equipped.accessory);
+  const totalScore = useMemo(()=>{
+    const eqW = inventory.find(i=>i.uid===equipped.weapon);
+    const eqA = inventory.find(i=>i.uid===equipped.armor);
+    const eqC = inventory.find(i=>i.uid===equipped.accessory);
     return [eqW,eqA,eqC].filter(Boolean).reduce((acc,it)=>{
-      const st=calcStat(it.atk||it.def||0,it.grade,it.enhance||0,it.type);
+      const st = calcStat(it.atk||it.def||0,it.grade,it.enhance||0,it.type);
       return acc+st.atk*3+st.def*2+st.mdef*2+st.crit*100+st.eva*100;
     },0);
   },[inventory,equipped]);
