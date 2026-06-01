@@ -901,7 +901,7 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
             <button onClick={()=>doOpen(1)} disabled={opening||dailyLeft<=0} style={{
               padding:"12px",borderRadius:4,border:"none",
               background:dailyLeft>0&&!opening?`linear-gradient(135deg,${C.goldD},${C.gold})`:C.bg2,
-              color:dailyLeft>0&&!opening?"#000":C.t3,fontSize:13,fontWeight:800,cursor warm:"pointer"||"default"}}>
+              color:dailyLeft>0&&!opening?"#000":C.t3,fontSize:13,fontWeight:800,cursor:dailyLeft>0&&!opening?"pointer":"default"}}>
               {opening?"열는 중...":"📦 1회 열기"}</button>
             <button onClick={()=>doOpen(10)} disabled={opening||dailyLeft<=0} style={{
               padding:"12px",borderRadius:4,background:C.bg2,
