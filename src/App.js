@@ -541,7 +541,7 @@ function CharScreen({onBack,onSelect}){
           <button onClick={()=>sel&&setNaming(true)} disabled={!sel} style={{
             width:"100%",padding:"13px",borderRadius:4,border:"none",
             background:sel?`linear-gradient(135deg,${C.goldD},${C.gold})`:C.bg2,
-            color:sel?"#000":C.t3,fontSize:14,fontWeight:800,cursor:"pointer布局":"default",
+            color:sel?"#000":C.t3,fontSize:14,fontWeight:800,cursor:"pointer":"default",
           }}>{sel?`${char?.name} 선택 → 이름 정하기`:"캐릭터를 먼저 선택하세요"}</button>
         ):(
           <div>
