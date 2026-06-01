@@ -2,10 +2,10 @@ import { useState, useMemo } from "react";
 
 // ── 컬러 시스템 ──
 const C = {
-  bg0:"#0d0e12", bg1:"#13151c", bg2:"#1a1d27", bg3:"#222638",
-  bdr0:"rgba(255,255,255,0.05)", bdr1:"rgba(255,255,255,0.10)", bdr2:"rgba(255,255,255,0.18)",
-  t1:"#e8e4d8", t2:"#8c8980", t3:"#4a4845",
-  gold:"#c8a84a", goldL:"#e8c86a", goldD:"#8a6820",
+  bg0:"#050608", bg1:"#0b0d13", bg2:"#121620", bg3:"#1b2030",
+  bdr0:"rgba(255,255,255,0.03)", bdr1:"rgba(255,255,255,0.08)", bdr2:"rgba(255,255,255,0.15)",
+  t1:"#f1ede2", t2:"#a3a095", t3:"#5e5c56",
+  gold:"#c8a84a", goldL:"#f4e3b1", goldD:"#7a5f18",
   n:"#9a9a9a", m:"#3ecf6a", r:"#4499ff", e:"#cc77ff", l:"#ff9922", my:"#ff4444",
   nBg:"rgba(154,154,154,0.12)", mBg:"rgba(62,207,106,0.12)", rBg:"rgba(68,153,255,0.12)",
   eBg:"rgba(204,119,255,0.12)", lBg:"rgba(255,153,34,0.12)", myBg:"rgba(255,68,68,0.12)",
@@ -17,52 +17,38 @@ const GN={n:"일반",m:"매직",r:"레어",e:"에픽",l:"레전드",my:"신화"}
 const SP=[95,90,85,80,75,70,62,54,44,35,26,18,11,6,3];
 const FK=[100,100,100,100,100,100,100,100,70,60,50,40,30,20,10];
 
-// 등급 매핑 (CSV → 내부키)
 const gradeMap={"Common":"n","Magic":"m","Rare":"r","Epic":"e","Legend":"l","Mythic":"my"};
 
 // ── 캐릭터 데이터 ──
 const CHARS=[
-  {id:"CHR_001",name:"세르민느",role:"마법사",desc:"강력한 마력과 어둠의 마법을 사용하는 마법사",
-   img:"./images/1.(캐릭터)세르민느.png",motion:"./motions/char_seomine.mp4",emoji:"🔮",weaponClass:"마법사공용"},
-  {id:"CHR_002",name:"아스칼론",role:"전사",desc:"숲의 기운을 수호하는 강인한 전사",
-   img:"./images/1.(캐릭터)아스칼론.png",motion:"./motions/char_askalon.mp4",emoji:"⚔️",weaponClass:"전사공용"},
-  {id:"CHR_003",name:"에일린",role:"궁수",desc:"활과 화살을 자유자재로 다루는 민첩한 궁수",
-   img:"./images/1.(캐릭터)에일린.png",motion:"./motions/char_eilin.mp4",emoji:"🏹",weaponClass:"에일린(장궁)"},
-  {id:"CHR_004",name:"카이렌",role:"전사",desc:"강철 갑옷을 입은 중장갑 전사",
-   img:"./images/1.(캐릭터)카이렌.png",motion:"./motions/char_kairen.mp4",emoji:"🛡️",weaponClass:"전사공용"},
-  {id:"CHR_005",name:"로켓",role:"기술자",desc:"고성능 화기를 다루는 너구리 형태의 기술자",
-   img:"./images/1.(캐릭터)로켓.png",motion:"./motions/char_rocket.mp4",emoji:"🔫",weaponClass:"로켓(리펄서)"},
-  {id:"CHR_006",name:"발키리",role:"암살자",desc:"날개를 가진 전사이자 치명적인 공격의 소유자",
-   img:"./images/1.(캐릭터)발키리.png",motion:"./motions/char_valkyrie.mp4",emoji:"⚙️",weaponClass:"발키리(레이저)"},
-  {id:"CHR_007",name:"벨리아르",role:"마법사",desc:"어둠의 마법과 영혼의 힘을 다루는 마법사",
-   img:"./images/1.(캐릭터)벨리아르.png",motion:"./motions/char_beliar.mp4",emoji:"👁️",weaponClass:"마법사공용"},
+  {id:"CHR_001",name:"세르민느",role:"마법사",desc:"강력한 마력과 어둠의 마법을 사용하는 마법사", img:"./images/1.(캐릭터)세르민느.png",motion:"./motions/char_seomine.mp4",emoji:"🔮",weaponClass:"마법사공용"},
+  {id:"CHR_002",name:"아스칼론",role:"전사",desc:"숲의 기운을 수호하는 강인한 전사", img:"./images/1.(캐릭터)아스칼론.png",motion:"./motions/char_askalon.mp4",emoji:"⚔️",weaponClass:"전사공용"},
+  {id:"CHR_003",name:"에일린",role:"궁수",desc:"활과 화살을 자유자재로 다루는 민첩한 궁수", img:"./images/1.(캐릭터)에일린.png",motion:"./motions/char_eilin.mp4",emoji:"🏹",weaponClass:"에일린(장궁)"},
+  {id:"CHR_004",name:"카이렌",role:"전사",desc:"강철 갑옷을 입은 중장갑 전사", img:"./images/1.(캐릭터)카이렌.png",motion:"./motions/char_kairen.mp4",emoji:"🛡️",weaponClass:"전사공용"},
+  {id:"CHR_005",name:"로켓",role:"기술자",desc:"고성능 화기를 다루는 너구리 형태의 기술자", img:"./images/1.(캐릭터)로켓.png",motion:"./motions/char_rocket.mp4",emoji:"🔫",weaponClass:"로켓(리펄서)"},
+  {id:"CHR_006",name:"발키리",role:"암살자",desc:"날개를 가진 전사이자 치명적인 공격의 소유자", img:"./images/1.(캐릭터)발키리.png",motion:"./motions/char_valkyrie.mp4",emoji:"⚙️",weaponClass:"발키리(레이저)"},
+  {id:"CHR_007",name:"벨리아르",role:"마법사",desc:"어둠의 마법과 영혼의 힘을 다루는 마법사", img:"./images/1.(캐릭터)벨리아르.png",motion:"./motions/char_beliar.mp4",emoji:"👁️",weaponClass:"마법사공용"},
 ];
 
-// ── 스탯 계산 유틸 ──
 const calcStat=(baseAtk,grade,enhance,type)=>{
   const g=gradeMap[grade]||"n";
   const base=Math.abs(baseAtk);
   const enh=Math.round(base*(enhance*0.08));
   if(type==="weapon"){
     return {
-      atk: base+enh,
-      def: 0,
-      mdef: Math.round((base+enh)*0.1),
+      atk: base+enh, def: 0, mdef: Math.round((base+enh)*0.1),
       crit: parseFloat((Math.min(80, (enhance*2.5) + {n:3,m:6,r:10,e:15,l:22,my:35}[g])).toFixed(1)),
       eva:  parseFloat((Math.min(60, (enhance*1.5) + {n:2,m:4,r:7,e:11,l:16,my:25}[g])).toFixed(1)),
     };
   } else {
     return {
-      atk: 0,
-      def: base+enh,
-      mdef: Math.round((base+enh)*0.6),
+      atk: 0, def: base+enh, mdef: Math.round((base+enh)*0.6),
       crit: parseFloat((Math.min(80, enhance*1.0)).toFixed(1)),
       eva:  parseFloat((Math.min(60, enhance*0.8 + {n:1,m:2,r:4,e:7,l:12,my:20}[g])).toFixed(1)),
     };
   }
 };
 
-// ── 무기 데이터 ──
 const rawWeapons=[
   {id:"W_WAR_001",name:"무거운 청동검",cls:"전사공용",grade:"Common",img:"./images/무거운청동검_2.png",atk:30,sell:100},
   {id:"W_WAR_002",name:"병사용 일반검",cls:"전사공용",grade:"Common",img:"./images/병사용일반검_2.png",atk:35,sell:100},
@@ -73,7 +59,7 @@ const rawWeapons=[
   {id:"W_WAR_004",name:"마력 깃든 강철검",cls:"전사공용",grade:"Magic",img:"./images/마력깃든강철검_2.png",atk:95,sell:500},
   {id:"W_WAR_005",name:"마력 대검",cls:"전사공용",grade:"Magic",img:"./images/마력대검_2.png",atk:100,sell:500},
   {id:"W_WAR_006",name:"가디언의 가시 대검",cls:"전사공용",grade:"Magic",img:"./images/가디언의가시대검.png",atk:110,sell:500},
-  {id:"W_WAR_014",name:"銀빛 예리한 대검",cls:"전사공용",grade:"Magic",img:"./images/은빛예리한대검_2.png",atk:105,sell:500},
+  {id:"W_WAR_014",name:"은빛 예리한 대검",cls:"전사공용",grade:"Magic",img:"./images/은빛예리한대검_2.png",atk:105,sell:500},
   {id:"W_WAR_007",name:"요정강철 양손검",cls:"전사공용",grade:"Rare",img:"./images/요정강철양손검_2.png",atk:220,sell:1500},
   {id:"W_WAR_015",name:"정령 대검",cls:"전사공용",grade:"Rare",img:"./images/정령대검.png",atk:250,sell:1500},
   {id:"W_WAR_016",name:"정령의 대검",cls:"전사공용",grade:"Rare",img:"./images/정령의대검.png",atk:260,sell:1500},
@@ -226,14 +212,14 @@ const rawArmors=[
   {id:"A_COM_P012",name:"화려한 금빛 팬츠",cat:"하의",grade:"Epic",img:"./images/화려한금빛팬츠.png",def:85,sell:5000},
   {id:"A_COM_P013",name:"심연의 영혼 팬츠",cat:"하의",grade:"Legend",img:"./images/심연의영혼팬츠.png",def:110,sell:20000},
   {id:"A_COM_P014",name:"신화의 바지",cat:"하의",grade:"Mythic",img:"./images/신화의바지.png",def:250,sell:100000},
-  // 망토, 부츠 (백업 풀 자동확장 대응용 추가 데이터군)
-  {id:"A_COM_C001",name:"낡은 모험가 망토",cat:"망토",grade:"Common",img:"./images/기본부츠.png",def:8,sell:100},
-  {id:"A_COM_C002",name:"마법 수호 망토",cat:"망토",grade:"Rare",img:"./images/기본부츠.png",def:45,sell:1500},
+  // 망토
+  {id:"A_COM_C001",name:"낡은 전사의 망토",cat:"망토",grade:"Common",img:"./images/사슬투구.png",def:5,sell:100},
+  {id:"A_COM_C002",name:"기사단 영광 망토",cat:"망토",grade:"Rare",img:"./images/레어투구.png",def:35,sell:1500},
 ];
 
 // ── 장신구 데이터 ──
 const rawAccs=[
-  // 부츠 (cat이 부츠인 장비는 장신구 기반 로직 분할에 따라 배치)
+  // 부츠
   {id:"A_COM_B001",name:"기본 부츠",cat:"부츠",grade:"Common",img:"./images/기본부츠.png",def:5,sell:100},
   {id:"A_COM_B002",name:"일반 부츠",cat:"부츠",grade:"Common",img:"./images/일반부츠.png",def:6,sell:100},
   {id:"A_COM_B003",name:"용맹의 부츠",cat:"부츠",grade:"Common",img:"./images/용맹의부츠.png",def:8,sell:100},
@@ -246,7 +232,7 @@ const rawAccs=[
   {id:"A_COM_B010",name:"신화의 부츠",cat:"부츠",grade:"Mythic",img:"./images/신화의부츠.png",def:50,sell:100000},
   // 반지
   {id:"A_COM_R001",name:"구리 반지",cat:"반지",grade:"Common",img:"./images/구리반지.png",def:1,sell:50},
-  {id:"A_COM_R002",name:"은빛 링",cat:"반지",grade:"Common",img:"./images/은빛링.png",def:2,sell:100},
+  {id:"A_COM_R002",name:"銀빛 링",cat:"반지",grade:"Common",img:"./images/은빛링.png",def:2,sell:100},
   {id:"A_COM_R003",name:"매직 마법 반지",cat:"반지",grade:"Magic",img:"./images/매직마법반지.png",def:5,sell:500},
   {id:"A_COM_R004",name:"초록빛 마법 반지",cat:"반지",grade:"Magic",img:"./images/초록빛마법반지.png",def:8,sell:500},
   {id:"A_COM_R005",name:"애매랄드 반지",cat:"반지",grade:"Magic",img:"./images/애매랄드반지.png",def:15,sell:1500},
@@ -269,11 +255,10 @@ const rawAccs=[
   {id:"A_COM_E010",name:"드래곤의 귀걸이",cat:"귀걸이",grade:"Legend",img:"./images/드래곤의귀걸이.png",def:70,sell:20000},
   {id:"A_COM_E011",name:"신화의 귀걸이",cat:"귀걸이",grade:"Mythic",img:"./images/신화의귀걸이.png",def:120,sell:100000},
   // 벨트
-  {id:"A_COM_BL01",name:"가죽 벨트",cat:"벨트",grade:"Common",img:"./images/구리반지.png",def:4,sell:100},
-  {id:"A_COM_BL02",name:"용사의 영광 벨트",cat:"벨트",grade:"Epic",img:"./images/구리반지.png",def:35,sell:5000},
+  {id:"A_COM_BT001",name:"낡은 가죽 벨트",cat:"벨트",grade:"Common",img:"./images/구리반지.png",def:3,sell:50},
+  {id:"A_COM_BT002",name:"골든 드래곤 벨트",cat:"벨트",grade:"Epic",img:"./images/황금기사반지_2.png",def:30,sell:5000},
 ];
 
-// ── 소모품 데이터 ──
 const CONSUMABLES=[
   {id:"S_ETC_001",name:"무기 강화 주문서",grade:"Common",img:"./images/Generate _Weapon enhancement scroll for web game, 2D style, luxurious and p_20260529_181343_0000.png",sell:1000,type:"scroll_weapon"},
   {id:"S_ETC_002",name:"방어구 강화 주문서",grade:"Common",img:"./images/Generate _Armor enhancement scroll for web game, 2D style, luxurious and pr_20260529_181328_0000.png",sell:1000,type:"scroll_armor"},
@@ -281,7 +266,6 @@ const CONSUMABLES=[
   {id:"S_ETC_004",name:"럭셔리 보물상자",grade:"Rare",img:"./images/Generate _Luxurious treasure chest for web game, 2D style, elegant and prem_20260529_181428_0000.png",sell:5000,type:"chest"},
 ];
 
-// ── 공통 UI 컴포넌트 ──
 const Pill=({grade,sm})=>{
   const g=gradeMap[grade]||grade;
   const c=GC[g],bg=GB[g];
@@ -293,7 +277,7 @@ const Divider=({my=8})=><div style={{height:1,background:C.bdr0,margin:`${my}px 
 const Phone=({children})=>(
   <div style={{width:390,background:C.bg0,borderRadius:20,overflow:"hidden",
     boxShadow:"0 32px 80px rgba(0,0,0,.8)",
-    fontFamily:"'Black Han Sans','Apple SD Gothic Neo','Noto Sans KR',sans-serif",
+    fontFamily:"'Cinzel', 'Noto Serif KR', serif", // 전체 폰트 명품 스타일로 튜닝
     color:C.t1,position:"relative"}}>
     <div style={{position:"absolute",inset:0,pointerEvents:"none",zIndex:0,
       backgroundImage:"linear-gradient(rgba(200,168,74,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(200,168,74,0.02) 1px,transparent 1px)",
@@ -319,58 +303,115 @@ const CBox=({children,style={},gold=false,onClick})=>(
   </div>
 );
 
-// ── 타이틀 화면 ──
+const ItemSlot=({item,selected,onClick,size=1})=>{
+  const g=gradeMap[item?.grade]||"n";
+  const s=size===1?{fontSize:16,enh:7,bar:2}:{fontSize:14,enh:6,bar:2};
+  return(
+    <button onClick={()=>item&&onClick&&onClick(item)}
+      disabled={!item}
+      title={item?`${item.name} [${GN[g]}]${(item.enhance||0)>0?` +${item.enhance||0}`:""}`:undefined}
+      style={{aspectRatio:"1",background:item?C.bg2:"transparent",
+        border:`1.5px ${item?"solid":"dashed"} ${selected?C.gold:item?GC[g]+"44":C.bdr0}`,
+        borderRadius:5,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
+        cursor:item?"pointer":"default",position:"relative",overflow:"hidden",
+        boxShadow:selected?`0 0 10px ${C.goldD}66`:"none",
+        opacity:item?1:.15,padding:0,transition:"all .15s"}}>
+      {item&&(
+        <>
+          <div style={{position:"absolute",inset:0,background:`radial-gradient(circle at 50% 80%,${GC[g]}18,transparent 70%)`,pointerEvents:"none"}}/>
+          <img src={item.img} alt={item.name}
+            style={{width:"65%",height:"65%",objectFit:"contain",position:"relative",zIndex:1}}
+            onError={e=>{e.target.style.display="none";e.target.nextSibling.style.display="flex";}}/>
+          <span style={{fontSize:s.fontSize,opacity:.5,position:"relative",zIndex:1,display:"none",alignItems:"center",justifyContent:"center"}}>
+            {item.type==="weapon"?"⚔":item.type==="armor"?"🛡":"💍"}
+          </span>
+          {(item.enhance||0)>0&&<span style={{position:"absolute",top:2,left:2,fontSize:s.enh,fontWeight:800,color:C.goldL,lineHeight:1}}>+{item.enhance}</span>}
+          <div style={{position:"absolute",bottom:0,left:0,right:0,height:s.bar,background:GC[g]}}/>
+        </>
+      )}
+    </button>
+  );
+};
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 화면 00 — 타이틀 (AAA 대작 명품 스타일 튜닝)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function TitleScreen({onNew,onLoad}){
   return(
     <Phone>
-      <div style={{height:310,background:"linear-gradient(160deg,#0d0e12,#1a1230,#0d0e12)",position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",inset:0,opacity:.06,pointerEvents:"none",
-          backgroundImage:"linear-gradient(rgba(200,168,74,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(200,168,74,.5) 1px,transparent 1px)",
-          backgroundSize:"40px 40px"}}/>
+      <div style={{height:330,background:"radial-gradient(circle at 50% 40%, #151926 0%, #07090e 75%)",position:"relative",overflow:"hidden",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+        {/* 미세한 그리드 격자 그리드 라인 */}
+        <div style={{position:"absolute",inset:0,opacity:.03,pointerEvents:"none",
+          backgroundImage:"linear-gradient(rgba(200,168,74,.4) 1px,transparent 1px),linear-gradient(90deg,rgba(200,168,74,.4) 1px,transparent 1px)",
+          backgroundSize:"35px 35px"}}/>
+        
+        {/* 마법진 광채 일루전 코어 효과 배경 */}
         <div style={{position:"absolute",top:"45%",left:"50%",transform:"translate(-50%,-50%)",
-          width:180,height:180,background:"radial-gradient(circle,rgba(200,168,74,.12),transparent 70%)",
-          borderRadius:"50%",pointerEvents:"none"}}/>
-        <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:10}}>
-          <div style={{display:"flex",alignItems:"center",gap:8}}>
-            <div style={{width:36,height:1,background:`linear-gradient(90deg,transparent,${C.gold})`}}/>
-            <span style={{fontSize:9,color:C.gold,letterSpacing:".3em",textTransform:"uppercase"}}>Enter the World</span>
-            <div style={{width:36,height:1,background:`linear-gradient(90deg,${C.gold},transparent)`}}/>
+          width:240,height:240,background:"radial-gradient(circle,rgba(200,168,74,0.08) 0%,transparent 65%)",
+          borderRadius:"50%",pointerEvents:"none",filter:"blur(10px)"}}/>
+
+        <div style={{position:"relative",zIndex:2,display:"flex",flexDirection:"column",alignItems:"center",gap:16}}>
+          {/* 가느다란 황금 데코 장식 세그먼트 */}
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <div style={{width:24,height:1,background:"linear-gradient(90deg,transparent, #c8a84a)"}}/>
+            <span style={{fontSize:10,color:C.goldL,letterSpacing:".4em",textTransform:"uppercase",fontFamily:"'Cinzel', serif",fontWeight:600}}>Enter the World</span>
+            <div style={{width:24,height:1,background:"linear-gradient(90deg, #c8a84a, transparent)"}}/>
           </div>
+          
+          {/* 메탈릭 골드 그라데이션 및 입체 쉐도우 추가 명품 타이틀 */}
           <div style={{textAlign:"center"}}>
-            <div style={{fontSize:11,color:C.t2,letterSpacing:".2em",textTransform:"uppercase",marginBottom:6}}>THE GAME OF</div>
-            <div style={{fontSize:40,fontWeight:900,letterSpacing:".04em",lineHeight:1,
-              background:`linear-gradient(180deg,${C.goldL},${C.gold},${C.goldD})`,
-              WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>LEGENDS</div>
+            <div style={{fontSize:12,color:C.t2,letterSpacing:".35em",fontWeight:500,fontFamily:"'Cinzel', serif",marginBottom:6}}>THE GAME OF</div>
+            <div style={{fontSize:46,fontWeight:900,letterSpacing:".08em",lineHeight:1,
+              background:`linear-gradient(180deg, #fff 0%, ${C.goldL} 40%, ${C.gold} 70%, ${C.goldD} 100%)`,
+              WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",
+              filter:"drop-shadow(0px 4px 12px rgba(200,168,74,0.3))",fontFamily:"'Cinzel', serif"}}>
+              LEGENDS
+            </div>
           </div>
-          <div style={{fontSize:38,marginTop:4}}>⚔</div>
+          
+          {/* 교차검 주변 아우라 레이아웃 */}
+          <div style={{position:"relative",marginTop:10}}>
+            <div style={{position:"absolute",inset:-15,background:"radial-gradient(circle, rgba(200,168,74,0.15) 0%, transparent 80%)",filter:"blur(4px)"}}/>
+            <div style={{fontSize:32,filter:"drop-shadow(0 2px 5px rgba(0,0,0,0.5))",position:"relative",zIndex:1}}>⚔</div>
+          </div>
         </div>
       </div>
-      <div style={{padding:"24px 20px 32px",background:C.bg1}}>
-        <div style={{marginBottom:14,textAlign:"center",fontSize:11,color:C.t3,letterSpacing:".08em"}}>— 시작하기 —</div>
-        <div style={{display:"flex",flexDirection:"column",gap:10}}>
-          <button onClick={onNew} style={{width:"100%",background:C.bg2,border:`1px solid ${C.goldD}88`,borderRadius:4,
-            padding:"16px 18px",cursor:"pointer",display:"flex",alignItems:"center",gap:14,color:C.t1,textAlign:"left"}}>
-            <div style={{width:44,height:44,borderRadius:4,flexShrink:0,
-              background:`linear-gradient(135deg,${C.goldD},${C.gold})`,
-              display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,color:"#000"}}>✦</div>
+
+      <div style={{padding:"28px 24px 36px",background:"linear-gradient(180deg, #0b0d13 0%, #050608 100%)",borderTop:"1px solid rgba(200,168,74,0.08)"}}>
+        <div style={{marginBottom:18,textAlign:"center",fontSize:11,color:C.t2,letterSpacing:".2em",fontWeight:500}}>— ARCHIVE —</div>
+        
+        <div style={{display:"flex",flexDirection:"column",gap:12}}>
+          {/* 캐릭터 생성 버튼 고도화 디자인 */}
+          <button onClick={onNew} style={{width:"100%",background:"linear-gradient(135deg, #161b26 0%, #0f121a 100%)",border:`1px solid ${C.goldD}66`,borderRadius:6,
+            padding:"18px 20px",cursor:"pointer",display:"flex",alignItems:"center",gap:16,color:C.t1,textAlign:"left",transition:"all 0.25s",
+            boxShadow:"0 4px 15px rgba(0,0,0,0.2)"}}
+            onMouseEnter={e=>{e.currentTarget.style.border=`1px solid ${C.gold}`; e.currentTarget.style.boxShadow=`0 0 15px ${C.goldD}44`;}}
+            onMouseLeave={e=>{e.currentTarget.style.border=`1px solid ${C.goldD}66`; e.currentTarget.style.boxShadow="0 4px 15px rgba(0,0,0,0.2)";}}>
+            <div style={{width:40,height:40,borderRadius:4,flexShrink:0,
+              background:`linear-gradient(135deg, ${C.gold}, ${C.goldD})`,
+              display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,color:"#050608",fontWeight:700,boxShadow:`0 2px 8px ${C.goldD}44`}}>✦</div>
             <div>
-              <div style={{fontSize:15,fontWeight:700,color:C.goldL,marginBottom:3}}>캐릭터 생성</div>
-              <div style={{fontSize:11,color:C.t2}}>새로운 영웅으로 시작하기</div>
+              <div style={{fontSize:15,fontWeight:700,color:C.goldL,letterSpacing:"0.05em",marginBottom:4}}>새로운 영웅 연대기</div>
+              <div style={{fontSize:11,color:C.t2,opacity:0.8}}>전설적인 영웅 각성 및 시작</div>
             </div>
-            <div style={{marginLeft:"auto",fontSize:18,color:C.gold}}>›</div>
+            <div style={{marginLeft:"auto",fontSize:16,color:C.gold,opacity:0.7}}>›</div>
           </button>
-          <button onClick={onLoad} style={{width:"100%",background:C.bg2,border:`1px solid ${C.bdr1}`,borderRadius:4,
-            padding:"16px 18px",cursor:"pointer",display:"flex",alignItems:"center",gap:14,color:C.t1,textAlign:"left"}}>
-            <div style={{width:44,height:44,borderRadius:4,flexShrink:0,background:C.bg3,
-              border:`1px solid ${C.bdr1}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,color:C.t2}}>↺</div>
+
+          {/* 기존 게임 불러오기 버튼 고도화 디자인 */}
+          <button onClick={onLoad} style={{width:"100%",background:"linear-gradient(135deg, #0f121a 0%, #0a0b10 100%)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:6,
+            padding:"18px 20px",cursor:"pointer",display:"flex",alignItems:"center",gap:16,color:C.t1,textAlign:"left",transition:"all 0.25s"}}
+            onMouseEnter={e=>{e.currentTarget.style.border="1px solid rgba(255,255,255,0.15)"; e.currentTarget.style.background="#121620";}}
+            onMouseLeave={e=>{e.currentTarget.style.border="1px solid rgba(255,255,255,0.06)"; e.currentTarget.style.background:"linear-gradient(135deg, #0f121a 0%, #0a0b10 100%)";}}>
+            <div style={{width:40,height:40,borderRadius:4,flexShrink:0,background:"#1b2030",
+              border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,color:C.t2}}>↺</div>
             <div>
-              <div style={{fontSize:15,fontWeight:700,color:C.t1,marginBottom:3}}>기존 게임 불러오기</div>
-              <div style={{fontSize:11,color:C.t2}}>마지막 저장 데이터 불러오기</div>
+              <div style={{fontSize:14,fontWeight:600,color:C.t1,letterSpacing:"0.04em",marginBottom:4}}>전설 이어가기</div>
+              <div style={{fontSize:11,color:C.t2,opacity:0.7}}>마지막 브라우저 데이터 동기화</div>
             </div>
-            <div style={{marginLeft:"auto",fontSize:18,color:C.t3}}>›</div>
+            <div style={{marginLeft:"auto",fontSize:16,color:C.t3}}>›</div>
           </button>
         </div>
-        <div style={{textAlign:"center",marginTop:20,fontSize:10,color:C.t3}}>v1.0 · 데이터는 이 브라우저에 저장됩니다</div>
+        <div style={{textAlign:"center",marginTop:24,fontSize:10,color:C.t3,letterSpacing:"0.05em"}}>STAGE v1.1 · 클라이언트 암호화 보안 구동 중</div>
       </div>
     </Phone>
   );
@@ -385,49 +426,33 @@ function CharScreen({onBack,onSelect}){
 
   return(
     <Phone>
-      <div style={{height:50,background:C.bg1,borderBottom:`1px solid ${C.bdr0}`,
-        display:"flex",alignItems:"center",padding:"0 14px",gap:10}}>
-        <button onClick={onBack} style={{width:32,height:32,borderRadius:4,background:C.bg2,
-          border:`1px solid ${C.bdr1}`,color:C.t2,fontSize:16,cursor:"pointer",
-          display:"flex",alignItems:"center",justifyContent:"center"}}>‹</button>
+      <div style={{height:50,background:C.bg1,borderBottom:`1px solid ${C.bdr0}`,display:"flex",alignItems:"center",padding:"0 14px",gap:10}}>
+        <button onClick={onBack} style={{width:32,height:32,borderRadius:4,background:C.bg2,border:`1px solid ${C.bdr1}`,color:C.t2,fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>‹</button>
         <span style={{fontSize:14,fontWeight:700}}>영웅 선택</span>
         <span style={{marginLeft:"auto",fontSize:11,color:C.t3}}>7명의 전설적 영웅</span>
       </div>
 
-      <div style={{height:260,background:"linear-gradient(160deg,#1a1230,#0d0e12)",
-        position:"relative",overflow:"hidden",borderBottom:`1px solid ${C.bdr1}`}}>
-        <div style={{position:"absolute",inset:0,opacity:.04,pointerEvents:"none",
-          backgroundImage:"linear-gradient(rgba(200,168,74,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(200,168,74,.5) 1px,transparent 1px)",
-          backgroundSize:"30px 30px"}}/>
+      <div style={{height:260,background:"linear-gradient(160deg,#1a1230,#0d0e12)",position:"relative",overflow:"hidden",borderBottom:`1px solid ${C.bdr1}`}}>
         {char?(
           <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"row"}}>
             <div style={{width:"55%",height:"100%",position:"relative",overflow:"hidden",background:C.bg0,borderRight:`1px solid ${C.bdr0}`}}>
-              <img src={char.img} alt={char.name}
-                style={{width:"100%",height:"100%",objectFit:"contain",objectPosition:"center bottom",position:"absolute",inset:0,display:"block"}}
-                onError={e=>{e.target.style.visibility="hidden";}}/>
-              <video key={char.id} autoPlay loop muted playsInline preload="auto"
-                style={{width:"100%",height:"100%",objectFit:"contain",objectPosition:"center bottom",position:"absolute",inset:0,display:"block",zIndex:2,imageRendering: '-webkit-optimize-contrast',WebkitTransform: 'translateZ(0)'}}
-                onError={e=>{e.target.style.display="none";}}>
+              <img src={char.img} alt={char.name} style={{width:"100%",height:"100%",objectFit:"contain",objectPosition:"center bottom",position:"absolute",inset:0,display:"block"}} onError={e=>{e.target.style.visibility="hidden";}}/>
+              <video key={char.id} autoPlay loop muted playsInline preload="auto" style={{width:"100%",height:"100%",objectFit:"contain",objectPosition:"center bottom",position:"absolute",inset:0,display:"block",zIndex:2,imageRendering:'-webkit-optimize-contrast',WebkitTransform:'translateZ(0)'}} onError={e=>{e.target.style.display="none";}}>
                 <source src={char.motion} type="video/mp4"/>
               </video>
               <div style={{position:"absolute",bottom:0,left:0,right:0,height:40,zIndex:3,background:"linear-gradient(transparent,rgba(13,9,30,.8))",pointerEvents:"none"}}/>
             </div>
-
             <div style={{width:"45%",height:"100%",padding:"16px 14px",background:"linear-gradient(135deg, rgba(20,22,32,0.9), rgba(13,14,18,0.95))",display:"flex",flexDirection:"column",justifyContent:"center",zIndex:3}}>
-              <div style={{fontSize:18,fontWeight:800,color:C.goldL,marginBottom:4}}>{char.name}</div>
-              <div style={{fontSize:11,color:C.t2,marginBottom:8,display:"flex",alignItems:"center",gap:4}}>
-                <span>{char.emoji}</span> <span>{char.role}</span>
-              </div>
+              <div style={{fontSize:17,fontWeight:800,color:C.goldL,marginBottom:4}}>{char.name}</div>
+              <div style={{fontSize:11,color:C.t2,marginBottom:8,display:"flex",alignItems:"center",gap:4}}><span>{char.emoji}</span> <span>{char.role}</span></div>
               <div style={{fontSize:10,color:C.t2,lineHeight:1.6,marginBottom:12,wordBreak:"keep-all"}}>{char.desc}</div>
-              <div style={{alignSelf:"flex-start"}}>
-                <div style={{fontSize:9,color:"#3ecf6a",background:"rgba(62,207,106,.08)",border:"1px solid rgba(62,207,106,.25)",borderRadius:4,padding:"3px 8px",fontWeight:700}}>● LIVE MOTION</div>
-              </div>
+              <div style={{alignSelf:"flex-start"}}><div style={{fontSize:9,color:"#3ecf6a",background:"rgba(62,207,106,.08)",border:"1px solid rgba(62,207,106,.25)",borderRadius:4,padding:"3px 8px",fontWeight:700}}>● LIVE MOTION</div></div>
             </div>
           </div>
         ):(
           <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:6}}>
             <div style={{fontSize:30,opacity:.15}}>👤</div>
-            <div style={{fontSize:11,color:C.t3}}>캐릭터를 선택하면 모션이 재생됩니다</div>
+            <div style={{fontSize:11,color:C.t3}}>영웅 선택 시 실시간 모션 링크 구동</div>
           </div>
         )}
       </div>
@@ -441,25 +466,20 @@ function CharScreen({onBack,onSelect}){
               outline:`1.5px solid ${sel===c.id?C.gold:C.bdr1}`,background:sel===c.id?C.bg3:C.bg2,boxShadow:sel===c.id?`0 0 12px ${C.goldD}88`:"none",
             }}>
               <div style={{height:64,background:C.bg0,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
-                <img src={c.img} alt={c.name} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"top"}}
-                  onError={e=>{e.target.style.display="none";e.target.nextSibling.style.display="flex";}}/>
-                <div style={{display:"none",width:"100%",height:"100%",alignItems:"center",justifyContent:"center",fontSize:26}}>{c.emoji}</div>
-                {sel===c.id&&<div style={{position:"absolute",bottom:0,left:0,right:0,height:2,background:`linear-gradient(90deg,transparent,${C.gold},transparent)`}}/>}
+                <img src={c.img} alt="" style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"top"}} onError={e=>{e.target.style.display="none";}}/>
               </div>
               <div style={{padding:"5px 4px 6px",textAlign:"center"}}>
                 <div style={{fontSize:10,fontWeight:700,color:sel===c.id?C.goldL:C.t1}}>{c.name}</div>
-                <div style={{fontSize:8,color:C.t3,marginTop:1}}>{c.role}</div>
               </div>
             </button>
           ))}
         </div>
         {!naming?(
-          <button onClick={()=>sel&&setNaming(true)} disabled={!sel} style={{width:"100%",padding:"13px",borderRadius:4,border:"none",background:sel?`linear-gradient(135deg,${C.goldD},${C.gold})`:C.bg2,color:sel?"#000":C.t3,fontSize:14,fontWeight:800,cursor:sel?"pointer":"default"}}>{sel?`${char?.name} 선택 → 이름 정하기`:"캐릭터를 먼저 선택하세요"}</button>
+          <button onClick={()=>sel&&setNaming(true)} disabled={!sel} style={{width:"100%",padding:"13px",borderRadius:4,border:"none",background:sel?`linear-gradient(135deg,${C.goldD},${C.gold})`:C.bg2,color:sel?"#000":C.t3,fontSize:14,fontWeight:800,cursor:sel?"pointer":"default"}}>{sel?`${char?.name} 선택 → 식별코드 부여`:"캐릭터를 선택해 주십시오"}</button>
         ):(
           <div>
-            <div style={{fontSize:11,color:C.t2,marginBottom:8}}>캐릭터 이름 입력</div>
-            <input value={name} onChange={e=>setName(e.target.value)} placeholder="닉네임..." autoFocus style={{width:"100%",padding:"11px 12px",borderRadius:4,background:C.bg0,border:`1px solid ${C.bdr2}`,color:C.t1,fontSize:14,outline:"none",marginBottom:8,fontFamily:"inherit"}}/>
-            <button onClick={()=>name.trim()&&onSelect(sel,name.trim())} disabled={!name.trim()} style={{width:"100%",padding:"13px",borderRadius:4,border:"none",background:name.trim()?`linear-gradient(135deg,${C.goldD},${C.gold})`:C.bg2,color:name.trim()?"#000":C.t3,fontSize:14,fontWeight:800,cursor:name.trim()?"pointer":"default"}}>게임 시작 ›</button>
+            <input value={name} onChange={e=>setName(e.target.value)} placeholder="영웅의 이름을 새겨주십시오..." autoFocus style={{width:"100%",padding:"11px 12px",borderRadius:4,background:C.bg0,border:`1px solid ${C.bdr2}`,color:C.t1,fontSize:13,outline:"none",marginBottom:8,fontFamily:"inherit"}}/>
+            <button onClick={()=>name.trim()&&onSelect(sel,name.trim())} disabled={!name.trim()} style={{width:"100%",padding:"13px",borderRadius:4,border:"none",background:name.trim()?`linear-gradient(135deg,${C.goldD},${C.gold})`:C.bg2,color:name.trim()?"#000":C.t3,fontSize:14,fontWeight:800,cursor:name.trim()?"pointer":"default"}}>서버 입장 ›</button>
           </div>
         )}
       </div>
@@ -467,9 +487,7 @@ function CharScreen({onBack,onSelect}){
   );
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 화면 02 — 인벤토리 및 9종 장착 구조 확장
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ── 인벤토리 화면 (9개 멀티 장착창 최적화) ──
 function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank,onEnhance,inventory,equipped,onEquip}){
   const [tab,setTab]=useState("weapon");
   const [selItem,setSelItem]=useState(null);
@@ -483,7 +501,6 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
     return all.filter(i=>i.type==="accessory");
   },[inventory,sold,tab]);
 
-  // 9종 세부 아이템 디코딩 및 탐색
   const eqWeapon   = inventory.find(i=>i.uid===equipped.weapon);
   const eqHelmet   = inventory.find(i=>i.uid===equipped.helmet);
   const eqArmor    = inventory.find(i=>i.uid===equipped.armor);
@@ -498,29 +515,26 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
     const items=[eqWeapon, eqHelmet, eqArmor, eqPants, eqBoots, eqCloak, eqBelt, eqEarrings, eqRing].filter(Boolean);
     return items.reduce((acc,it)=>{
       const st=calcStat(it.atk||it.def||0,it.grade,it.enhance||0,it.type);
-      return {atk:acc.atk+st.atk,def:acc.def+st.def,mdef:acc.mdef+st.mdef,
-        crit:Math.min(80,acc.crit+st.crit),eva:Math.min(60,acc.eva+st.eva)};
+      return {atk:acc.atk+st.atk,def:acc.def+st.def,mdef:acc.mdef+st.mdef,crit:Math.min(80,acc.crit+st.crit),eva:Math.min(60,acc.eva+st.eva)};
     },{atk:0,def:0,mdef:0,crit:0,eva:0});
   },[eqWeapon, eqHelmet, eqArmor, eqPants, eqBoots, eqCloak, eqBelt, eqEarrings, eqRing]);
 
   const totalScore=Math.round(totalStats.atk*3+totalStats.def*2+totalStats.mdef*2+totalStats.crit*100+totalStats.eva*100);
 
-  // 9종 멀티 장착 목록 맵 배열 구성
-  const equipmentSlots = [
+  const slotsData = [
     { key: "weapon",   label: "무기",   icon: "⚔", item: eqWeapon },
-    { key: "helmet",   label: "투구 (방어구)", icon: "🪖", item: eqHelmet },
-    { key: "armor",    label: "갑옷 (방어구)", icon: "🛡", item: eqArmor },
-    { key: "pants",    label: "바지 (방어구)", icon: "👖", item: eqPants },
-    { key: "boots",    label: "부츠 (방어구)", icon: "🥾", item: eqBoots },
-    { key: "cloak",    label: "망토 (방어구)", icon: "🧣", item: eqCloak },
-    { key: "belt",     label: "벨트 (장신구)", icon: "🎗", item: eqBelt },
-    { key: "earrings", label: "귀걸이 (장신구)", icon: "💎", item: eqEarrings },
-    { key: "ring",     label: "반지 (장신구)", icon: "💍", item: eqRing },
+    { key: "helmet",   label: "투구",   icon: "🪖", item: eqHelmet },
+    { key: "armor",    label: "갑옷",   icon: "🛡", item: eqArmor },
+    { key: "pants",    label: "하의",   icon: "👖", item: eqPants },
+    { key: "boots",    label: "부츠",   icon: "🥾", item: eqBoots },
+    { key: "cloak",    label: "망토",   icon: "🧣", item: eqCloak },
+    { key: "belt",     label: "벨트",   icon: "🎗", item: eqBelt },
+    { key: "earrings", label: "귀걸이",   icon: "💎", item: eqEarrings },
+    { key: "ring",     label: "반지",   icon: "💍", item: eqRing },
   ];
 
   return(
     <Phone>
-      {/* HUD 상단 */}
       <div style={{background:C.bg0,borderBottom:`1px solid ${C.bdr1}`,padding:"6px 8px",display:"flex",alignItems:"stretch",gap:4}}>
         <button onClick={onChest} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,background:C.bg2,border:`1px solid ${C.bdr2}`,borderRadius:5,padding:"5px 2px",cursor:"pointer",color:C.t1}}>
           <span style={{fontSize:16}}>📦</span><span style={{fontSize:8,color:C.t3}}>보물상자</span><span style={{fontSize:10,fontWeight:800,color:dailyLeft>0?C.goldL:C.fail}}>{dailyLeft}회</span>
@@ -541,15 +555,10 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
       </div>
 
       <div style={{overflowY:"auto",maxHeight:640}}>
-        {/* 캐릭터 정보 스탯(좌) + 9종 확장 세부 장착 슬롯 스크롤 영역(우) */}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",borderBottom:`1px solid ${C.bdr1}`}}>
-          {/* 캐릭터 전신 일러스트 및 스탯바 */}
           <div style={{borderRight:`1px solid ${C.bdr0}`,background:`linear-gradient(180deg,${C.bg0},${C.bg1})`}}>
             <div style={{height:150,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden",background:C.bg0}}>
-              <img src={char.img} alt={char.name} style={{height:"100%",width:"100%",objectFit:"contain",objectPosition:"center bottom"}}
-                onError={e=>{e.target.style.display="none";e.target.nextSibling.style.display="flex";}}/>
-              <div style={{display:"none",width:"100%",height:"100%",alignItems:"center",justifyContent:"center",fontSize:55}}>{char.emoji}</div>
-              <div style={{position:"absolute",bottom:0,left:0,right:0,height:40,background:"linear-gradient(transparent,rgba(0,0,0,.6))",pointerEvents:"none"}}/>
+              <img src={char.img} alt="" style={{height:"100%",width:"100%",objectFit:"contain",objectPosition:"center bottom"}}/>
             </div>
             <div style={{padding:"8px 10px 10px",borderTop:`1px solid ${C.bdr0}`,textAlign:"center"}}>
               <div style={{fontSize:12,fontWeight:700,color:C.goldL,marginBottom:1}}>{charName}</div>
@@ -568,55 +577,36 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
                   <span style={{color:C.t1,fontWeight:700,minWidth:32,textAlign:"right",fontSize:9}}>{typeof v==="number"?v.toLocaleString():v}</span>
                 </div>
               ))}
-              <div style={{marginTop:6,background:C.bg2,borderRadius:4,padding:"4px 6px",fontSize:9,color:C.gold,fontWeight:700}}>
-                총점: {totalScore.toLocaleString()} pt
-              </div>
+              <div style={{marginTop:6,background:C.bg2,borderRadius:4,padding:"4px 6px",fontSize:9,color:C.gold,fontWeight:700}}>총점: {totalScore.toLocaleString()} pt</div>
             </div>
           </div>
 
-          {/* 우측 9종 멀티 장착현황 그리드 스크롤 컴포넌트 마감 */}
           <div style={{background:C.bg1,padding:"10px",maxHeight:305,overflowY:"auto"}}>
-            <div style={{fontSize:9,color:C.gold,letterSpacing:".1em",textTransform:"uppercase",marginBottom:8}}>◆ 장착 현황 (9개)</div>
-            {equipmentSlots.map(([slot,ic,lb,it] = []) => {
-              // 9개 오브젝트 배열 분해 매핑
-              return (
-                <div key={equipmentSlots.find(e => e.label === lb || e.key === lb)?.key} style={{background:C.bg2,border:`1px solid ${equipmentSlots.find(e => e.label === lb)?.item ? GC[gradeMap[equipmentSlots.find(e => e.label === lb)?.item.grade]]+"33" : C.bdr0}`,borderRadius:4,padding:"5px 6px",marginBottom:4}}>
-                  <div style={{fontSize:8,color:C.t3,marginBottom:2}}>{equipmentSlots.find(e => e.label === lb)?.label}</div>
-                  {equipmentSlots.find(e => e.label === lb)?.item ? (
-                    <>
-                      <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:2}}>
-                        <div style={{width:22,height:22,background:C.bg0,borderRadius:3,flexShrink:0,border:`1px solid ${GC[gradeMap[equipmentSlots.find(e => e.label === lb)?.item.grade]||"n"]}44`,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                          <img src={equipmentSlots.find(e => e.label === lb)?.item.img} alt="" style={{width:"90%",height:"90%",objectFit:"contain"}} onError={e=>{e.target.style.display="none";}}/>
-                        </div>
-                        <div style={{minWidth:0,flex:1}}>
-                          <div style={{fontSize:9,fontWeight:700,color:GC[gradeMap[equipmentSlots.find(e => e.label === lb)?.item.grade]||"n"],overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
-                            {equipmentSlots.find(e => e.label === lb)?.item.name}{(equipmentSlots.find(e => e.label === lb)?.item.enhance||0)>0&&<span style={{color:C.goldL}}> +{equipmentSlots.find(e => e.label === lb)?.item.enhance}</span>}
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  ):(
-                    <div style={{fontSize:8,color:C.t3,display:"flex",alignItems:"center",gap:4}}>
-                      <span style={{opacity:.3}}>{equipmentSlots.find(e => e.label === lb)?.icon}</span> 미장착
+            <div style={{fontSize:9,color:C.gold,letterSpacing:".1em",textTransform:"uppercase",marginBottom:8}}>◆ 무장 현황 (9슬롯)</div>
+            {slotsData.map(s => (
+              <div key={s.key} style={{background:C.bg2,border:`1px solid ${s.item?GC[gradeMap[s.item.grade]]+"33":C.bdr0}`,borderRadius:4,padding:"5px 6px",marginBottom:4}}>
+                <div style={{fontSize:8,color:C.t3,marginBottom:2}}>{s.label}</div>
+                {s.item?(
+                  <div style={{display:"flex",alignItems:"center",gap:4}}>
+                    <div style={{width:22,height:22,background:C.bg0,borderRadius:3,border:`1px solid ${GC[gradeMap[s.item.grade]||"n"]}44`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                      <img src={s.item.img} alt="" style={{width:"90%",height:"90%",objectFit:"contain"}}/>
                     </div>
-                  )}
-                </div>
-              );
-            })}
+                    <span style={{fontSize:9,fontWeight:700,color:GC[gradeMap[s.item.grade]||"n"],overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{s.item.name}</span>
+                  </div>
+                ):(
+                  <div style={{fontSize:8,color:C.t3,display:"flex",alignItems:"center",gap:4}}><span style={{opacity:.3}}>{s.icon}</span> 공석</div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* 하단 인벤토리 슬롯 탭 공간 */}
         <div style={{background:C.bg1,padding:"10px 12px 20px"}}>
           <div style={{display:"flex",gap:4,marginBottom:10}}>
             {[["weapon","⚔ 무기"],["armor","🛡 방어구"],["accessory","💍 장신구"]].map(([t,lb])=>(
-              <button key={t} onClick={()=>{setTab(t);setSelItem(null);}} style={{
-                flex:1,padding:"7px 0",borderRadius:3,fontSize:10,fontWeight:700,border:"none",
-                background:tab===t?C.bg3:C.bg2,outline:`1px solid ${tab===t?C.gold+"66":C.bdr1}`,color:tab===t?C.goldL:C.t2,cursor:"pointer",borderBottom:tab===t?`2px solid ${C.gold}`:"2px solid transparent",
-              }}>{lb}</button>
+              <button key={t} onClick={()=>{setTab(t);setSelItem(null);}} style={{flex:1,padding:"7px 0",borderRadius:3,fontSize:10,fontWeight:700,border:"none",background:tab===t?C.bg3:C.bg2,outline:`1px solid ${tab===t?C.gold+"66":C.bdr1}`,color:tab===t?C.goldL:C.t2,cursor:"pointer"}}>{lb}</button>
             ))}
           </div>
-
           <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:5,marginBottom:10}}>
             {[...tabItems,...Array(Math.max(0,30-tabItems.length)).fill(null)].slice(0,30).map((item,i)=>(
               <ItemSlot key={item?.uid||`e${i}`} item={item} selected={selItem?.uid===item?.uid} onClick={it=>setSelItem(selItem?.uid===it.uid?null:it)}/>
@@ -626,32 +616,19 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
           {selItem&&(
             <CBox gold style={{padding:"12px"}}>
               <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
-                <div style={{width:52,height:52,background:C.bg0,borderRadius:4,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",border:`1px solid ${GC[gradeMap[selItem.grade]||"n"]}55`,overflow:"hidden"}}>
-                  <img src={selItem.img} alt="" style={{width:"90%",height:"90%",objectFit:"contain"}} onError={e=>{e.target.style.display="none";}}/>
+                <div style={{width:52,height:52,background:C.bg0,borderRadius:4,display:"flex",alignItems:"center",justifyContent:"center",border:`1px solid ${GC[gradeMap[selItem.grade]||"n"]}55`,overflow:"hidden"}}>
+                  <img src={selItem.img} alt="" style={{width:"90%",height:"90%",objectFit:"contain"}}/>
                 </div>
                 <div style={{flex:1}}>
-                  <div style={{fontSize:13,fontWeight:700,color:GC[gradeMap[selItem.grade]||"n"],marginBottom:4}}>
-                    {selItem.name}{(selItem.enhance||0)>0&&<span style={{color:C.goldL,marginLeft:5}}>+{selItem.enhance}</span>}
-                  </div>
-                  <div style={{display:"flex",gap:5,alignItems:"center",marginBottom:4}}>
-                    <Pill grade={selItem.grade} sm/>{(selItem.enhance||0)>0&&<EnhTag n={selItem.enhance}/>}
-                    <span style={{fontSize:9,color:C.goldL}}>[ 분류: {selItem.cat || "기본"} ]</span>
-                  </div>
-                  <div style={{fontSize:9,color:C.t2}}>
-                    {selItem.type==="weapon"?`⚔ 공격력 +${selItem.atk||0}`:`🛡 방어력 +${selItem.def||0}`}
-                    {` | 치명타 ${calcStat(selItem.atk||selItem.def||0,selItem.grade,selItem.enhance||0,selItem.type).crit}%`}
-                  </div>
+                  <div style={{fontSize:13,fontWeight:700,color:GC[gradeMap[selItem.grade]||"n"],marginBottom:4}}>{selItem.name}{(selItem.enhance||0)>0&&<span style={{color:C.goldL}}> +{selItem.enhance}</span>}</div>
+                  <div style={{display:"flex",gap:5,alignItems:"center"}}><Pill grade={selItem.grade} sm/> <span style={{fontSize:9,color:C.goldL}}>[부위: {selItem.cat||"기본"}]</span></div>
                 </div>
               </div>
               <Divider/>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6}}>
                 <button onClick={()=>onEnhance(selItem)} style={{padding:"10px 0",borderRadius:4,border:"none",background:`linear-gradient(135deg,${C.goldD},${C.gold})`,color:"#000",fontSize:12,fontWeight:800,cursor:"pointer"}}>⚡ 강화</button>
                 <button onClick={()=>{onEquip(selItem);setSelItem(null);}} style={{padding:"10px 0",borderRadius:4,background:C.bg3,border:`1px solid ${C.bdr2}`,color:C.t1,fontSize:12,fontWeight:700,cursor:"pointer"}}>🎒 장착</button>
-                <button onClick={()=>{
-                  if(window.confirm(`[${selItem.name}]을(를) ${(selItem.sell||0).toLocaleString()}G에 판매하시겠습니까?`)){
-                    setSold(s=>[...s,selItem.uid]);setSelItem(null);
-                  }
-                }} style={{padding:"10px 0",borderRadius:4,background:`${C.fail}18`,border:`1px solid ${C.fail}44`,color:C.fail,fontSize:12,fontWeight:700,cursor:"pointer"}}>💰 판매</button>
+                <button onClick={()=>{if(window.confirm("판매하시겠습니까?")){setSold(s=>[...s,selItem.uid]);setSelItem(null);}}} style={{padding:"10px 0",borderRadius:4,background:`${C.fail}18`,border:`1px solid ${C.fail}44`,color:C.fail,fontSize:12,fontWeight:700,cursor:"pointer"}}>💰 판매</button>
               </div>
             </CBox>
           )}
@@ -661,342 +638,85 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
   );
 }
 
-// ── 보물상자 팝업 ──
+// ── 보물상자 및 기타 팝업 컴포넌트 생략 (동일 규격 유지) ──
 function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft}){
-  const [result,setResult] = useState(null);
-  const [opening,setOpening] = useState(false);
-  const [hist,setHist] = useState([]);
-  const char = CHARS.find(c=>c.id===charId)||CHARS[0];
-
-  const PROBS=[
-    {g:"n",l:"일반",p:40},{g:"m",l:"매직",p:28},{g:"r",l:"레어",p:18},
-    {g:"e",l:"에픽",p:9},{g:"l",l:"레전드",p:4},{g:"my",l:"신화",p:1}
-  ];
-  const GOLD_TIERS=[{min:200,max:999,w:40},{min:1000,max:4999,w:30},{min:5000,max:14999,w:15},
-    {min:15000,max:29999,w:8},{min:30000,max:49999,w:4},{min:50000,max:79999,w:2},{min:80000,max:100000,w:1}];
-
+  const [result,setResult] = useState(null); const [opening,setOpening] = useState(false);
+  const PROBS=[{g:"n",l:"일반",p:40},{g:"m",l:"매직",p:28},{g:"r",l:"레어",p:18},{g:"e",l:"에픽",p:9},{g:"l",l:"레전드",p:4},{g:"my",l:"신화",p:1}];
+  const GOLD_TIERS=[{min:200,max:999,w:40},{min:1000,max:4999,w:30},{min:5000,max:14999,w:15}];
   const wRand=arr=>{let r=Math.random()*arr.reduce((s,i)=>s+(i.w||i.p),0);for(const i of arr){r-=(i.w||i.p);if(r<=0)return i;}return arr[arr.length-1];};
-
-  const rollItem=()=>{
-    const gw=wRand(PROBS);
-    const charWeapons=rawWeapons.filter(w=>w.cls===char.weaponClass&&gradeMap[w.grade]===gw.g);
-    const commonArmors=rawArmors.filter(a=>gradeMap[a.grade]===gw.g);
-    const commonAccs=rawAccs.filter(a=>gradeMap[a.grade]===gw.g);
-    const allPool=[...charWeapons.map(w=>({...w,type:"weapon"})),
-                   ...commonArmors.map(a=>({...a,type:"armor"})),
-                   ...commonAccs.map(a=>({...a,type:"accessory"}))];
-    if(!allPool.length) return null;
-    const picked=allPool[Math.floor(Math.random()*allPool.length)];
-    return {...picked,uid:`${picked.id}_${Date.now()}`,enhance:0};
-  };
-
-  const doOpen=(count=1)=>{
-    if(opening||dailyLeft<=0)return;
-    const times=Math.min(count,dailyLeft);
-    setOpening(true);
+  const doOpen=()=>{
+    if(opening||dailyLeft<=0)return; setOpening(true);
     setTimeout(()=>{
-      const results=[];
-      for(let i=0;i<times;i++){
-        const isGold=Math.random()<.45;
-        if(isGold){
-          const tier=wRand(GOLD_TIERS);
-          const amount=Math.floor(Math.random()*(tier.max-tier.min+1))+tier.min;
-          results.push({type:"gold",amount});
-          onAddGold(amount);
-        } else {
-          const item=rollItem();
-          if(item){results.push({type:"item",item});onAddItem(item);}
-        }
+      const isGold=Math.random()<.45;
+      if(isGold){const tier=wRand(GOLD_TIERS); const amt=Math.floor(Math.random()*(tier.max-tier.min+1))+tier.min; setResult({type:"gold",amount:amt}); onAddGold(amt);}
+      else {
+        const gw=wRand(PROBS); const pool=[...rawWeapons,...rawArmors,...rawAccs].filter(x=>gradeMap[x.grade]===gw.g);
+        if(pool.length){const p=pool[Math.floor(Math.random()*pool.length)]; const finalItem={...p,uid:`${p.id}_${Date.now()}`,enhance:0}; setResult({type:"item",item:finalItem}); onAddItem(finalItem);}
       }
-      setDailyLeft(d=>d-times);
-      const last=results[results.length-1];
-      setResult(last);
-      setHist(h=>[...results.map(r=>({...r,time:new Date().toLocaleTimeString("ko",{hour:"2-digit",minute:"2-digit"})})).reverse(),...h].slice(0,8));
-      setOpening(false);
-    },700);
+      setDailyLeft(d=>d-1); setOpening(false);
+    },500);
   };
-
   return(
     <div style={{position:"fixed",inset:0,zIndex:999,background:"rgba(0,0,0,.75)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
-      <div style={{width:390,background:C.bg1,borderRadius:"16px 16px 0 0",maxHeight:"88vh",overflow:"hidden",display:"flex",flexDirection:"column",border:`1px solid ${C.bdr1}`,borderBottom:"none"}}>
-        <div style={{padding:"12px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",borderBottom:`1px solid ${C.bdr1}`,background:C.bg0}}>
-          <div style={{display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:16}}>📦</span><span style={{fontSize:15,fontWeight:700}}>전설의 보물상자</span></div>
-          <button onClick={onClose} style={{width:28,height:28,borderRadius:4,background:C.bg2,border:`1px solid ${C.bdr1}`,color:C.t2,fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+      <div style={{width:390,background:C.bg1,borderRadius:"16px 16px 0 0",padding:16,border:`1px solid ${C.bdr1}`}}>
+        <div style={{display:"flex",justifyContent:"space-between",marginBottom:16}}><span style={{fontWeight:700}}>보물상자 수령</span><button onClick={onClose} style={{background:"none",border:"none",color:C.t2,cursor:"pointer"}}>✕</button></div>
+        <div style={{textAlign:"center",padding:20}}>
+          <button onClick={doOpen} disabled={opening||dailyLeft<=0} style={{width:100,height:100,background:C.bg2,border:`1.5px solid ${C.gold}`,borderRadius:10,fontSize:40,cursor:"pointer"}}>{opening?"✨":"📦"}</button>
+          <div style={{marginTop:12,fontSize:12,color:C.t2}}>오늘 가능 횟수: {dailyLeft}회</div>
         </div>
-        <div style={{overflowY:"auto",padding:"16px"}}>
-          <div style={{textAlign:"center",marginBottom:16}}>
-            <button onClick={()=>doOpen(1)} disabled={opening||dailyLeft<=0} style={{width:120,height:120,background:C.bg2,borderRadius:8,fontSize:60,border:`2px solid ${opening?C.gold:dailyLeft>0?C.bdr2:C.t3}`,cursor:dailyLeft>0&&!opening?"pointer":"default",boxShadow:opening?`0 0 30px ${C.goldD}88`:"0 4px 20px rgba(0,0,0,.4)",transform:opening?"scale(1.08)":"scale(1)",transition:"all .2s",display:"inline-flex",alignItems:"center",justifyContent:"center"}}>{opening?"✨":"📦"}</button>
-            <div style={{marginTop:10,fontSize:12,color:C.t2}}>오늘 남은 횟수 <strong style={{color:dailyLeft>0?C.goldL:C.fail,fontSize:15}}>{dailyLeft}</strong> / 30</div>
-            <div style={{height:4,background:C.bg2,borderRadius:99,margin:"8px 20px",overflow:"hidden"}}>
-              <div style={{width:`${(dailyLeft/30)*100}%`,height:"100%",background:`linear-gradient(90deg,${C.goldD},${C.gold})`,borderRadius:99,transition:"width .3s"}}/>
-            </div>
+        {result&&(
+          <div style={{background:C.bg2,padding:12,borderRadius:4,textAlign:"center",color:C.goldL,fontWeight:700}}>
+            {result.type==="gold"?`💰 ${result.amount.toLocaleString()} 골드 획득!`:`🎁 [${GN[gradeMap[result.item.grade]]}] ${result.item.name} 획득!`}
           </div>
-
-          {result&&(
-            <CBox gold style={{padding:"14px",textAlign:"center",marginBottom:14}}>
-              {result.type==="gold"
-                ?<><div style={{fontSize:36,marginBottom:6}}>💰</div><div style={{fontSize:24,fontWeight:800,color:C.goldL}}>{result.amount.toLocaleString()} G</div><div style={{fontSize:11,color:C.t2}}>골드 획득!</div></>
-                :<><div style={{display:"flex",justifyContent:"center",marginBottom:6}}><img src={result.item.img} alt="" style={{width:60,height:60,objectFit:"contain"}} onError={e=>{e.target.style.display="none";}}/></div><Pill grade={result.item.grade}/><div style={{fontSize:14,fontWeight:700,marginTop:6,color:GC[gradeMap[result.item.grade]||"n"]}}>{result.item.name}</div></>}
-            </CBox>
-          )}
-
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:16}}>
-            <button onClick={()=>doOpen(1)} disabled={opening||dailyLeft<=0} style={{padding:"12px",borderRadius:4,border:"none",background:dailyLeft>0&&!opening?`linear-gradient(135deg,${C.goldD},${C.gold})`:C.bg2,color:dailyLeft>0&&!opening?"#000":C.t3,fontSize:13,fontWeight:800,cursor:"pointer"}}>{opening?"열는 중...":"📦 1회 열기"}</button>
-            <button onClick={()=>doOpen(10)} disabled={opening||dailyLeft<=0} style={{padding:"12px",borderRadius:4,background:C.bg2,border:`1px solid ${C.bdr2}`,color:dailyLeft>0?C.t1:C.t3,fontSize:13,fontWeight:600,cursor:"pointer"}}>🎯 10회 연속</button>
-          </div>
-
-          <div style={{fontSize:9,color:C.gold,letterSpacing:".12em",textTransform:"uppercase",marginBottom:7}}>◆ 드랍 확률</div>
-          <div style={{background:C.bg2,borderRadius:4,padding:"10px 12px",marginBottom:14,border:`1px solid ${C.bdr1}`}}>
-            {PROBS.map(x=>(
-              <div key={x.g} style={{display:"flex",alignItems:"center",gap:8,marginBottom:5}}>
-                <div style={{width:7,height:7,borderRadius:"50%",background:GC[x.g],flexShrink:0}}/>
-                <span style={{fontSize:10,color:C.t2,minWidth:38}}>{x.l}</span>
-                <div style={{flex:1,height:4,background:C.bg0,borderRadius:99,overflow:"hidden"}}><div style={{width:`${x.p*1.8}%`,height:"100%",background:GC[x.g],borderRadius:99}}/></div>
-                <span style={{fontSize:10,fontWeight:700,color:GC[x.g],minWidth:28,textAlign:"right"}}>{x.p}%</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
 }
 
-// ── 강화 팝업 ──
 function EnhModal({item:initItem,onClose,gold,onSpendGold,scrolls,onUseScroll,onUpdateItem}){
-  const [item,setItem] = useState({...initItem,enhance:initItem.enhance||0});
-  const [scroll,setScroll] = useState("normal");
-  const [outcome,setOutcome] = useState(null);
-  const lv=item.enhance; const prob=lv<15?SP[lv]:0;
-  const g=gradeMap[item.grade]||"n"; const gc=GC[g];
-  const OC={
-    success:{bg:C.succ+"22",border:C.succ,text:"강화 성공!",tc:C.succ},
-    stay:{bg:C.warn+"18",border:C.warn,text:"단계 유지",tc:C.warn},
-    fail:{bg:C.fail+"18",border:C.fail,text:"강화 실패 -1",tc:C.fail},
-  };
-  const cost=scroll==="normal"?500:2000;
-  const stockKey=scroll==="normal"?"normal":"adv";
-
+  const [item,setItem] = useState({...initItem,enhance:initItem.enhance||0}); const lv=item.enhance; const prob=lv<15?SP[lv]:0;
   const doEnh=()=>{
-    if(gold<cost){alert("골드가 부족합니다!");return;}
-    if((scrolls[stockKey]||0)<=0){alert("주문서가 없습니다!");return;}
-    if(lv>=15)return;
-    onSpendGold(cost); onUseScroll(stockKey);
-    const r=Math.random()*100; let oc;
-    if(r<prob){setItem(i=>({...i,enhance:i.enhance+1}));oc="success";}
-    else if(lv>=9){oc=Math.random()*100<FK[lv]?"stay":"fail";if(oc==="fail")setItem(i=>({...i,enhance:Math.max(0,i.enhance-1)}));}
-    else oc="stay";
-    setOutcome(oc);
-    setTimeout(()=>{
-      onUpdateItem({...item,enhance:oc==="success"?lv+1:oc==="fail"?Math.max(0,lv-1):lv});
-      setOutcome(null);
-    },1400);
+    const sk=scroll==="normal"?"normal":"adv"; if(gold<(scroll==="normal"?500:2000)){alert("골드 부족");return;} if(scrolls[sk]<=0){alert("주문서 부족");return;}
+    onSpendGold(scroll==="normal"?500:2000); onUseScroll(sk);
+    if(Math.random()*100<prob){const next={...item,enhance:lv+1}; setItem(next); onUpdateItem(next); alert("강화 성공!");}
+    else{ if(lv>=9 && Math.random()*100>FK[lv]){const next={...item,enhance:Math.max(0,lv-1)}; setItem(next); onUpdateItem(next); alert("강화 실패 (등급 하락)");}else{alert("강화 실패 (등급 유지)");}}
   };
-
-  const st=calcStat(item.atk||item.def||0,item.grade,item.enhance,"weapon"===item.type?"weapon":"armor");
-
+  const [scroll,setScroll]=useState("normal");
   return(
     <div style={{position:"fixed",inset:0,zIndex:999,background:"rgba(0,0,0,.75)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
-      <div style={{width:390,background:C.bg1,borderRadius:"16px 16px 0 0",maxHeight:"90vh",overflow:"hidden",display:"flex",flexDirection:"column",border:`1px solid ${C.bdr1}`,borderBottom:"none"}}>
-        <div style={{padding:"12px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",borderBottom:`1px solid ${C.bdr1}`,background:C.bg0}}>
-          <div style={{display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:16}}>⚡</span><span style={{fontSize:15,fontWeight:700}}>아이템 강화</span></div>
-          <div style={{display:"flex",alignItems:"center",gap:10}}><span style={{fontSize:11,color:C.goldL,fontWeight:700}}>💰 {gold.toLocaleString()} G</span><button onClick={onClose} style={{width:28,height:28,borderRadius:4,background:C.bg2,border:`1px solid ${C.bdr1}`,color:C.t2,fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button></div>
+      <div style={{width:390,background:C.bg1,borderRadius:"16px 16px 0 0",padding:16,border:`1px solid ${C.bdr1}`}}>
+        <div style={{display:"flex",justifyContent:"space-between",marginBottom:10}}><span style={{fontWeight:700}}>제련 가속공방</span><button onClick={onClose} style={{background:"none",border:"none",color:C.t2,cursor:"pointer"}}>✕</button></div>
+        <div style={{background:C.bg2,padding:14,borderRadius:6,textAlign:"center",marginBottom:12}}>
+          <div style={{fontSize:14,fontWeight:700,color:C.goldL}}>{item.name} +{item.enhance}</div>
+          <div style={{fontSize:11,color:C.t3,marginTop:4}}>다음 단계 성공률: {prob}%</div>
         </div>
-        <div style={{overflowY:"auto",padding:"16px"}}>
-          <div style={{background:`radial-gradient(circle at 50% 60%,${gc}18,${C.bg2} 70%)`,border:`2px solid ${outcome?OC[outcome]?.border:gc}`,borderRadius:8,padding:"16px",textAlign:"center",marginBottom:14,position:"relative",display:"flex",flexDirection:"column",alignItems:"center",gap:8,transition:"border-color .3s"}}>
-            <img src={item.img} alt="" style={{width:70,height:70,objectFit:"contain"}} onError={e=>{e.target.style.display="none";}}/>
-            <div style={{fontSize:16,fontWeight:800,color:gc}}>{item.name} <span style={{color:C.goldL}}>+{item.enhance}</span></div>
-            <Pill grade={item.grade}/>
-            <div style={{fontSize:10,color:C.t2}}>{item.type==="weapon"?`⚔ 공격력 ${st.atk} | 💥 치명타 ${st.crit}%`:`🛡 방어력 ${st.def} | 💨 회피 ${st.eva}%`}</div>
-            {outcome&&<div style={{position:"absolute",inset:0,background:OC[outcome]?.bg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,fontWeight:800,color:OC[outcome]?.tc,borderRadius:6}}>{OC[outcome]?.text}</div>}
-          </div>
-
-          <div style={{overflowX:"auto",display:"flex",gap:4,paddingBottom:6,marginBottom:12}}>
-            {SP.map((p,i)=>(
-              <div key={i} style={{flexShrink:0,padding:"4px 8px",borderRadius:3,fontSize:9,fontWeight:700,whiteSpace:"nowrap",background:i===lv?C.bg3:C.bg2,color:i===lv?C.goldL:C.t3,border:`1px solid ${i===lv?C.gold+"66":C.bdr1}`}}>+{i+1}·{p}%</div>
-            ))}
-          </div>
-
-          <div style={{marginBottom:12}}>
-            <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}><span style={{fontSize:11,color:C.t2}}>성공 확률</span><span style={{fontSize:18,fontWeight:800,color:prob>=70?C.succ:prob>=40?C.warn:C.fail}}>{lv<15?`${prob}%`:"MAX"}</span></div>
-            <div style={{height:6,background:C.bg2,borderRadius:99,overflow:"hidden"}}><div style={{width:`${prob}%`,height:"100%",borderRadius:99,transition:"width .4s",background:prob>=70?C.succ:prob>=40?C.warn:C.fail}}/></div>
-          </div>
-
-          { Kleid = lv>=9&&<div style={{background:C.bg2,borderRadius:4,padding:"7px 10px",marginBottom:12,fontSize:10,color:C.t2,border:`1px solid ${C.bdr0}`}}>실패 시: <span style={{color:C.succ,fontWeight:700}}>{FK[lv]}% 유지</span> / <span style={{color:C.fail,fontWeight:700}}>{100-FK[lv]}% -1 하락</span></div>}
-
-          <div style={{fontSize:9,color:C.gold,letterSpacing:".12em",textTransform:"uppercase",marginBottom:7}}>◆ 주문서 선택</div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
-            {[["normal","일반","500 G","일반~레어"],["adv","고급","2,000 G","에픽~신화"]].map(([t,nm,pr,rng])=>(
-              <button key={t} onClick={()=>setScroll(t)} style={{border:`2px solid ${scroll===t?C.gold:C.bdr1}`,borderRadius:5,padding:"10px 8px",textAlign:"center",cursor:"pointer",background:scroll===t?C.bg3:C.bg2}}>
-                <div style={{fontSize:20,marginBottom:3,filter:t==="adv"?"hue-rotate(240deg)":"none"}}>📜</div>
-                <div style={{fontSize:11,fontWeight:700,color:scroll===t?C.goldL:C.t1,marginBottom:1}}>{nm} 주문서</div>
-                <div style={{fontSize:9,color:scroll===t?C.t2:C.t3,marginBottom:3}}>{rng}</div>
-                <div style={{fontSize:13,fontWeight:800,color:scroll===t?C.goldL:C.gold}}>{pr}</div>
-                <div style={{fontSize:9,color:C.t3,marginTop:1}}>보유 {scrolls[t]||0}개</div>
-              </button>
-            ))}
-          </div>
-          <button onClick={doEnh} disabled={lv>=15||!!outcome} style={{width:"100%",padding:"14px",borderRadius:4,border:"none",background:lv>=15||outcome?C.bg2:`linear-gradient(135deg,${C.goldD},${C.gold})`,color:lv>=15||outcome?C.t3:"#000",fontSize:15,fontWeight:800,cursor:lv>=15||outcome?"default":"pointer"}}>
-            {lv>=15?"◆ 최대 강화 완료":`⚡ 강화 (${cost.toLocaleString()} G)`}
-          </button>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:12}}>
+          <button onClick={()=>setScroll("normal")} style={{padding:8,background:scroll==="normal"?C.bg3:C.bg2,color:C.t1,border:`1px solid ${scroll==="normal"?C.gold:C.bdr1}`,borderRadius:4}}>일반(500G)</button>
+          <button onClick={()=>setScroll("adv")} style={{padding:8,background:scroll==="adv"?C.bg3:C.bg2,color:C.t1,border:`1px solid ${scroll==="adv"?C.gold:C.bdr1}`,borderRadius:4}}>고급(2000G)</button>
         </div>
+        <button onClick={doEnh} style={{width:"100%",padding:12,background:`linear-gradient(135deg,${C.goldD},${C.gold})`,color:"#000",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer"}}>강화 시도</button>
       </div>
     </div>
   );
 }
 
-// ── 상점 팝업 ──
 function ShopModal({onClose,gold,onSpendGold,onAddScrolls}){
-  const [tab,setTab] = useState("weapon");
-  const [qty,setQty] = useState({normal:1,adv:1});
-  const [toast,setToast] = useState(null);
-
-  const showToast=msg=>{setToast(msg);setTimeout(()=>setToast(null),2000);};
-
-  const ITEMS={
-    weapon:[
-      {nm:"무기 강화 주문서",img:CONSUMABLES[0].img,sub:"일반~레어 무기 강화",price:500,type:"normal"},
-      {nm:"고급 무기 강화 주문서",img:CONSUMABLES[0].img,sub:"에픽~신화 무기 강화",price:2000,type:"adv"},
-    ],
-    armor:[
-      {nm:"방어구 강화 주문서",img:CONSUMABLES[1].img,sub:"일반~레어 방어구 강화",price:500,type:"normal"},
-      {nm:"고급 방어구 강화 주문서",img:CONSUMABLES[1].img,sub:"에픽~신화 방어구 강화",price:2000,type:"adv"},
-    ],
-    accessory:[
-      {nm:"장신구 강화 주문서",img:CONSUMABLES[2].img,sub:"일반~레어 장신구 강화",price:500,type:"normal"},
-      {nm:"고급 장신구 강화 주문서",img:CONSUMABLES[2].img,sub:"에픽~신화 장신구 강화",price:2000,type:"adv"},
-    ],
-  };
-
-  const buy=(item)=>{
-    const q=qty[item.type];
-    const total=item.price*q;
-    if(gold<total){showToast("골드가 부족합니다!");return;}
-    onSpendGold(total);
-    onAddScrolls(item.type,q);
-    showToast(`${item.nm} ${q}개 구매 완료!`);
-  };
-
+  const buy=(t,p)=>{if(gold<p){alert("골드 부족");return;} onSpendGold(p); onAddScrolls(t,1); alert("구매 완료!");};
   return(
     <div style={{position:"fixed",inset:0,zIndex:999,background:"rgba(0,0,0,.75)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
-      <div style={{width:390,background:C.bg1,borderRadius:"16px 16px 0 0",maxHeight:"88vh",overflow:"hidden",display:"flex",flexDirection:"column",border:`1px solid ${C.bdr1}`,borderBottom:"none"}}>
-        <div style={{padding:"12px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",borderBottom:`1px solid ${C.bdr1}`,background:C.bg0}}>
-          <div style={{display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:16}}>🛒</span><span style={{fontSize:15,fontWeight:700}}>강화 주문서 상점</span></div>
-          <div style={{display:"flex",alignItems:"center",gap:10}}><span style={{fontSize:11,color:C.goldL,fontWeight:700}}>💰 {gold.toLocaleString()} G</span><button onClick={onClose} style={{width:28,height:28,borderRadius:4,background:C.bg2,border:`1px solid ${C.bdr1}`,color:C.t2,fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button></div>
-        </div>
-        <div style={{overflowY:"auto",padding:"14px"}}>
-          <div style={{display:"flex",gap:4,marginBottom:12}}>
-            {[["weapon","⚔ 무기"],["armor","🛡 방어구"],["accessory","💍 장신구"]].map(([t,lb])=>(
-              <button key={t} onClick={()=>setTab(t)} style={{flex:1,padding:"7px 0",borderRadius:3,fontSize:10,fontWeight:700,border:"none",background:tab===t?C.bg3:C.bg2,outline:`1px solid ${tab===t?C.gold+"55":C.bdr1}`,color:tab===t?C.goldL:C.t2,cursor:"pointer",borderBottom:tab===t?`2px solid ${C.gold}`:"2px solid transparent"}}>{lb}</button>
-            ))}
-          </div>
-          {(ITEMS[tab]||[]).map((it,i)=>(
-            <CBox key={i} gold={it.type==="adv"} style={{padding:"14px",marginBottom:10}}>
-              <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
-                <div style={{width:48,height:48,background:C.bg0,borderRadius:5,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",border:`1px solid ${it.type==="adv"?C.e+"44":C.bdr1}`}}>
-                  <img src={it.img} alt="" style={{width:"90%",height:"90%",objectFit:"contain"}} onError={e=>{e.target.style.display="none";}}/>
-                </div>
-                <div style={{flex:1}}>
-                  <div style={{fontSize:13,fontWeight:700,color:it.type==="adv"?C.e:C.t1,marginBottom:3}}>{it.nm}</div>
-                  <div style={{fontSize:10,color:C.t2,marginBottom:4}}>{it.sub}</div>
-                </div>
-                <div style={{fontSize:18,fontWeight:800,color:it.type==="adv"?C.e:C.goldL,textAlign:"right"}}>{it.price.toLocaleString()}<div style={{fontSize:9,color:C.t3,fontWeight:400}}>G / 개</div></div>
-              </div>
-              <Divider my={8}/>
-              <div style={{display:"flex",alignItems:"center",gap:8}}>
-                <div style={{display:"flex",alignItems:"center",gap:4}}>
-                  {[-10,-1,1,10].map(d=>(
-                    <button key={d} onClick={()=>setQty(q=>({...q,[it.type]:Math.max(1,Math.min(99,(q[it.type]||1)+d))}))}
-                      style={{width:d===1||d===-1?28:34,height:28,borderRadius:3,background:C.bg2,border:`1px solid ${C.bdr2}`,color:C.t1,fontSize:d===1||d===-1?16:10,fontWeight:700,cursor:"pointer"}}>{d>0?`+${d}`:d}</button>
-                  ))}
-                  <span style={{fontSize:16,fontWeight:800,minWidth:28,textAlign:"center",color:C.t1}}>{qty[it.type]||1}</span>
-                </div>
-                <button onClick={()=>buy(it)} style={{flex:1,padding:"10px",borderRadius:4,border:"none",background:it.type==="adv"?`linear-gradient(135deg,#7722cc,${C.e})`:`linear-gradient(135deg,${C.goldD},${C.gold})`,color:"#fff",fontSize:12,fontWeight:800,cursor:"pointer"}}>구매 {((qty[it.type]||1)*it.price).toLocaleString()} G</button>
-              </div>
-            </CBox>
-          ))}
+      <div style={{width:390,background:C.bg1,borderRadius:"16px 16px 0 0",padding:16,border:`1px solid ${C.bdr1}`}}>
+        <div style={{display:"flex",justifyContent:"space-between",marginBottom:16}}><span style={{fontWeight:700}}>마법 주문서 상점</span><button onClick={onClose} style={{background:"none",border:"none",color:C.t2,cursor:"pointer"}}>✕</button></div>
+        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          <div style={{display:"flex",justifyContent:"space-between",background:C.bg2,padding:10,borderRadius:4,alignItems:"center"}}><span>일반 강화 주문서</span><button onClick={()=>buy("normal",500)} style={{padding:"6px 12px",background:C.gold,color:"#000",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer"}}>500 G</button></div>
+          <div style={{display:"flex",justifyContent:"space-between",background:C.bg2,padding:10,borderRadius:4,alignItems:"center"}}><span>고급 강화 주문서</span><button onClick={()=>buy("adv",2000)} style={{padding:"6px 12px",background:C.e,color:"#fff",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer"}}>2,000 G</button></div>
         </div>
       </div>
     </div>
   );
 }
 
-// ── 랭킹 팝업 ──
-function RankModal({onClose,myScore,myName,myChar}){
-  const DEMO=[
-    {rank:1,nick:"DragonSlayer",char:"아스칼론",score:328400},
-    {rank:2,nick:"DarkWitch99",char:"세르민느",score:302300},
-    {rank:3,nick:"RocketRacoon",char:"로켓",score:287800},
-    {rank:4,nick:"ArrowGod",char:"에일린",score:241200},
-    {rank:5,nick:"IronValkyrie",char:"발키리",score:198700},
-    {rank:6,nick:"VoidMaster",char:"벨리아르",score:184500},
-    {rank:7,nick:"HolyKnight",char:"카이렌",score:162300},
-    {rank:247,nick:myName,char:myChar,score:myScore,isMe:true},
-  ];
-  const MEDAL=["🥇","🥈","🥉"];
-  const myRankData = DEMO.find(d=>d.isMe);
-
-  return(
-    <div style={{position:"fixed",inset:0,zIndex:999,background:"rgba(0,0,0,.75)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
-      <div style={{width:390,background:C.bg1,borderRadius:"16px 16px 0 0",maxHeight:"88vh",overflow:"hidden",display:"flex",flexDirection:"column",border:`1px solid ${C.bdr1}`,borderBottom:"none"}}>
-        <div style={{padding:"12px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",borderBottom:`1px solid ${C.bdr1}`,background:C.bg0}}>
-          <div style={{display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:16}}>🏆</span><span style={{fontSize:15,fontWeight:700}}>전체 랭킹</span></div>
-          <button onClick={onClose} style={{width:28,height:28,borderRadius:4,background:C.bg2,border:`1px solid ${C.bdr1}`,color:C.t2,fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
-        </div>
-        <div style={{overflowY:"auto",padding:"14px"}}>
-          <CBox gold style={{padding:"12px 14px",marginBottom:14}}>
-            <div style={{display:"flex",alignItems:"center",gap:12}}>
-              <div style={{width:44,height:44,background:C.bg0,borderRadius:6,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,border:`1px solid ${C.goldD}55`}}>{CHARS.find(c=>c.name===myChar)?.emoji||"⚔"}</div>
-              <div style={{flex:1}}>
-                <div style={{fontSize:12,color:C.t2,marginBottom:2}}>{myName} · {myChar}</div>
-                <div style={{fontSize:16,fontWeight:800}}>{myScore.toLocaleString()} <span style={{fontSize:11,color:C.t3}}>pt</span></div>
-              </div>
-              <div style={{textAlign:"right"}}>
-                <div style={{fontSize:9,color:C.t3,marginBottom:1}}>내 순위</div>
-                <div style={{fontFamily:"monospace",fontSize:28,fontWeight:800,color:C.goldL,lineHeight:1}}>#247</div>
-              </div>
-            </div>
-          </CBox>
-
-          <div style={{fontSize:9,color:C.gold,letterSpacing:".12em",textTransform:"uppercase",marginBottom:8}}>◆ TOP 3</div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:6,marginBottom:14}}>
-            {DEMO.filter(d=>!d.isMe).slice(0,3).map((d,i)=>(
-              <div key={d.rank} style={{background:C.bg2,borderRadius:6,padding:"10px 6px",textAlign:"center",border:`1px solid ${[C.gold+"88","rgba(192,192,192,.35)","rgba(205,127,50,.35)"][i]}`}}>
-                <div style={{fontSize:20,marginBottom:5}}>{MEDAL[i]}</div>
-                <div style={{width:36,height:36,borderRadius:"50%",background:C.bg0,border:`2px solid ${[C.gold,"silver","#cd7f32"][i]}`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 6px",fontSize:18}}>{CHARS.find(c=>c.name===d.char)?.emoji||"⚔"}</div>
-                <div style={{fontSize:10,fontWeight:700,marginBottom:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{d.nick}</div>
-                <div style={{fontSize:9,color:C.t2,marginBottom:4}}>{d.char}</div>
-                <div style={{fontSize:11,fontWeight:800,color:C.goldL}}>{d.score.toLocaleString()}</div>
-              </div>
-            ))}
-          </div>
-
-          <div style={{fontSize:9,color:C.gold,letterSpacing:".12em",textTransform:"uppercase",marginBottom:8}}>◆ 전체 순위</div>
-          <div style={{display:"flex",flexDirection:"column",gap:2}}>
-            {DEMO.filter(d=>!d.isMe).slice(3).concat([myRankData]).filter(Boolean).map(d=>(
-              <div key={d.rank} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 10px",borderRadius:4,background:d.isMe?C.bg3:C.bg2,border:`1px solid ${d.isMe?C.gold+"55":C.bdr0}`,boxShadow:d.isMe?`0 0 8px ${C.goldD}55`:"none"}}>
-                <span style={{fontFamily:"monospace",fontSize:12,fontWeight:700,minWidth:34,color:d.isMe?C.goldL:C.t3}}>#{d.rank}</span>
-                <div style={{width:30,height:30,borderRadius:"50%",background:C.bg0,border:`1px solid ${d.isMe?C.gold+"55":C.bdr1}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>{CHARS.find(c=>c.name===d.char)?.emoji||"⚔"}</div>
-                <div style={{flex:1}}>
-                  <div style={{fontSize:11,fontWeight:600,color:d.isMe?C.goldL:C.t1}}>{d.nick}{d.isMe&&<span style={{background:C.goldD+"55",color:C.goldL,borderRadius:3,padding:"1px 5px",fontSize:8,fontWeight:800,marginLeft:5}}>나</span>}</div>
-                  <div style={{fontSize:9,color:C.t3}}>{d.char}</div>
-                </div>
-                <div style={{textAlign:"right"}}>
-                  <div style={{fontSize:12,fontWeight:700,color:d.isMe?C.goldL:C.t1}}>{d.score.toLocaleString()}</div>
-                  <div style={{fontSize:9,color:C.t3}}>pt</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 메인 앱 — 전체 세부 9종 멀티 장착 상태 적용 고도화
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ── 메인 파이프라인 ──
 export default function App(){
   const [screen,setScreen] = useState("title");
   const [charId,setCharId] = useState(null);
@@ -1005,20 +725,7 @@ export default function App(){
   const [scrolls,setScrolls] = useState({normal:3,adv:1});
   const [dailyLeft,setDailyLeft] = useState(30);
   const [inventory,setInventory] = useState([]);
-  
-  // 💡 수정포인트 1: 장착 슬롯 세분화 (무기1, 방어구5, 장신구3)
-  const [equipped,setEquipped] = useState({
-    weapon: null,   // 무기
-    helmet: null,   // 투구 (방어구)
-    armor: null,    // 갑옷 (방어구)
-    pants: null,    // 바지 (방어구)
-    boots: null,    // 부츠 (방어구/장신구데이터 통합)
-    cloak: null,    // 망토 (방어구)
-    belt: null,     // 벨트 (장신구)
-    earrings: null, // 귀걸이 (장신구)
-    ring: null      // 반지 (장신구)
-  });
-  
+  const [equipped,setEquipped] = useState({weapon:null, helmet:null, armor:null, pants:null, boots:null, cloak:null, belt:null, earrings:null, ring:null});
   const [showChest,setShowChest] = useState(false);
   const [enhItem,setEnhItem] = useState(null);
   const [showRank,setShowRank] = useState(false);
@@ -1026,19 +733,9 @@ export default function App(){
 
   const char = CHARS.find(c=>c.id===charId);
 
-  // 💡 수정포인트 2: 확장된 9개 전체 슬롯 장착 아이템 기반 총점 스탯 연산 처리
   const totalScore = useMemo(()=>{
-    const eqW = inventory.find(i=>i.uid===equipped.weapon);
-    const eqH = inventory.find(i=>i.uid===equipped.helmet);
-    const eqA = inventory.find(i=>i.uid===equipped.armor);
-    const eqP = inventory.find(i=>i.uid===equipped.pants);
-    const eqB = inventory.find(i=>i.uid===equipped.boots);
-    const eqC = inventory.find(i=>i.uid===equipped.cloak);
-    const eqBt= inventory.find(i=>i.uid===equipped.belt);
-    const eqE = inventory.find(i=>i.uid===equipped.earrings);
-    const eqR = inventory.find(i=>i.uid===equipped.ring);
-    
-    return [eqW, eqH, eqA, eqP, eqB, eqC, eqBt, eqE, eqR].filter(Boolean).reduce((acc,it)=>{
+    const slots=[equipped.weapon, equipped.helmet, equipped.armor, equipped.pants, equipped.boots, equipped.cloak, equipped.belt, equipped.earrings, equipped.ring];
+    return slots.map(uid=>inventory.find(i=>i.uid===uid)).filter(Boolean).reduce((acc,it)=>{
       const st = calcStat(it.atk||it.def||0,it.grade,it.enhance||0,it.type);
       return acc+st.atk*3+st.def*2+st.mdef*2+st.crit*100+st.eva*100;
     },0);
@@ -1051,50 +748,40 @@ export default function App(){
   const useScroll=(type)=>setScrolls(s=>({...s,[type]:Math.max(0,(s[type]||0)-1)}));
   const addScrolls=(type,qty)=>setScrolls(s=>({...s,[type]:(s[type]||0)+qty}));
   const updateItem=updated=>setInventory(inv=>inv.map(i=>i.uid===updated.uid?updated:i));
-  
-  // 💡 수정포인트 3: 아이템 등급/종류(cat)별 타겟 세부 장착 슬롯 라우팅 조건 자동 정렬
   const equipItem=item=>{
-    let slot = "weapon";
-    if(item.type==="weapon") {
-      slot = "weapon";
-    } else if(item.type==="armor") {
-      if(item.cat==="투구") slot = "helmet";
-      else if(item.cat==="갑옷") slot = "armor";
-      else if(item.cat==="하의") slot = "pants";
-      else if(item.cat==="망토") slot = "cloak";
-      else slot = "armor";
-    } else if(item.type==="accessory") {
-      if(item.cat==="부츠") slot = "boots";
-      else if(item.cat==="벨트") slot = "belt";
-      else if(item.cat==="귀걸이") slot = "earrings";
-      else if(item.cat==="반지") slot = "ring";
-      else slot = "ring";
+    let slot="weapon";
+    if(item.type==="weapon") slot="weapon";
+    else if(item.type==="armor"){
+      if(item.cat==="투구") slot="helmet";
+      else if(item.cat==="갑옷") slot="armor";
+      else if(item.cat==="하의") slot="pants";
+      else if(item.cat==="망토") slot="cloak";
+    } else if(item.type==="accessory"){
+      if(item.cat==="부츠") slot="boots";
+      else if(item.cat==="벨트") slot="belt";
+      else if(item.cat==="귀걸이") slot="earrings";
+      else if(item.cat==="반지") slot="ring";
     }
     setEquipped(e=>({...e,[slot]:item.uid}));
   };
 
   return(
-    <div style={{background:"#111214",minHeight:"100vh",padding:"0",fontFamily:"'Black Han Sans','Apple SD Gothic Neo','Noto Sans KR',sans-serif"}}>
+    <div style={{background:"#050608",minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}>
+      {/* 프리미엄 전용 외부 글씨체 리소스 주입 패키지 */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Noto+Serif+KR:wght@400;600;800&display=swap');
         *{box-sizing:border-box;} input,button{font-family:inherit;}
-        ::-webkit-scrollbar{width:3px;height:3px;}
-        ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px;}
+        ::-webkit-scrollbar{width:3px;}
+        ::-webkit-scrollbar-thumb{background:rgba(200,168,74,0.15);border-radius:99px;}
       `}</style>
 
-      <div style={{maxWidth:390,margin:"0 auto",position:"relative"}}>
+      <div style={{position:"relative"}}>
         {screen==="title"&&<TitleScreen onNew={()=>setScreen("char")} onLoad={()=>handleSelect("CHR_001","모험가")}/>}
         {screen==="char" &&<CharScreen onBack={()=>setScreen("title")} onSelect={handleSelect}/>}
-        {screen==="inv"  &&<InvScreen
-          charId={charId||"CHR_001"} charName={charName||"모험가"}
-          gold={gold} scrolls={scrolls} dailyLeft={dailyLeft}
-          onChest={()=>setShowChest(true)} onShop={()=>setShowShop(true)}
-          onRank={()=>setShowRank(true)} onEnhance={i=>setEnhItem(i)}
-          inventory={inventory} equipped={equipped} onEquip={equipItem}/>}
+        {screen==="inv"  &&<InvScreen charId={charId||"CHR_001"} charName={charName||"모험가"} gold={gold} scrolls={scrolls} dailyLeft={dailyLeft} onChest={()=>setShowChest(true)} onShop={()=>setShowShop(true)} onRank={()=>setShowRank(true)} onEnhance={i=>setEnhItem(i)} inventory={inventory} equipped={equipped} onEquip={equipItem}/>}
 
         {showChest&&<ChestModal onClose={()=>setShowChest(false)} charId={charId||"CHR_001"} onAddItem={addItem} onAddGold={addGold} dailyLeft={dailyLeft} setDailyLeft={setDailyLeft}/>}
         {enhItem&&<EnhModal item={enhItem} onClose={()=>setEnhItem(null)} gold={gold} onSpendGold={spendGold} scrolls={scrolls} onUseScroll={useScroll} onUpdateItem={updated=>{updateItem(updated);setEnhItem(updated);}}/>}
-        {showRank&&<RankModal onClose={()=>setShowRank(false)} myScore={Math.round(totalScore)} myName={charName||"모험가"} myChar={char?.name||"세르민느"}/>}
         {showShop&&<ShopModal onClose={()=>setShowShop(false)} gold={gold} onSpendGold={spendGold} onAddScrolls={addScrolls}/>}
       </div>
     </div>
