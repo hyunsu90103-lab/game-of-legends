@@ -277,7 +277,7 @@ const Divider=({my=8})=><div style={{height:1,background:C.bdr0,margin:`${my}px 
 const Phone=({children})=>(
   <div style={{width:390,background:C.bg0,borderRadius:20,overflow:"hidden",
     boxShadow:"0 32px 80px rgba(0,0,0,.8)",
-    fontFamily:"'Cinzel', 'Noto Serif KR', serif", // 전체 폰트 명품 스타일로 튜닝
+    fontFamily:"'Cinzel', 'Noto Serif KR', serif",
     color:C.t1,position:"relative"}}>
     <div style={{position:"absolute",inset:0,pointerEvents:"none",zIndex:0,
       backgroundImage:"linear-gradient(rgba(200,168,74,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(200,168,74,0.02) 1px,transparent 1px)",
@@ -340,25 +340,21 @@ function TitleScreen({onNew,onLoad}){
   return(
     <Phone>
       <div style={{height:330,background:"radial-gradient(circle at 50% 40%, #151926 0%, #07090e 75%)",position:"relative",overflow:"hidden",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-        {/* 미세한 그리드 격자 그리드 라인 */}
         <div style={{position:"absolute",inset:0,opacity:.03,pointerEvents:"none",
           backgroundImage:"linear-gradient(rgba(200,168,74,.4) 1px,transparent 1px),linear-gradient(90deg,rgba(200,168,74,.4) 1px,transparent 1px)",
           backgroundSize:"35px 35px"}}/>
         
-        {/* 마법진 광채 일루전 코어 효과 배경 */}
         <div style={{position:"absolute",top:"45%",left:"50%",transform:"translate(-50%,-50%)",
           width:240,height:240,background:"radial-gradient(circle,rgba(200,168,74,0.08) 0%,transparent 65%)",
           borderRadius:"50%",pointerEvents:"none",filter:"blur(10px)"}}/>
 
         <div style={{position:"relative",zIndex:2,display:"flex",flexDirection:"column",alignItems:"center",gap:16}}>
-          {/* 가느다란 황금 데코 장식 세그먼트 */}
           <div style={{display:"flex",alignItems:"center",gap:10}}>
             <div style={{width:24,height:1,background:"linear-gradient(90deg,transparent, #c8a84a)"}}/>
             <span style={{fontSize:10,color:C.goldL,letterSpacing:".4em",textTransform:"uppercase",fontFamily:"'Cinzel', serif",fontWeight:600}}>Enter the World</span>
             <div style={{width:24,height:1,background:"linear-gradient(90deg, #c8a84a, transparent)"}}/>
           </div>
           
-          {/* 메탈릭 골드 그라데이션 및 입체 쉐도우 추가 명품 타이틀 */}
           <div style={{textAlign:"center"}}>
             <div style={{fontSize:12,color:C.t2,letterSpacing:".35em",fontWeight:500,fontFamily:"'Cinzel', serif",marginBottom:6}}>THE GAME OF</div>
             <div style={{fontSize:46,fontWeight:900,letterSpacing:".08em",lineHeight:1,
@@ -369,7 +365,6 @@ function TitleScreen({onNew,onLoad}){
             </div>
           </div>
           
-          {/* 교차검 주변 아우라 레이아웃 */}
           <div style={{position:"relative",marginTop:10}}>
             <div style={{position:"absolute",inset:-15,background:"radial-gradient(circle, rgba(200,168,74,0.15) 0%, transparent 80%)",filter:"blur(4px)"}}/>
             <div style={{fontSize:32,filter:"drop-shadow(0 2px 5px rgba(0,0,0,0.5))",position:"relative",zIndex:1}}>⚔</div>
@@ -381,7 +376,6 @@ function TitleScreen({onNew,onLoad}){
         <div style={{marginBottom:18,textAlign:"center",fontSize:11,color:C.t2,letterSpacing:".2em",fontWeight:500}}>— ARCHIVE —</div>
         
         <div style={{display:"flex",flexDirection:"column",gap:12}}>
-          {/* 캐릭터 생성 버튼 고도화 디자인 */}
           <button onClick={onNew} style={{width:"100%",background:"linear-gradient(135deg, #161b26 0%, #0f121a 100%)",border:`1px solid ${C.goldD}66`,borderRadius:6,
             padding:"18px 20px",cursor:"pointer",display:"flex",alignItems:"center",gap:16,color:C.t1,textAlign:"left",transition:"all 0.25s",
             boxShadow:"0 4px 15px rgba(0,0,0,0.2)"}}
@@ -397,7 +391,6 @@ function TitleScreen({onNew,onLoad}){
             <div style={{marginLeft:"auto",fontSize:16,color:C.gold,opacity:0.7}}>›</div>
           </button>
 
-          {/* 기존 게임 불러오기 버튼 고도화 디자인 */}
           <button onClick={onLoad} style={{width:"100%",background:"linear-gradient(135deg, #0f121a 0%, #0a0b10 100%)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:6,
             padding:"18px 20px",cursor:"pointer",display:"flex",alignItems:"center",gap:16,color:C.t1,textAlign:"left",transition:"all 0.25s"}}
             onMouseEnter={e=>{e.currentTarget.style.border="1px solid rgba(255,255,255,0.15)"; e.currentTarget.style.background="#121620";}}
@@ -487,7 +480,7 @@ function CharScreen({onBack,onSelect}){
   );
 }
 
-// ── 인벤토리 화면 (9개 멀티 장착창 최적화) ──
+// ── 인벤토리 화면 (9개 멀티 장착창 및 HUD 비율 1:1 통일 최적화) ──
 function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank,onEnhance,inventory,equipped,onEquip}){
   const [tab,setTab]=useState("weapon");
   const [selItem,setSelItem]=useState(null);
@@ -542,10 +535,10 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
         <button onClick={onShop} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,background:C.bg2,border:`1px solid ${C.bdr2}`,borderRadius:5,padding:"5px 2px",cursor:"pointer",color:C.t1}}>
           <span style={{fontSize:16}}>🛒</span><span style={{fontSize:8,color:C.t3}}>상점</span><span style={{fontSize:10,fontWeight:800}}>구매</span>
         </button>
-        <div style={{flex:1.3,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,background:`${C.goldD}22`,border:`1px solid ${C.goldD}55`,borderRadius:5,padding:"5px 2px"}}>
+        <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,background:`${C.goldD}22`,border:`1px solid ${C.goldD}55`,borderRadius:5,padding:"5px 2px"}}>
           <span style={{fontSize:16}}>💰</span><span style={{fontSize:8,color:C.t3}}>골드</span><span style={{fontSize:10,fontWeight:800,color:C.goldL}}>{gold.toLocaleString()}</span>
         </div>
-        <div style={{flex:1.7,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,background:C.bg2,border:`1px solid ${C.bdr2}`,borderRadius:5,padding:"5px 2px",color:C.t1}}>
+        <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,background:C.bg2,border:`1px solid ${C.bdr2}`,borderRadius:5,padding:"5px 2px",color:C.t1}}>
           <span style={{fontSize:16}}>📜</span><span style={{fontSize:8,color:C.t3}}>주문서</span>
           <span style={{fontSize:9,fontWeight:700}}><span style={{color:C.goldL}}>일반{scrolls.normal}</span><span style={{color:C.bdr2}}>·</span><span style={{color:C.e}}>고급{scrolls.adv}</span></span>
         </div>
@@ -767,7 +760,6 @@ export default function App(){
 
   return(
     <div style={{background:"#050608",minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}>
-      {/* 프리미엄 전용 외부 글씨체 리소스 주입 패키지 */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Noto+Serif+KR:wght@400;600;800&display=swap');
         *{box-sizing:border-box;} input,button{font-family:inherit;}
