@@ -41,6 +41,7 @@ const CHARS=[
 
 // ── 스탯 계산 유틸 ──
 // 등급별 기본 스탯 배율
+// eslint-disable-next-line no-unused-vars
 const GRADE_MULTI={n:1,m:1.5,r:2.2,e:3.5,l:6,my:12};
 // 강화 보너스: 강화수 * 등급배율 * 0.08
 const calcStat=(baseAtk,grade,enhance,type)=>{
@@ -282,6 +283,7 @@ const CONSUMABLES=[
 ];
 
 // ── 보물상자 드랍풀 구성 (등급별 확률) ──
+// eslint-disable-next-line no-unused-vars
 const CHEST_POOL={
   n:0.40, m:0.28, r:0.18, e:0.09, l:0.04, my:0.01
 };
@@ -367,9 +369,23 @@ const INTRO_VIDEOS=[
 ];
 
 function TitleScreen({onNew,onLoad}){
-  const [vidIdx,setVidIdx]=useState(0);
-  const [phase,setPhase]=useState("intro");
-  const [capVis,setCapVis]=useState(true);
+  // ── 모든 Hook 최상단 선언 (Rules of Hooks) ──
+  const [vidIdx,  setVidIdx]  = useState(0);
+  const [phase,   setPhase]   = useState("intro");
+  const [capVis,  setCapVis]  = useState(true);
+  const [imgIdx,  setImgIdx]  = useState(0);
+  const [imgFade, setImgFade] = useState(true);
+  const TITLE_IMGS = ["./images/main_title.png","./images/main_title2.png"];
+
+  // 메인 타이틀 이미지 슬라이드 (3.5초마다, 메인 phase일 때만 동작)
+  useEffect(()=>{
+    if(phase !== "main") return;
+    const t=setInterval(()=>{
+      setImgFade(false);
+      setTimeout(()=>{setImgIdx(i=>(i+1)%2);setImgFade(true);},600);
+    },3500);
+    return ()=>clearInterval(t);
+  },[phase]);
 
   const goNext=()=>{
     setCapVis(false);
@@ -431,18 +447,6 @@ function TitleScreen({onNew,onLoad}){
   );
 
   // ── 메인 타이틀 ──
-  const [imgIdx,setImgIdx]=useState(0);
-  const [imgFade,setImgFade]=useState(true);
-  const TITLE_IMGS=["./images/main_title.png","./images/main_title2.png"];
-  // 3.5초마다 이미지 페이드 전환
-  useEffect(()=>{
-    const t=setInterval(()=>{
-      setImgFade(false);
-      setTimeout(()=>{setImgIdx(i=>(i+1)%2);setImgFade(true);},600);
-    },3500);
-    return ()=>clearInterval(t);
-  },[]);
-
   return(
     <Phone>
       {/* 히어로 — 배경영상(video4) + 메인아트 슬라이드 겹침 */}
@@ -459,8 +463,7 @@ function TitleScreen({onNew,onLoad}){
           <img key={src} src={src} alt=""
             style={{position:"absolute",inset:0,width:"100%",height:"100%",
               objectFit:"cover",objectPosition:"center top",zIndex:2,
-              mixBlendMode:"screen",
-              opacity:i===imgIdx?(imgFade?.9:0):0,
+              opacity:i===imgIdx?(imgFade?.5:0):0,
               transition:"opacity .6s ease-in-out"}}
             onError={e=>e.target.style.display="none"}/>
         ))}
@@ -491,8 +494,72 @@ function TitleScreen({onNew,onLoad}){
         <div style={{position:"absolute",top:100,left:14,zIndex:4,fontSize:8,opacity:.2,color:C.gold,animation:"float 5s ease-in-out infinite 0.5s"}}>✦</div>
       </div>
 
+      {/* ── 이미지 슬라이드 섹션 ── */}
+      <div style={{background:"#050608",padding:"0 0 4px",position:"relative",overflow:"hidden"}}>
+        {/* 섹션 타이틀 */}
+        <div style={{display:"flex",alignItems:"center",gap:8,padding:"14px 16px 10px"}}>
+          <div style={{width:3,height:14,background:C.gold,borderRadius:99}}/>
+          <span style={{fontSize:10,color:C.goldL,letterSpacing:".18em",textTransform:"uppercase",fontFamily:"'Cinzel',serif",fontWeight:600}}>Heroes & Legends</span>
+          <div style={{flex:1,height:1,background:`linear-gradient(90deg,${C.goldD}44,transparent)`}}/>
+        </div>
+
+        {/* 이미지 슬라이드 래퍼 */}
+        <div style={{position:"relative",overflow:"hidden",borderRadius:"0"}}>
+          {/* main_title.png — 전체 집합 아트 */}
+          <div style={{
+            opacity:imgIdx===0?(imgFade?1:0):0,
+            transition:"opacity .6s ease-in-out",
+            position:imgIdx===0?"relative":"absolute",
+            top:0,left:0,width:"100%",
+          }}>
+            <img src="./images/main_title.png" alt="The Game of Legends"
+              style={{width:"100%",display:"block",objectFit:"cover",maxHeight:200,objectPosition:"center top"}}
+              onError={e=>e.target.style.display="none"}/>
+            <div style={{position:"absolute",inset:0,
+              background:"linear-gradient(180deg,transparent 50%,rgba(5,6,8,.95) 100%)",
+              pointerEvents:"none"}}/>
+            <div style={{position:"absolute",bottom:10,left:14,fontSize:10,color:C.goldL,
+              fontFamily:"'Cinzel',serif",letterSpacing:".08em",opacity:.9}}>
+              ✦ 전설의 영웅들이 결집하다
+            </div>
+          </div>
+
+          {/* main_title2.png — 캐릭터 7명 카드 */}
+          <div style={{
+            opacity:imgIdx===1?(imgFade?1:0):0,
+            transition:"opacity .6s ease-in-out",
+            position:imgIdx===1?"relative":"absolute",
+            top:0,left:0,width:"100%",
+          }}>
+            <img src="./images/main_title2.png" alt="Characters"
+              style={{width:"100%",display:"block",objectFit:"cover",maxHeight:200,objectPosition:"center center"}}
+              onError={e=>e.target.style.display="none"}/>
+            <div style={{position:"absolute",inset:0,
+              background:"linear-gradient(180deg,transparent 50%,rgba(5,6,8,.95) 100%)",
+              pointerEvents:"none"}}/>
+            <div style={{position:"absolute",bottom:10,left:14,fontSize:10,color:C.goldL,
+              fontFamily:"'Cinzel',serif",letterSpacing:".08em",opacity:.9}}>
+              ✦ 7명의 전설적인 영웅을 선택하라
+            </div>
+          </div>
+        </div>
+
+        {/* 인디케이터 도트 */}
+        <div style={{display:"flex",justifyContent:"center",gap:7,padding:"10px 0 6px"}}>
+          {[0,1].map(i=>(
+            <div key={i}
+              onClick={()=>{setImgFade(false);setTimeout(()=>{setImgIdx(i);setImgFade(true);},300);}}
+              style={{
+                width:i===imgIdx?20:7, height:7, borderRadius:99, cursor:"pointer",
+                background:i===imgIdx?C.gold:"rgba(255,255,255,.2)",
+                transition:"all .4s", border:`1px solid ${i===imgIdx?C.gold:"transparent"}`,
+              }}/>
+          ))}
+        </div>
+      </div>
+
       {/* 버튼 영역 */}
-      <div style={{padding:"24px 20px 28px",background:"linear-gradient(180deg,#050608 0%,#0b0d13 100%)"}}>
+      <div style={{padding:"16px 20px 28px",background:"linear-gradient(180deg,#050608 0%,#0b0d13 100%)"}}>
         <div style={{marginBottom:16,textAlign:"center",fontSize:10,color:C.t3,letterSpacing:".22em"}}>— 모험을 시작하라 —</div>
         <div style={{display:"flex",flexDirection:"column",gap:10}}>
           {/* 캐릭터 생성 */}
