@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import React from "react";
 
-// ── 컬러 시스템 ──
 const C = {
   bg0:"#0d0e12", bg1:"#13151c", bg2:"#1a1d27", bg3:"#222638",
   bdr0:"rgba(255,255,255,0.05)", bdr1:"rgba(255,255,255,0.10)", bdr2:"rgba(255,255,255,0.18)",
@@ -17,24 +16,16 @@ const GB={n:C.nBg,m:C.mBg,r:C.rBg,e:C.eBg,l:C.lBg,my:C.myBg};
 const GN={n:"일반",m:"매직",r:"레어",e:"에픽",l:"레전드",my:"신화"};
 const SP=[95,90,85,80,75,70,62,54,44,35,26,18,11,6,3];
 const FK=[100,100,100,100,100,100,100,100,70,60,50,40,30,20,10];
-
 const gradeMap={"Common":"n","Magic":"m","Rare":"r","Epic":"e","Legend":"l","Mythic":"my"};
 
 const CHARS=[
-  {id:"CHR_001",name:"세르민느",role:"마법사",desc:"강력한 마력과 어둠의 마법을 사용하는 마법사",
-   img:"./images/1.(캐릭터)세르민느.png",motion:"./motions/char_seomine.mp4",emoji:"🔮",weaponClass:"마법사공용"},
-  {id:"CHR_002",name:"아스칼론",role:"전사",desc:"숲의 기운을 수호하는 강인한 전사",
-   img:"./images/1.(캐릭터)아스칼론.png",motion:"./motions/char_askalon.mp4",emoji:"⚔️",weaponClass:"전사공용"},
-  {id:"CHR_003",name:"에일린",role:"궁수",desc:"활과 화살을 자유자재로 다루는 민첩한 궁수",
-   img:"./images/1.(캐릭터)에일린.png",motion:"./motions/char_eilin.mp4",emoji:"🏹",weaponClass:"에일린(장궁)"},
-  {id:"CHR_004",name:"카이렌",role:"전사",desc:"강철 갑옷을 입은 중장갑 전사",
-   img:"./images/1.(캐릭터)카이렌.png",motion:"./motions/char_kairen.mp4",emoji:"🛡️",weaponClass:"전사공용"},
-  {id:"CHR_005",name:"로켓",role:"기술자",desc:"고성능 화기를 다루는 너구리 형태의 기술자",
-   img:"./images/1.(캐릭터)로켓.png",motion:"./motions/char_rocket.mp4",emoji:"🔫",weaponClass:"로켓(리펄서)"},
-  {id:"CHR_006",name:"발키리",role:"암살자",desc:"날개를 가진 전사이자 치명적인 공격의 소유자",
-   img:"./images/1.(캐릭터)발키리.png",motion:"./motions/char_valkyrie.mp4",emoji:"⚙️",weaponClass:"발키리(레이저)"},
-  {id:"CHR_007",name:"벨리아르",role:"마법사",desc:"어둠의 마법과 영혼의 힘을 다루는 마법사",
-   img:"./images/1.(캐릭터)벨리아르.png",motion:"./motions/char_beliar.mp4",emoji:"👁️",weaponClass:"마법사공용"},
+  {id:"CHR_001",name:"세르민느",role:"마법사",desc:"강력한 마력과 어둠의 마법을 사용하는 마법사",img:"./images/1.(캐릭터)세르민느.png",motion:"./motions/char_seomine.mp4",emoji:"🔮",weaponClass:"마법사공용"},
+  {id:"CHR_002",name:"아스칼론",role:"전사",desc:"숲의 기운을 수호하는 강인한 전사",img:"./images/1.(캐릭터)아스칼론.png",motion:"./motions/char_askalon.mp4",emoji:"⚔️",weaponClass:"전사공용"},
+  {id:"CHR_003",name:"에일린",role:"궁수",desc:"활과 화살을 자유자재로 다루는 민첩한 궁수",img:"./images/1.(캐릭터)에일린.png",motion:"./motions/char_eilin.mp4",emoji:"🏹",weaponClass:"에일린(장궁)"},
+  {id:"CHR_004",name:"카이렌",role:"전사",desc:"강철 갑옷을 입은 중장갑 전사",img:"./images/1.(캐릭터)카이렌.png",motion:"./motions/char_kairen.mp4",emoji:"🛡️",weaponClass:"전사공용"},
+  {id:"CHR_005",name:"로켓",role:"기술자",desc:"고성능 화기를 다루는 너구리 형태의 기술자",img:"./images/1.(캐릭터)로켓.png",motion:"./motions/char_rocket.mp4",emoji:"🔫",weaponClass:"로켓(리펄서)"},
+  {id:"CHR_006",name:"발키리",role:"암살자",desc:"날개를 가진 전사이자 치명적인 공격의 소유자",img:"./images/1.(캐릭터)발키리.png",motion:"./motions/char_valkyrie.mp4",emoji:"⚙️",weaponClass:"발키리(레이저)"},
+  {id:"CHR_007",name:"벨리아르",role:"마법사",desc:"어둠의 마법과 영혼의 힘을 다루는 마법사",img:"./images/1.(캐릭터)벨리아르.png",motion:"./motions/char_beliar.mp4",emoji:"👁️",weaponClass:"마법사공용"},
 ];
 
 const calcStat=(baseAtk,grade,enhance,type)=>{
@@ -43,19 +34,17 @@ const calcStat=(baseAtk,grade,enhance,type)=>{
   const enh=Math.round(base*(enhance*0.08));
   if(type==="weapon"){
     return {
-      atk: base+enh,
-      def: 0,
-      mdef: Math.round((base+enh)*0.1),
-      crit: parseFloat((Math.min(80, (enhance*2.5) + {n:3,m:6,r:10,e:15,l:22,my:35}[g])).toFixed(1)),
-      eva:  parseFloat((Math.min(60, (enhance*1.5) + {n:2,m:4,r:7,e:11,l:16,my:25}[g])).toFixed(1)),
+      atk:base+enh, def:0,
+      mdef:Math.round((base+enh)*0.1),
+      crit:parseFloat((Math.min(80,(enhance*2.5)+{n:3,m:6,r:10,e:15,l:22,my:35}[g])).toFixed(1)),
+      eva:parseFloat((Math.min(60,(enhance*1.5)+{n:2,m:4,r:7,e:11,l:16,my:25}[g])).toFixed(1)),
     };
   } else {
     return {
-      atk: 0,
-      def: base+enh,
-      mdef: Math.round((base+enh)*0.6),
-      crit: parseFloat((Math.min(80, enhance*1.0)).toFixed(1)),
-      eva:  parseFloat((Math.min(60, enhance*0.8 + {n:1,m:2,r:4,e:7,l:12,my:20}[g])).toFixed(1)),
+      atk:0, def:base+enh,
+      mdef:Math.round((base+enh)*0.6),
+      crit:parseFloat((Math.min(80,enhance*1.0)).toFixed(1)),
+      eva:parseFloat((Math.min(60,enhance*0.8+{n:1,m:2,r:4,e:7,l:12,my:20}[g])).toFixed(1)),
     };
   }
 };
@@ -106,7 +95,6 @@ const CONSUMABLES=[
   {id:"S_ETC_003",name:"장신구 강화 주문서",grade:"Common",img:"./images/Generate _Accessory enhancement scroll for web game, 2D style, luxurious an_20260529_181315_0000.png",sell:1000,type:"scroll_acc"},
 ];
 
-// ── 공통 UI ──
 const Pill=({grade,sm})=>{
   const g=gradeMap[grade]||grade;
   const c=GC[g],bg=GB[g];
@@ -133,18 +121,17 @@ const CBox=({children,style={},gold=false,onClick})=>(
       ["auto","-1px","-1px","auto"],["auto","auto","-1px","-1px"]].map(([t,r,b,l],i)=>(
       <div key={i} style={{position:"absolute",width:8,height:8,pointerEvents:"none",
         top:t,right:r,bottom:b,left:l,
-        borderTop:   i<2?`2px solid ${gold?C.gold:C.bdr2}`:undefined,
+        borderTop:i<2?`2px solid ${gold?C.gold:C.bdr2}`:undefined,
         borderBottom:i>=2?`2px solid ${gold?C.gold:C.bdr2}`:undefined,
-        borderLeft:  i%2===0?`2px solid ${gold?C.gold:C.bdr2}`:undefined,
-        borderRight: i%2===1?`2px solid ${gold?C.gold:C.bdr2}`:undefined}}/>
+        borderLeft:i%2===0?`2px solid ${gold?C.gold:C.bdr2}`:undefined,
+        borderRight:i%2===1?`2px solid ${gold?C.gold:C.bdr2}`:undefined}}/>
     ))}
     {children}
   </div>
 );
 
-const ItemSlot=({item,selected,onClick,size=1})=>{
+const ItemSlot=({item,selected,onClick})=>{
   const g=gradeMap[item?.grade]||"n";
-  const s=size===1?{fontSize:16,enh:7,bar:2}:{fontSize:14,enh:6,bar:2};
   return(
     <button onClick={()=>item&&onClick&&onClick(item)}
       disabled={!item}
@@ -160,26 +147,20 @@ const ItemSlot=({item,selected,onClick,size=1})=>{
           <div style={{position:"absolute",inset:0,background:`radial-gradient(circle at 50% 80%,${GC[g]}18,transparent 70%)`,pointerEvents:"none"}}/>
           <img src={item.img} alt={item.name}
             style={{width:"65%",height:"65%",objectFit:"contain",position:"relative",zIndex:1}}
-            onError={e=>{
-              e.target.style.display="none";
-              const fb=e.target.nextSibling;
-              if(fb)fb.style.display="flex";
-            }}/>
+            onError={e=>{e.target.style.display="none";const fb=e.target.nextSibling;if(fb)fb.style.display="flex";}}/>
           <div style={{fontSize:18,position:"relative",zIndex:1,display:"none",
             alignItems:"center",justifyContent:"center",width:"65%",height:"65%"}}>
             {item.type==="weapon"?"⚔":item.type==="armor"?"🛡":"💍"}
           </div>
-          {(item.enhance||0)>0&&<span style={{position:"absolute",top:2,left:2,fontSize:s.enh,fontWeight:800,color:C.goldL,lineHeight:1}}>+{item.enhance}</span>}
-          <div style={{position:"absolute",bottom:0,left:0,right:0,height:s.bar,background:GC[g]}}/>
+          {(item.enhance||0)>0&&<span style={{position:"absolute",top:2,left:2,fontSize:7,fontWeight:800,color:C.goldL,lineHeight:1}}>+{item.enhance}</span>}
+          <div style={{position:"absolute",bottom:0,left:0,right:0,height:2,background:GC[g]}}/>
         </>
       )}
     </button>
   );
 };
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// TitleScreen
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ━━━━ TitleScreen ━━━━
 function TitleScreen({onNew,onLoad}){
   const [imgIdx,setImgIdx]=useState(0);
   const [imgFade,setImgFade]=useState(true);
@@ -192,60 +173,10 @@ function TitleScreen({onNew,onLoad}){
     return ()=>clearInterval(t);
   },[]);
 
-  const OrnateBtn=({onClick,isGold=true,icon,title,sub})=>{
-    const bc=isGold?"#c8a84a":"#9966cc";
-    const gc=isGold?"#e8c86a":"#cc88ff";
-    const bg=isGold
-      ?"linear-gradient(180deg,#28200a 0%,#1a1406 60%,#0e0c04 100%)"
-      :"linear-gradient(180deg,#1e1430 0%,#130e22 60%,#0a0810 100%)";
-    const glow=isGold?"rgba(200,168,74,.4)":"rgba(160,80,255,.35)";
-    const gems=isGold?["#22dd66","#22dd66","#22dd66","#22dd66"]:["#aa44ff","#aa44ff","#aa44ff","#aa44ff"];
-    const gemPos=[{top:5,left:5},{top:5,right:5},{bottom:5,left:5},{bottom:5,right:5}];
-    return(
-      <button onClick={onClick} style={{
-        width:"100%",background:bg,border:"none",borderRadius:10,
-        padding:"20px 18px",cursor:"pointer",textAlign:"left",position:"relative",
-        boxShadow:`0 6px 28px ${glow}, inset 0 1px 0 rgba(255,255,255,.07)`,
-        overflow:"hidden",
-      }}>
-        <div style={{position:"absolute",inset:3,borderRadius:7,pointerEvents:"none",
-          border:`1px solid ${bc}66`}}/>
-        <div style={{position:"absolute",top:0,left:0,right:0,height:2,borderRadius:"10px 10px 0 0",
-          background:`linear-gradient(90deg,transparent 8%,${bc}aa 35%,${bc} 50%,${bc}aa 65%,transparent 92%)`,
-          pointerEvents:"none"}}/>
-        <div style={{position:"absolute",bottom:0,left:0,right:0,height:2,borderRadius:"0 0 10px 10px",
-          background:`linear-gradient(90deg,transparent 8%,${bc}55 35%,${bc}99 50%,${bc}55 65%,transparent 92%)`,
-          pointerEvents:"none"}}/>
-        <div style={{position:"absolute",left:0,top:"50%",transform:"translateY(-50%)",
-          width:3,height:24,background:`linear-gradient(180deg,transparent,${bc},transparent)`,pointerEvents:"none"}}/>
-        <div style={{position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",
-          width:3,height:24,background:`linear-gradient(180deg,transparent,${bc},transparent)`,pointerEvents:"none"}}/>
-        {gemPos.map((p,i)=>(
-          <div key={i} style={{position:"absolute",...p,width:9,height:9,borderRadius:"50%",
-            background:`radial-gradient(circle,#fff 0%,${gems[i]} 55%,${gems[i]}66 100%)`,
-            boxShadow:`0 0 7px ${gems[i]}`,pointerEvents:"none"}}/>
-        ))}
-        <div style={{display:"flex",alignItems:"center",gap:16,position:"relative",zIndex:1}}>
-          <div style={{width:54,height:54,borderRadius:9,flexShrink:0,
-            background:`radial-gradient(circle,${gc}33,${gc}0a)`,
-            border:`2px solid ${bc}`,
-            display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,
-            boxShadow:`0 0 14px ${gc}55, inset 0 0 10px ${gc}22`}}>{icon}</div>
-          <div style={{flex:1}}>
-            <div style={{fontSize:19,fontWeight:900,color:gc,marginBottom:5,
-              letterSpacing:".03em",textShadow:`0 0 14px ${gc}77`}}>{title}</div>
-            <div style={{fontSize:11,color:"rgba(255,255,255,.4)"}}>{sub}</div>
-          </div>
-          <div style={{fontSize:22,color:bc,fontWeight:900,textShadow:`0 0 10px ${bc}`}}>›</div>
-        </div>
-      </button>
-    );
-  };
-
   return(
     <Phone>
       <style>{`@keyframes tFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes tGlow{0%,100%{opacity:.65}50%{opacity:1}}`}</style>
-      {/* ① 이미지 슬라이드 (상단) */}
+      {/* 이미지 슬라이드 */}
       <div style={{position:"relative",overflow:"hidden"}}>
         <div style={{height:218,position:"relative",overflow:"hidden",background:"#05060a"}}>
           {TITLE_IMGS.map((src,i)=>(
@@ -277,7 +208,7 @@ function TitleScreen({onNew,onLoad}){
           ))}
         </div>
       </div>
-      {/* ② 영상 (하단) */}
+      {/* 영상 */}
       <div style={{position:"relative",height:390,overflow:"hidden",background:"#000"}}>
         <video autoPlay loop muted playsInline
           style={{position:"absolute",inset:0,width:"100%",height:"100%",
@@ -290,45 +221,25 @@ function TitleScreen({onNew,onLoad}){
         <div style={{position:"absolute",bottom:10,left:0,right:0,zIndex:3,textAlign:"center",
           fontSize:9,color:"rgba(200,168,74,.5)",letterSpacing:".18em"}}>✦ 전설의 영웅들이 결집하다 ✦</div>
       </div>
-      {/* ③ 버튼 — 이미지 버튼 */}
+      {/* 버튼 */}
       <div style={{padding:"14px 10px 28px",background:"linear-gradient(180deg,#050608 0%,#0a0c12 100%)"}}>
         <div style={{display:"flex",flexDirection:"column",gap:10}}>
-          <button onClick={onNew} style={{
-            width:"100%",background:"none",border:"none",padding:0,cursor:"pointer",
-            display:"block",position:"relative",
-          }}>
-            <img src="./images/btn_new_game.png" alt="캐릭터 생성"
-              style={{width:"100%",height:"auto",display:"block",
-                filter:"drop-shadow(0 4px 16px rgba(200,168,74,.4))",
-                transition:"filter .2s, transform .15s"}}
+          <button onClick={onNew} style={{width:"100%",background:"none",border:"none",padding:0,cursor:"pointer",display:"block",position:"relative"}}>
+            <img src="./images/캐릭터생성.png" alt="캐릭터 생성"
+              style={{width:"100%",height:"auto",display:"block",filter:"drop-shadow(0 4px 16px rgba(200,168,74,.4))",transition:"filter .2s"}}
               onError={e=>{
                 e.target.style.display="none";
-                e.target.parentElement.style.background="linear-gradient(135deg,#28200a,#1a1406)";
-                e.target.parentElement.style.border="2px solid #c8a84a88";
-                e.target.parentElement.style.borderRadius="10px";
-                e.target.parentElement.style.padding="20px 18px";
-                e.target.parentElement.insertAdjacentHTML("beforeend",
-                  "<div style='display:flex;align-items:center;gap:14px;color:#e8c86a'><span style='font-size:26px'>✦</span><div><div style='font-size:18px;font-weight:900'>캐릭터 생성</div><div style='font-size:11px;color:rgba(255,255,255,.4);margin-top:4px'>새로운 영웅으로 전설을 써내려가라</div></div><span style='font-size:20px;margin-left:auto'>›</span></div>"
-                );
+                e.target.parentElement.style.cssText="background:linear-gradient(135deg,#28200a,#1a1406);border:2px solid #c8a84a88;border-radius:10px;padding:20px 18px";
+                e.target.parentElement.insertAdjacentHTML("beforeend","<div style='display:flex;align-items:center;gap:14px;color:#e8c86a'><span style='font-size:26px'>✦</span><div><div style='font-size:18px;font-weight:900'>캐릭터 생성</div><div style='font-size:11px;color:rgba(255,255,255,.4);margin-top:4px'>새로운 영웅으로 전설을 써내려가라</div></div><span style='font-size:20px;margin-left:auto'>›</span></div>");
               }}/>
           </button>
-          <button onClick={onLoad} style={{
-            width:"100%",background:"none",border:"none",padding:0,cursor:"pointer",
-            display:"block",position:"relative",
-          }}>
-            <img src="./images/btn_load_game.png" alt="기존 게임 불러오기"
-              style={{width:"100%",height:"auto",display:"block",
-                filter:"drop-shadow(0 4px 16px rgba(160,80,255,.35))",
-                transition:"filter .2s, transform .15s"}}
+          <button onClick={onLoad} style={{width:"100%",background:"none",border:"none",padding:0,cursor:"pointer",display:"block",position:"relative"}}>
+            <img src="./images/게임이어하기.png" alt="기존 게임 불러오기"
+              style={{width:"100%",height:"auto",display:"block",filter:"drop-shadow(0 4px 16px rgba(160,80,255,.35))",transition:"filter .2s"}}
               onError={e=>{
                 e.target.style.display="none";
-                e.target.parentElement.style.background="linear-gradient(135deg,#1e1430,#130e22)";
-                e.target.parentElement.style.border="2px solid #9966cc88";
-                e.target.parentElement.style.borderRadius="10px";
-                e.target.parentElement.style.padding="20px 18px";
-                e.target.parentElement.insertAdjacentHTML("beforeend",
-                  "<div style='display:flex;align-items:center;gap:14px;color:#cc88ff'><span style='font-size:26px'>↺</span><div><div style='font-size:18px;font-weight:900'>기존 게임 불러오기</div><div style='font-size:11px;color:rgba(255,255,255,.4);margin-top:4px'>마지막 저장 데이터 불러오기</div></div><span style='font-size:20px;margin-left:auto'>›</span></div>"
-                );
+                e.target.parentElement.style.cssText="background:linear-gradient(135deg,#1e1430,#130e22);border:2px solid #9966cc88;border-radius:10px;padding:20px 18px";
+                e.target.parentElement.insertAdjacentHTML("beforeend","<div style='display:flex;align-items:center;gap:14px;color:#cc88ff'><span style='font-size:26px'>↺</span><div><div style='font-size:18px;font-weight:900'>기존 게임 불러오기</div><div style='font-size:11px;color:rgba(255,255,255,.4);margin-top:4px'>마지막 저장 데이터 불러오기</div></div><span style='font-size:20px;margin-left:auto'>›</span></div>");
               }}/>
           </button>
         </div>
@@ -338,9 +249,8 @@ function TitleScreen({onNew,onLoad}){
     </Phone>
   );
 }
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// CharScreen
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// ━━━━ CharScreen ━━━━
 function CharScreen({onBack,onSelect}){
   const [sel,setSel]=useState(null);
   const [naming,setNaming]=useState(false);
@@ -356,11 +266,12 @@ function CharScreen({onBack,onSelect}){
         <span style={{fontSize:14,fontWeight:700}}>영웅 선택</span>
         <span style={{marginLeft:"auto",fontSize:11,color:C.t3}}>7명의 전설적 영웅</span>
       </div>
-      <div style={{height:260,background:"linear-gradient(160deg,#1a1230,#0d0e12)",position:"relative",overflow:"hidden",borderBottom:`1px solid ${C.bdr1}`}}>
-        {char?(
-          <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"row"}}>
-            <div style={{width:"55%",height:"100%",position:"relative",overflow:"hidden",background:C.bg0,flexShrink:0}}>
-              <img src={char.img} alt={char.name}
+      <div style={{display:"flex",background:"linear-gradient(160deg,#1a1230,#0d0e12)",borderBottom:`1px solid ${C.bdr1}`}}>
+        {/* 좌: 모션 */}
+        <div style={{width:"52%",height:420,position:"relative",overflow:"hidden",background:C.bg0,flexShrink:0}}>
+          {char?(
+            <>
+              <img src={char.img} alt={char.name||""}
                 style={{width:"100%",height:"100%",objectFit:"contain",objectPosition:"center bottom",position:"absolute",inset:0}}
                 onError={e=>{e.target.style.visibility="hidden";}}/>
               <video key={char.id} autoPlay loop muted playsInline
@@ -368,65 +279,72 @@ function CharScreen({onBack,onSelect}){
                 onError={e=>{e.target.style.display="none";}}>
                 <source src={char.motion} type="video/mp4"/>
               </video>
-            </div>
-            <div style={{width:"45%",padding:"16px 12px",display:"flex",flexDirection:"column",justifyContent:"center",gap:6,
-              background:"linear-gradient(135deg,rgba(20,18,30,.95),rgba(10,9,18,.98))"}}>
-              <div style={{fontSize:17,fontWeight:800,color:C.goldL}}>{char.name}</div>
-              <div style={{fontSize:11,color:C.t2}}>{char.emoji} {char.role}</div>
-              <div style={{fontSize:9,color:C.t3,lineHeight:1.6}}>{char.desc}</div>
-            </div>
-          </div>
-        ):(
-          <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:6}}>
-            <div style={{fontSize:30,opacity:.15}}>👤</div>
-            <div style={{fontSize:11,color:C.t3}}>캐릭터를 선택하면 모션이 재생됩니다</div>
-          </div>
-        )}
-      </div>
-      <div style={{padding:"12px 14px",background:C.bg1}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:7,marginBottom:14}}>
-          {CHARS.map(c=>(
-            <button key={c.id} onClick={()=>{setSel(c.id);setNaming(false);}} style={{
-              cursor:"pointer",borderRadius:6,overflow:"hidden",border:"none",padding:0,
-              outline:`1.5px solid ${sel===c.id?C.gold:C.bdr1}`,background:sel===c.id?C.bg3:C.bg2}}>
-              <div style={{height:64,background:C.bg0,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
-                <img src={c.img} alt={c.name} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"top"}}
-                  onError={e=>{e.target.style.display="none";}}/>
+              <div style={{position:"absolute",bottom:0,left:0,right:0,height:60,
+                background:"linear-gradient(transparent,rgba(0,0,0,.85))",pointerEvents:"none",zIndex:3}}/>
+              <div style={{position:"absolute",bottom:10,left:0,right:0,textAlign:"center",zIndex:4}}>
+                <div style={{fontSize:14,fontWeight:800,color:C.goldL}}>{char.name}</div>
+                <div style={{fontSize:10,color:C.t2}}>{char.emoji} {char.role}</div>
               </div>
-              <div style={{padding:"5px 4px 6px",textAlign:"center"}}>
-                <div style={{fontSize:10,fontWeight:700,color:sel===c.id?C.goldL:C.t1}}>{c.name}</div>
-                <div style={{fontSize:8,color:C.t3}}>{c.role}</div>
-              </div>
-            </button>
-          ))}
+            </>
+          ):(
+            <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",
+              alignItems:"center",justifyContent:"center",gap:8}}>
+              <div style={{fontSize:36,opacity:.12}}>👤</div>
+              <div style={{fontSize:10,color:C.t3,textAlign:"center",padding:"0 12px"}}>캐릭터를 선택하면<br/>모션이 재생됩니다</div>
+            </div>
+          )}
         </div>
-        {!naming?(
-          <button onClick={()=>sel&&setNaming(true)} disabled={!sel} style={{
-            width:"100%",padding:"13px",borderRadius:4,border:"none",
-            background:sel?`linear-gradient(135deg,${C.goldD},${C.gold})`:C.bg2,
-            color:sel?"#000":C.t3,fontSize:14,fontWeight:800,cursor:sel?"pointer":"default"}}>
-            {sel?`${char?.name} 선택 → 이름 정하기`:"캐릭터를 먼저 선택하세요"}</button>
-        ):(
-          <div>
-            <input value={name} onChange={e=>setName(e.target.value)} placeholder="닉네임..." autoFocus
-              style={{width:"100%",padding:"11px 12px",borderRadius:4,background:C.bg0,
-                border:`1px solid ${C.bdr2}`,color:C.t1,fontSize:14,outline:"none",marginBottom:8,fontFamily:"inherit"}}/>
-            <button onClick={()=>name.trim()&&onSelect(sel,name.trim())} disabled={!name.trim()} style={{
-              width:"100%",padding:"13px",borderRadius:4,border:"none",
-              background:name.trim()?`linear-gradient(135deg,${C.goldD},${C.gold})`:C.bg2,
-              color:name.trim()?"#000":C.t3,fontSize:14,fontWeight:800,cursor:name.trim()?"pointer":"default"}}>게임 시작 ›</button>
+        {/* 우: 캐릭터 목록 3열 */}
+        <div style={{width:"48%",flexShrink:0,background:"linear-gradient(180deg,#0f0e18,#0a0912)",
+          padding:"10px 8px",display:"flex",flexDirection:"column",gap:6,overflowY:"auto"}}>
+          <div style={{fontSize:9,color:C.gold,letterSpacing:".1em",marginBottom:2}}>◆ 영웅 선택</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5,marginBottom:6}}>
+            {CHARS.map(c=>(
+              <button key={c.id} onClick={()=>{setSel(c.id);setNaming(false);}} style={{
+                cursor:"pointer",borderRadius:6,overflow:"hidden",border:"none",padding:0,
+                outline:`1.5px solid ${sel===c.id?C.gold:C.bdr1}`,
+                background:sel===c.id?C.bg3:C.bg2,
+                boxShadow:sel===c.id?`0 0 10px ${C.goldD}88`:"none"}}>
+                <div style={{height:56,background:C.bg0,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
+                  <img src={c.img} alt={c.name} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"top"}}
+                    onError={e=>{e.target.style.display="none";}}/>
+                  {sel===c.id&&<div style={{position:"absolute",bottom:0,left:0,right:0,height:2,
+                    background:`linear-gradient(90deg,transparent,${C.gold},transparent)`}}/>}
+                </div>
+                <div style={{padding:"4px 3px 5px",textAlign:"center"}}>
+                  <div style={{fontSize:9,fontWeight:700,color:sel===c.id?C.goldL:C.t1,
+                    overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
+                  <div style={{fontSize:7,color:C.t3}}>{c.role}</div>
+                </div>
+              </button>
+            ))}
           </div>
-        )}
+          {!naming?(
+            <button onClick={()=>sel&&setNaming(true)} disabled={!sel} style={{
+              width:"100%",padding:"13px",borderRadius:4,border:"none",
+              background:sel?`linear-gradient(135deg,${C.goldD},${C.gold})`:C.bg2,
+              color:sel?"#000":C.t3,fontSize:14,fontWeight:800,cursor:sel?"pointer":"default"}}>
+              {sel?`${char?.name} 선택 → 이름 정하기`:"캐릭터를 먼저 선택하세요"}</button>
+          ):(
+            <div>
+              <input value={name} onChange={e=>setName(e.target.value)} placeholder="닉네임..." autoFocus
+                style={{width:"100%",padding:"11px 12px",borderRadius:4,background:C.bg0,
+                  border:`1px solid ${C.bdr2}`,color:C.t1,fontSize:14,outline:"none",marginBottom:8,fontFamily:"inherit"}}/>
+              <button onClick={()=>name.trim()&&onSelect(sel,name.trim())} disabled={!name.trim()} style={{
+                width:"100%",padding:"13px",borderRadius:4,border:"none",
+                background:name.trim()?`linear-gradient(135deg,${C.goldD},${C.gold})`:C.bg2,
+                color:name.trim()?"#000":C.t3,fontSize:14,fontWeight:800,cursor:name.trim()?"pointer":"default"}}>게임 시작 ›</button>
+            </div>
+          )}
+        </div>
       </div>
     </Phone>
   );
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 상단 HUD — 사진 1 스타일 (가로 5칸, 각 칸에 이미지+라벨+값)
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-function TopHUD({gold, scrolls, dailyLeft, onChest, onShop, onRank}){
-  const SZ=44;
+// ━━━━ TopHUD ━━━━
+function TopHUD({gold,scrolls,dailyLeft,onChest,onShop,onRank}){
+  const SZ=60;
   const HudItem=({onClick,children,flex=1,br=true,hl=false})=>(
     <button onClick={onClick} style={{
       flex,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
@@ -442,8 +360,7 @@ function TopHUD({gold, scrolls, dailyLeft, onChest, onShop, onRank}){
       borderBottom:"2px solid rgba(200,168,74,.3)",display:"flex",alignItems:"stretch"}}>
       <HudItem onClick={onChest} flex={1}>
         <div style={{width:SZ,height:SZ,display:"flex",alignItems:"center",justifyContent:"center"}}>
-          <img src="./images/보물상자.png" alt="" style={{width:SZ,height:SZ,objectFit:"contain",
-            filter:"drop-shadow(0 2px 8px rgba(80,140,255,.6))"}}
+          <img src="./images/보물상자.png" alt="" style={{width:SZ,height:SZ,objectFit:"contain",filter:"drop-shadow(0 2px 8px rgba(80,140,255,.6))"}}
             onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:30px'>📦</span>");}}/>
         </div>
         <span style={{fontSize:9,color:"#7a7a8a",lineHeight:1}}>일일상자</span>
@@ -452,27 +369,23 @@ function TopHUD({gold, scrolls, dailyLeft, onChest, onShop, onRank}){
       </HudItem>
       <HudItem onClick={onShop} flex={1}>
         <div style={{width:SZ,height:SZ,display:"flex",alignItems:"center",justifyContent:"center"}}>
-          <img src="./images/상점.png" alt="" style={{width:SZ,height:SZ,objectFit:"contain",
-            transform:"scale(1.2)",filter:"drop-shadow(0 2px 8px rgba(180,100,255,.5))"}}
+          <img src="./images/상점.png" alt="" style={{width:SZ,height:SZ,objectFit:"contain",transform:"scale(1.2)",filter:"drop-shadow(0 2px 8px rgba(180,100,255,.5))"}}
             onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:30px'>🛒</span>");}}/>
         </div>
         <span style={{fontSize:9,color:"#7a7a8a",lineHeight:1}}>상점</span>
         <span style={{fontSize:13,fontWeight:900,color:"#b0c8e8",lineHeight:1}}>구매</span>
       </HudItem>
-      <HudItem flex={1} hl={true}>
+      <HudItem flex={1} hl={false}>
         <div style={{width:SZ,height:SZ,display:"flex",alignItems:"center",justifyContent:"center"}}>
-          <img src="./images/골드.png" alt="" style={{width:SZ,height:SZ,objectFit:"contain",
-            filter:"drop-shadow(0 2px 12px rgba(200,168,74,.9))"}}
+          <img src="./images/골드.png" alt="" style={{width:SZ,height:SZ,objectFit:"contain",filter:"drop-shadow(0 2px 12px rgba(200,168,74,.9))"}}
             onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:30px'>💰</span>");}}/>
         </div>
         <span style={{fontSize:9,color:"#c8a84a",lineHeight:1}}>골드</span>
-        <span style={{fontSize:13,fontWeight:900,color:"#e8c86a",lineHeight:1,
-          textShadow:"0 0 8px rgba(200,168,74,.7)"}}>{gold.toLocaleString()}</span>
+        <span style={{fontSize:13,fontWeight:900,color:"#e8c86a",lineHeight:1,textShadow:"0 0 8px rgba(200,168,74,.7)"}}>{gold.toLocaleString()}</span>
       </HudItem>
       <HudItem onClick={onShop} flex={1}>
         <div style={{width:SZ,height:SZ,display:"flex",alignItems:"center",justifyContent:"center"}}>
-          <img src="./images/주문서.png" alt="" style={{width:SZ,height:SZ,objectFit:"contain",
-            transform:"scale(1.18)",filter:"drop-shadow(0 2px 8px rgba(100,200,180,.5))"}}
+          <img src="./images/주문서.png" alt="" style={{width:SZ,height:SZ,objectFit:"contain",transform:"scale(1.18)",filter:"drop-shadow(0 2px 8px rgba(100,200,180,.5))"}}
             onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:30px'>📜</span>");}}/>
         </div>
         <span style={{fontSize:9,color:"#7a7a8a",lineHeight:1}}>주문서현황</span>
@@ -484,21 +397,17 @@ function TopHUD({gold, scrolls, dailyLeft, onChest, onShop, onRank}){
       </HudItem>
       <HudItem onClick={onRank} flex={1} br={false}>
         <div style={{width:SZ,height:SZ,display:"flex",alignItems:"center",justifyContent:"center"}}>
-          <img src="./images/랭킹.png" alt="" style={{width:SZ,height:SZ,objectFit:"contain",
-            filter:"drop-shadow(0 2px 10px rgba(80,140,255,.6))"}}
+          <img src="./images/랭킹.png" alt="" style={{width:SZ,height:SZ,objectFit:"contain",filter:"drop-shadow(0 2px 10px rgba(80,140,255,.6))"}}
             onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:30px'>👑</span>");}}/>
         </div>
         <span style={{fontSize:9,color:"#7a7a8a",lineHeight:1}}>랭킹</span>
-        <span style={{fontSize:13,fontWeight:900,color:"#e8c86a",lineHeight:1,
-          textShadow:"0 0 8px rgba(200,168,74,.5)"}}>#247</span>
+        <span style={{fontSize:13,fontWeight:900,color:"#e8c86a",lineHeight:1,textShadow:"0 0 8px rgba(200,168,74,.5)"}}>#247</span>
       </HudItem>
     </div>
   );
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// InvScreen
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ━━━━ InvScreen ━━━━
 function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank,onEnhance,inventory,equipped,onEquip,onSellItem}){
   const [tab,setTab]=useState("weapon");
   const [selItem,setSelItem]=useState(null);
@@ -508,16 +417,16 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
   const tabItems=useMemo(()=>{
     const all=inventory.filter(i=>!sold.includes(i.uid));
     if(tab==="weapon") return all.filter(i=>i.type==="weapon");
-    if(tab==="armor")  return all.filter(i=>i.type==="armor"||(i.type==="accessory"&&i.cat==="부츠"));
+    if(tab==="armor") return all.filter(i=>i.type==="armor"||(i.type==="accessory"&&i.cat==="부츠"));
     return all.filter(i=>i.type==="accessory"&&i.cat!=="부츠");
   },[inventory,sold,tab]);
 
-  const eqWeapon  =inventory.find(i=>i.uid===equipped.weapon);
-  const eqHelmet  =inventory.find(i=>i.uid===equipped.helmet);
-  const eqArmor   =inventory.find(i=>i.uid===equipped.armor);
-  const eqPants   =inventory.find(i=>i.uid===equipped.pants);
-  const eqBoots   =inventory.find(i=>i.uid===equipped.boots);
-  const eqRing    =inventory.find(i=>i.uid===equipped.ring);
+  const eqWeapon=inventory.find(i=>i.uid===equipped.weapon);
+  const eqHelmet=inventory.find(i=>i.uid===equipped.helmet);
+  const eqArmor=inventory.find(i=>i.uid===equipped.armor);
+  const eqPants=inventory.find(i=>i.uid===equipped.pants);
+  const eqBoots=inventory.find(i=>i.uid===equipped.boots);
+  const eqRing=inventory.find(i=>i.uid===equipped.ring);
   const eqEarrings=inventory.find(i=>i.uid===equipped.earrings);
 
   const totalStats=useMemo(()=>{
@@ -542,23 +451,14 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
 
   return(
     <Phone>
-      <style>{`
-        .hud-btn:active{transform:scale(.94);filter:brightness(.85);}
-      `}</style>
-
-      {/* ━━ 상단 HUD ━━ */}
       <TopHUD gold={gold} scrolls={scrolls} dailyLeft={dailyLeft}
         onChest={onChest} onShop={onShop} onRank={onRank}/>
-
       <div style={{overflowY:"auto",maxHeight:700}}>
-        {/* ── 좌: 캐릭터이미지(고정) / 우: 스탯+장착현황(스크롤) ── */}
         <div style={{display:"flex",borderBottom:"1px solid rgba(255,255,255,.06)"}}>
-          {/* 좌: 캐릭터 이미지 고정 */}
-          <div style={{width:"46%",flexShrink:0,position:"relative",
-            background:"#0a0b10",minHeight:380}}>
+          {/* 좌: 캐릭터 이미지 */}
+          <div style={{width:"46%",flexShrink:0,position:"relative",background:"#0a0b10",minHeight:380}}>
             <img src={char.img} alt={char.name}
-              style={{position:"absolute",inset:0,width:"100%",height:"100%",
-                objectFit:"cover",objectPosition:"center top"}}
+              style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center top"}}
               onError={e=>{e.target.style.display="none";}}/>
             <div style={{position:"absolute",bottom:0,left:0,right:0,height:60,
               background:"linear-gradient(transparent,rgba(0,0,0,.9))",pointerEvents:"none"}}/>
@@ -567,15 +467,10 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
               <div style={{fontSize:9,color:"#8c8980"}}>{char.role}</div>
             </div>
           </div>
-          {/* 우: 스탯 + 장착현황 스크롤 */}
-          <div style={{
-            width:"54%",flexShrink:0,
-            background:"linear-gradient(180deg,#13151c,#1a1d27)",
-            borderLeft:"1px solid rgba(255,255,255,.07)",
-            maxHeight:380,overflowY:"auto",
-            scrollbarWidth:"thin",scrollbarColor:"#8a6820 #0d0e12",
-          }}>
-            {/* 스탯 */}
+          {/* 우: 스탯+장착현황 스크롤 */}
+          <div style={{width:"54%",flexShrink:0,background:"linear-gradient(180deg,#13151c,#1a1d27)",
+            borderLeft:"1px solid rgba(255,255,255,.07)",maxHeight:380,overflowY:"auto",
+            scrollbarWidth:"thin",scrollbarColor:"#8a6820 #0d0e12"}}>
             <div style={{padding:"10px 10px 8px",borderBottom:"1px solid rgba(255,255,255,.05)"}}>
               <div style={{fontSize:9,color:"#c8a84a",letterSpacing:".08em",marginBottom:8,fontWeight:700}}>◆ 캐릭터 스탯</div>
               {[["⚔","공격력",totalStats.atk,"rgba(255,100,100,.85)"],
@@ -587,20 +482,17 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
                   <span style={{fontSize:10,width:14,flexShrink:0}}>{ic}</span>
                   <span style={{color:"#4a4845",fontSize:8,minWidth:28,flexShrink:0}}>{lb}</span>
                   <div style={{flex:1,height:3,background:"rgba(255,255,255,.05)",borderRadius:99,overflow:"hidden"}}>
-                    <div style={{width:`${Math.min(100,typeof v==="string"?parseFloat(v)*1.2:v/40)}%`,
-                      height:"100%",background:bc,borderRadius:99}}/>
+                    <div style={{width:`${Math.min(100,typeof v==="string"?parseFloat(v)*1.2:v/40)}%`,height:"100%",background:bc,borderRadius:99}}/>
                   </div>
                   <span style={{color:"#e8e4d8",fontWeight:700,minWidth:24,textAlign:"right",fontSize:9,flexShrink:0}}>
                     {typeof v==="number"?v.toLocaleString():v}
                   </span>
                 </div>
               ))}
-              <div style={{background:"#222638",borderRadius:4,padding:"4px 6px",
-                fontSize:8,color:"#c8a84a",fontWeight:700,textAlign:"center",marginTop:6}}>
+              <div style={{background:"#222638",borderRadius:4,padding:"4px 6px",fontSize:8,color:"#c8a84a",fontWeight:700,textAlign:"center",marginTop:6}}>
                 ✦ 총점: {totalScore.toLocaleString()} pt
               </div>
             </div>
-            {/* 장착 현황 */}
             <div style={{padding:"10px 10px 10px"}}>
               <div style={{fontSize:9,color:"#c8a84a",letterSpacing:".08em",marginBottom:8,fontWeight:700}}>◆ 장착 현황</div>
               {[["weapon","⚔","무기",eqWeapon],["helmet","🪖","투구",eqHelmet],
@@ -609,23 +501,18 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
                 ["earrings","💎","귀걸이",eqEarrings]].map(([slot,ic,lb,it])=>{
                 const g=gradeMap[it?.grade]||"n";
                 return(
-                  <div key={slot} style={{
-                    background:"#1a1d27",
-                    border:`1px solid ${it?GC[g]+"44":"rgba(255,255,255,.05)"}`,
-                    borderRadius:5,padding:"5px 7px",marginBottom:4,
-                    display:"flex",alignItems:"center",gap:6}}>
+                  <div key={slot} style={{background:"#1a1d27",border:`1px solid ${it?GC[g]+"44":"rgba(255,255,255,.05)"}`,
+                    borderRadius:5,padding:"5px 7px",marginBottom:4,display:"flex",alignItems:"center",gap:6}}>
                     <span style={{fontSize:12,width:16,flexShrink:0}}>{ic}</span>
                     <span style={{fontSize:8,color:"#4a4845",minWidth:24,flexShrink:0}}>{lb}</span>
                     {it?(
                       <div style={{display:"flex",alignItems:"center",gap:6,flex:1,minWidth:0}}>
                         <div style={{width:22,height:22,background:"#0d0e12",borderRadius:3,flexShrink:0,
-                          border:`1px solid ${GC[g]}55`,overflow:"hidden",
-                          display:"flex",alignItems:"center",justifyContent:"center"}}>
+                          border:`1px solid ${GC[g]}55`,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
                           <img src={it.img} alt="" style={{width:"90%",height:"90%",objectFit:"contain"}}
                             onError={e=>{e.target.style.display="none";}}/>
                         </div>
-                        <span style={{fontSize:9,fontWeight:700,color:GC[g],
-                          overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                        <span style={{fontSize:9,fontWeight:700,color:GC[g],overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
                           {it.name}{(it.enhance||0)>0&&<span style={{color:"#e8c86a"}}> +{it.enhance}</span>}
                         </span>
                       </div>
@@ -641,12 +528,17 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
         {/* 인벤토리 */}
         <div style={{background:C.bg1,padding:"10px 12px 20px"}}>
           <div style={{display:"flex",gap:4,marginBottom:8}}>
-            {[["weapon","⚔ 무기"],["armor","🛡 방어구"],["accessory","💍 장신구"]].map(([t,lb])=>(
+            {[["weapon","무기","./images/무기.png"],["armor","방어구","./images/방어구.png"],["accessory","장신구","./images/장신구.png"]].map(([t,lb,ic])=>(
               <button key={t} onClick={()=>{setTab(t);setSelItem(null);}} style={{
-                flex:1,padding:"7px 0",borderRadius:3,fontSize:10,fontWeight:700,border:"none",
+                flex:1,padding:"7px 0",borderRadius:3,border:"none",
                 background:tab===t?C.bg3:C.bg2,outline:`1px solid ${tab===t?C.gold+"66":C.bdr1}`,
-                color:tab===t?C.goldL:C.t2,cursor:"pointer",
-                borderBottom:tab===t?`2px solid ${C.gold}`:"2px solid transparent"}}>{lb}</button>
+                cursor:"pointer",borderBottom:tab===t?`2px solid ${C.gold}`:"2px solid transparent",
+                display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3}}>
+                <img src={ic} alt={lb} style={{width:22,height:22,objectFit:"contain",
+                  filter:tab===t?"drop-shadow(0 0 4px rgba(200,168,74,.6))":"grayscale(0.3) opacity(0.7)"}}
+                  onError={e=>{e.target.style.display="none";}}/>
+                <span style={{fontSize:9,fontWeight:700,color:tab===t?C.goldL:C.t2}}>{lb}</span>
+              </button>
             ))}
           </div>
           {selItem&&(
@@ -695,9 +587,7 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
   );
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 보물상자 팝업 — 사진 2 스타일
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ━━━━ ChestModal ━━━━
 function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft}){
   const [result,setResult]=useState(null);
   const [opening,setOpening]=useState(false);
@@ -705,12 +595,8 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
   const char=CHARS.find(c=>c.id===charId)||CHARS[0];
 
   const PROBS=[
-    {g:"n",l:"일반",  p:40,c:C.n},
-    {g:"m",l:"마술",  p:28,c:C.m},
-    {g:"r",l:"베르어",p:18,c:C.r},
-    {g:"e",l:"에픽",  p:9, c:C.e},
-    {g:"l",l:"레전드",p:4, c:C.l},
-    {g:"my",l:"신화", p:1, c:C.my},
+    {g:"n",l:"일반",p:40,c:C.n},{g:"m",l:"마술",p:28,c:C.m},{g:"r",l:"베르어",p:18,c:C.r},
+    {g:"e",l:"에픽",p:9,c:C.e},{g:"l",l:"레전드",p:4,c:C.l},{g:"my",l:"신화",p:1,c:C.my},
   ];
   const GOLD_TIERS=[{min:200,max:999,w:40},{min:1000,max:4999,w:30},{min:5000,max:14999,w:15},
     {min:15000,max:29999,w:8},{min:30000,max:49999,w:4},{min:50000,max:79999,w:2},{min:80000,max:100000,w:1}];
@@ -719,14 +605,13 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
 
   const rollItem=()=>{
     const gw=wRand(PROBS);
-    const charWeapons=rawWeapons.filter(w=>w.cls===char.weaponClass&&gradeMap[w.grade]===gw.g);
-    const commonArmors=rawArmors.filter(a=>gradeMap[a.grade]===gw.g);
-    const commonAccs=rawAccs.filter(a=>gradeMap[a.grade]===gw.g);
-    const allPool=[...charWeapons.map(w=>({...w,type:"weapon"})),
-      ...commonArmors.map(a=>({...a,type:"armor"})),
-      ...commonAccs.map(a=>({...a,type:"accessory"}))];
-    if(!allPool.length) return null;
-    const picked=allPool[Math.floor(Math.random()*allPool.length)];
+    const pool=[
+      ...rawWeapons.filter(w=>w.cls===char.weaponClass&&gradeMap[w.grade]===gw.g).map(w=>({...w,type:"weapon"})),
+      ...rawArmors.filter(a=>gradeMap[a.grade]===gw.g).map(a=>({...a,type:"armor"})),
+      ...rawAccs.filter(a=>gradeMap[a.grade]===gw.g).map(a=>({...a,type:"accessory"})),
+    ];
+    if(!pool.length) return null;
+    const picked=pool[Math.floor(Math.random()*pool.length)];
     return {...picked,uid:`${picked.id}_${Date.now()}`,enhance:0};
   };
 
@@ -736,217 +621,131 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
     setOpening(true);
     setTimeout(()=>{
       const results=[];
+      const ts=Date.now();
       for(let i=0;i<times;i++){
-        const isGold=Math.random()<.35;
+        const isGold=Math.random()<.25;
         if(isGold){
           const tier=wRand(GOLD_TIERS);
           const amount=Math.floor(Math.random()*(tier.max-tier.min+1))+tier.min;
           results.push({type:"gold",amount});
           onAddGold(amount);
         } else {
-          // rollItem null 방어: null이면 재시도 최대 5회
           let item=null;
-          for(let t=0;t<5;t++){item=rollItem();if(item)break;}
+          let retry=0;
+          while(!item&&retry<10){item=rollItem();retry++;}
           if(item){
-            // uid 중복 방지: timestamp + 인덱스
-            const safeItem={...item,uid:`${item.id}_${Date.now()}_${i}`};
+            const safeItem={...item,uid:`${item.id}_${ts}_${i}`};
             results.push({type:"item",item:safeItem});
             onAddItem(safeItem);
+          } else {
+            results.push({type:"gold",amount:500});
+            onAddGold(500);
           }
         }
       }
       setDailyLeft(d=>d-times);
-      const last=results[results.length-1];
-      setResult(last);
+      setResult(results[results.length-1]);
       setHist(h=>[...results.map(r=>({...r,time:new Date().toLocaleTimeString("ko",{hour:"2-digit",minute:"2-digit"})})).reverse(),...h].slice(0,8));
       setOpening(false);
     },700);
   };
 
   const pct=(dailyLeft/30)*100;
-
   return(
-    <div style={{position:"fixed",inset:0,zIndex:999,background:"rgba(0,0,0,.82)",
-      display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
-      <style>{`
-        @keyframes chestBounce{0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-6px) scale(1.04)}70%{transform:translateY(2px) scale(.97)}}
-        @keyframes shimmer{0%{background-position:-200px 0}100%{background-position:200px 0}}
-        @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-      `}</style>
-
-      <div style={{
-        width:390,
-        background:"linear-gradient(180deg,#1a1a2e 0%,#0f0f1e 30%,#0a0a14 100%)",
-        borderRadius:"20px 20px 0 0",
-        maxHeight:"92vh",overflow:"hidden",display:"flex",flexDirection:"column",
-        border:"1px solid rgba(200,168,74,.35)",borderBottom:"none",
-        boxShadow:"0 -8px 40px rgba(0,0,0,.8), 0 -2px 0 rgba(200,168,74,.4)",
-      }}>
-        {/* 상단 엠블럼 영역 */}
-        <div style={{position:"relative",textAlign:"center",paddingTop:0}}>
-          {/* 엠블럼 이미지 (상자 위에 배치) */}
-          <div style={{
-            position:"absolute",top:-28,left:"50%",transform:"translateX(-50%)",
-            width:56,height:56,zIndex:10,
-            background:"radial-gradient(circle,#2a2a50,#12121f)",
-            borderRadius:"50%",border:"2px solid rgba(200,168,74,.6)",
-            display:"flex",alignItems:"center",justifyContent:"center",
-            boxShadow:"0 0 20px rgba(200,168,74,.4)",
-          }}>
+    <div style={{position:"fixed",inset:0,zIndex:999,background:"rgba(0,0,0,.82)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
+      <style>{`@keyframes chestBounce{0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-6px) scale(1.04)}70%{transform:translateY(2px) scale(.97)}}@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}`}</style>
+      <div style={{width:390,background:"linear-gradient(180deg,#1a1a2e 0%,#0f0f1e 30%,#0a0a14 100%)",
+        borderRadius:"20px 20px 0 0",maxHeight:"92vh",overflow:"hidden",display:"flex",flexDirection:"column",
+        border:"1px solid rgba(200,168,74,.35)",borderBottom:"none",boxShadow:"0 -8px 40px rgba(0,0,0,.8)"}}>
+        <div style={{position:"relative",textAlign:"center"}}>
+          <div style={{position:"absolute",top:-28,left:"50%",transform:"translateX(-50%)",width:56,height:56,zIndex:10,
+            background:"radial-gradient(circle,#2a2a50,#12121f)",borderRadius:"50%",border:"2px solid rgba(200,168,74,.6)",
+            display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 20px rgba(200,168,74,.4)"}}>
             <span style={{fontSize:22}}>🏆</span>
           </div>
-          {/* 헤더 바 */}
-          <div style={{
-            background:"linear-gradient(90deg,rgba(200,168,74,.05),rgba(200,168,74,.15),rgba(200,168,74,.05))",
-            borderBottom:"1px solid rgba(200,168,74,.2)",
-            padding:"6px 16px 8px",marginTop:0,
-            display:"flex",alignItems:"center",justifyContent:"space-between",
-          }}>
+          <div style={{background:"linear-gradient(90deg,rgba(200,168,74,.05),rgba(200,168,74,.15),rgba(200,168,74,.05))",
+            borderBottom:"1px solid rgba(200,168,74,.2)",padding:"6px 16px 8px",
+            display:"flex",alignItems:"center",justifyContent:"space-between"}}>
             <div style={{width:28}}/>
-            <div style={{fontSize:16,fontWeight:800,color:C.goldL,letterSpacing:".04em",
-              textShadow:"0 0 12px rgba(200,168,74,.5)"}}>전설의 보물상자</div>
-            <button onClick={onClose} style={{
-              width:28,height:28,borderRadius:6,
-              background:"rgba(255,255,255,.08)",border:"1px solid rgba(255,255,255,.12)",
-              color:C.t2,fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+            <div style={{fontSize:16,fontWeight:800,color:C.goldL,textShadow:"0 0 12px rgba(200,168,74,.5)"}}>전설의 보물상자</div>
+            <button onClick={onClose} style={{width:28,height:28,borderRadius:6,background:"rgba(255,255,255,.08)",
+              border:"1px solid rgba(255,255,255,.12)",color:C.t2,fontSize:14,cursor:"pointer",
+              display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
           </div>
         </div>
-
         <div style={{overflowY:"auto",padding:"0 16px 24px",flex:1}}>
-          {/* 보물상자 이미지 */}
           <div style={{textAlign:"center",padding:"20px 0 8px"}}>
-            <button onClick={()=>doOpen(1)} disabled={opening||dailyLeft<=0} style={{
-              background:"none",border:"none",cursor:dailyLeft>0&&!opening?"pointer":"default",padding:0,
-            }}>
-              <div style={{
-                width:140,height:140,margin:"0 auto",
-                background:"radial-gradient(circle at 50% 60%,rgba(200,168,74,.15),transparent 70%)",
+            <button onClick={()=>doOpen(1)} disabled={opening||dailyLeft<=0} style={{background:"none",border:"none",cursor:dailyLeft>0&&!opening?"pointer":"default",padding:0}}>
+              <div style={{width:140,height:140,margin:"0 auto",background:"radial-gradient(circle at 50% 60%,rgba(200,168,74,.15),transparent 70%)",
                 borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",
-                animation:opening?"none":"chestBounce 2.5s ease-in-out infinite",
-              }}>
+                animation:opening?"none":"chestBounce 2.5s ease-in-out infinite"}}>
                 <img src="./images/보물상자.png" alt="보물상자"
-                  style={{
-                    width:120,height:120,objectFit:"contain",
-                    filter:"drop-shadow(0 8px 24px rgba(200,168,74,.5)) drop-shadow(0 0 40px rgba(100,150,255,.3))",
-                    opacity:dailyLeft>0?1:.4,
-                  }}
-                  onError={e=>{
-                    e.target.style.display="none";
-                    e.target.insertAdjacentHTML("afterend","<span style='font-size:80px;line-height:1;filter:drop-shadow(0 8px 24px rgba(200,168,74,.5))'>📦</span>");
-                  }}/>
+                  style={{width:120,height:120,objectFit:"contain",
+                    filter:"drop-shadow(0 8px 24px rgba(200,168,74,.5))",opacity:dailyLeft>0?1:.4}}
+                  onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:80px;line-height:1'>📦</span>");}}/>
               </div>
             </button>
           </div>
-
-          {/* 오늘은 X/30 + 진행바 */}
           <div style={{textAlign:"center",marginBottom:14}}>
             <div style={{fontSize:14,color:C.t2,marginBottom:8}}>
-              오늘은 <strong style={{
-                fontSize:18,fontWeight:900,
-                color:dailyLeft>0?C.goldL:C.fail,
-                textShadow:dailyLeft>0?"0 0 8px rgba(200,168,74,.6)":"none"
-              }}>{dailyLeft}</strong> / 30
+              오늘은 <strong style={{fontSize:18,fontWeight:900,color:dailyLeft>0?C.goldL:C.fail}}>{dailyLeft}</strong> / 30
             </div>
-            <div style={{
-              height:6,background:"rgba(255,255,255,.06)",borderRadius:99,
-              margin:"0 20px",overflow:"hidden",border:"1px solid rgba(255,255,255,.04)",
-            }}>
-              <div style={{
-                width:`${pct}%`,height:"100%",borderRadius:99,transition:"width .4s ease",
-                background:`linear-gradient(90deg,${C.goldD},${C.goldL})`,
-                boxShadow:"0 0 6px rgba(200,168,74,.5)",
-              }}/>
+            <div style={{height:6,background:"rgba(255,255,255,.06)",borderRadius:99,margin:"0 20px",overflow:"hidden"}}>
+              <div style={{width:`${pct}%`,height:"100%",borderRadius:99,transition:"width .4s ease",
+                background:`linear-gradient(90deg,${C.goldD},${C.goldL})`,boxShadow:"0 0 6px rgba(200,168,74,.5)"}}/>
             </div>
           </div>
-
-          {/* 결과 표시 */}
           {result&&(
-            <div style={{
-              background:result.type==="gold"?"rgba(200,168,74,.1)":"rgba(255,255,255,.05)",
+            <div style={{background:result.type==="gold"?"rgba(200,168,74,.1)":"rgba(255,255,255,.05)",
               border:`1px solid ${result.type==="gold"?C.goldD+"88":GC[gradeMap[result.item?.grade||"n"]||"n"]+"66"}`,
-              borderRadius:8,padding:"12px",textAlign:"center",marginBottom:12,
-              animation:"fadeUp .3s ease",
-            }}>
+              borderRadius:8,padding:"12px",textAlign:"center",marginBottom:12,animation:"fadeUp .3s ease"}}>
               {result.type==="gold"
-                ?<><div style={{fontSize:28,marginBottom:4}}>💰</div>
-                  <div style={{fontSize:20,fontWeight:800,color:C.goldL}}>{result.amount.toLocaleString()} G</div></>
-                :<><Pill grade={result.item.grade}/><div style={{fontSize:13,fontWeight:700,marginTop:5,
-                  color:GC[gradeMap[result.item.grade||"Common"]||"n"]}}>{result.item.name}</div></>}
+                ?<><div style={{marginBottom:4,display:"flex",justifyContent:"center"}}>
+                    <img src="./images/골드.png" alt="" style={{width:48,height:48,objectFit:"contain",filter:"drop-shadow(0 2px 12px rgba(200,168,74,.8))"}} onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:36px'>💰</span>");}}/>
+                  </div><div style={{fontSize:20,fontWeight:800,color:C.goldL}}>{result.amount.toLocaleString()} G</div></>
+                :<><Pill grade={result.item.grade}/><div style={{fontSize:13,fontWeight:700,marginTop:5,color:GC[gradeMap[result.item.grade||"Common"]||"n"]}}>{result.item.name}</div></>}
             </div>
           )}
-
-          {/* 버튼 2개 */}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:20}}>
-            {/* 1회 택배 */}
             <button onClick={()=>doOpen(1)} disabled={opening||dailyLeft<=0} style={{
               padding:"14px 8px",borderRadius:8,border:"none",cursor:dailyLeft>0&&!opening?"pointer":"default",
-              background:dailyLeft>0&&!opening
-                ?"linear-gradient(135deg,#b8920a,#e8c84a)"
-                :"rgba(255,255,255,.05)",
-              boxShadow:dailyLeft>0&&!opening?"0 4px 16px rgba(200,168,74,.4)":"none",
+              background:dailyLeft>0&&!opening?"linear-gradient(135deg,#b8920a,#e8c84a)":"rgba(255,255,255,.05)",
               color:dailyLeft>0&&!opening?"#000":"rgba(255,255,255,.25)",
-              display:"flex",alignItems:"center",justifyContent:"center",gap:8,
-              fontSize:14,fontWeight:800,
-              transition:"all .2s",
-            }}>
-              <span style={{fontSize:18}}>🛡</span>
-              {opening?"열는 중...":"1회 택배"}
+              display:"flex",alignItems:"center",justifyContent:"center",gap:8,fontSize:14,fontWeight:800}}>
+              <span style={{fontSize:18}}>🛡</span>{opening?"열는 중...":"1회 택배"}
             </button>
-            {/* 10회 연속 */}
             <button onClick={()=>doOpen(10)} disabled={opening||dailyLeft<=0} style={{
               padding:"14px 8px",borderRadius:8,cursor:dailyLeft>0&&!opening?"pointer":"default",
-              background:dailyLeft>0&&!opening
-                ?"linear-gradient(135deg,#1a2a4a,#2a3a6a)"
-                :"rgba(255,255,255,.05)",
+              background:dailyLeft>0&&!opening?"linear-gradient(135deg,#1a2a4a,#2a3a6a)":"rgba(255,255,255,.05)",
               border:`2px solid ${dailyLeft>0&&!opening?"rgba(100,150,255,.5)":"rgba(255,255,255,.08)"}`,
-              boxShadow:dailyLeft>0&&!opening?"0 4px 16px rgba(80,120,255,.25)":"none",
               color:dailyLeft>0&&!opening?C.t1:"rgba(255,255,255,.25)",
-              display:"flex",alignItems:"center",justifyContent:"center",gap:8,
-              fontSize:14,fontWeight:800,
-              transition:"all .2s",
-            }}>
-              <span style={{fontSize:18}}>🎯</span>
-              10회 연속
+              display:"flex",alignItems:"center",justifyContent:"center",gap:8,fontSize:14,fontWeight:800}}>
+              <span style={{fontSize:18}}>🎯</span>10회 연속
             </button>
           </div>
-
-          {/* 드랍 확률 */}
-          <div style={{
-            background:"rgba(255,255,255,.03)",
-            border:"1px solid rgba(255,255,255,.07)",
-            borderRadius:8,padding:"12px 14px",marginBottom:16,
-          }}>
-            <div style={{fontSize:10,color:C.goldL,fontWeight:700,marginBottom:10,letterSpacing:".05em"}}>
-              ◆ 드랍이 재미있다
-            </div>
+          <div style={{background:"rgba(255,255,255,.03)",border:"1px solid rgba(255,255,255,.07)",borderRadius:8,padding:"12px 14px",marginBottom:16}}>
+            <div style={{fontSize:10,color:C.goldL,fontWeight:700,marginBottom:10}}>◆ 드랍이 재미있다</div>
             {PROBS.map(x=>(
               <div key={x.g} style={{display:"flex",alignItems:"center",gap:10,marginBottom:7}}>
                 <div style={{width:8,height:8,borderRadius:"50%",background:x.c,flexShrink:0}}/>
                 <span style={{fontSize:11,color:C.t1,minWidth:38}}>{x.l}</span>
                 <div style={{flex:1,height:5,background:"rgba(255,255,255,.06)",borderRadius:99,overflow:"hidden"}}>
-                  <div style={{
-                    width:`${x.p*1.8}%`,height:"100%",background:x.c,borderRadius:99,
-                    boxShadow:`0 0 6px ${x.c}88`,
-                  }}/>
+                  <div style={{width:`${x.p*1.8}%`,height:"100%",background:x.c,borderRadius:99}}/>
                 </div>
                 <span style={{fontSize:11,fontWeight:800,color:x.c,minWidth:34,textAlign:"right"}}>{x.p} %</span>
               </div>
             ))}
           </div>
-
-          {/* 오픈 이력 */}
           {hist.length>0&&(
             <>
               <div style={{fontSize:9,color:C.gold,letterSpacing:".1em",marginBottom:8}}>◆ 오픈 이력</div>
               {hist.map((h,i)=>(
-                <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"7px 0",
-                  borderBottom:`1px solid ${C.bdr0}`}}>
-                  <div style={{width:32,height:32,background:C.bg2,borderRadius:5,display:"flex",
-                    alignItems:"center",justifyContent:"center",fontSize:14,overflow:"hidden",
+                <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"7px 0",borderBottom:`1px solid ${C.bdr0}`}}>
+                  <div style={{width:32,height:32,background:C.bg2,borderRadius:5,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,overflow:"hidden",
                     border:`1px solid ${h.type==="gold"?C.goldD+"55":GC[gradeMap[h.item?.grade||"n"]||"n"]+"44"}`}}>
-                    {h.type==="gold"?"💰":
-                      <img src={h.item?.img} alt="" style={{width:"90%",height:"90%",objectFit:"contain"}}
-                        onError={e=>{e.target.style.display="none";}}/>}
+                    {h.type==="gold"
+                      ?<img src="./images/골드.png" alt="" style={{width:"90%",height:"90%",objectFit:"contain"}} onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:16px'>💰</span>");}}/>
+                      :<img src={h.item?.img} alt="" style={{width:"90%",height:"90%",objectFit:"contain"}} onError={e=>{e.target.style.display="none";}}/>}
                   </div>
                   <div style={{flex:1}}>
                     <div style={{fontSize:11,fontWeight:600,color:h.type==="gold"?C.goldL:GC[gradeMap[h.item?.grade||"n"]||"n"]}}>
@@ -964,40 +763,37 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
   );
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 강화 팝업
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ━━━━ EnhModal ━━━━
 function EnhModal({item:initItem,onClose,gold,onSpendGold,scrolls,onUseScroll,onUpdateItem}){
   const [item,setItem]=useState({...initItem,enhance:initItem.enhance||0});
   const [scroll,setScroll]=useState("normal");
   const [outcome,setOutcome]=useState(null);
-  const lv=item.enhance; const prob=lv<15?SP[lv]:0;
-  const g=gradeMap[item.grade]||"n"; const gc=GC[g];
+  const lv=item.enhance;
+  const prob=lv<15?SP[lv]:0;
+  const g=gradeMap[item.grade]||"n";
+  const gc=GC[g];
   const OC={
     success:{bg:C.succ+"22",border:C.succ,text:"⚡ 강화 성공!",tc:C.succ},
-    stay:   {bg:C.warn+"18",border:C.warn,text:"🔶 단계 유지", tc:C.warn},
-    fail:   {bg:C.fail+"18",border:C.fail,text:"💥 강화 실패 -1",tc:C.fail},
+    stay:{bg:C.warn+"18",border:C.warn,text:"🔶 단계 유지",tc:C.warn},
+    fail:{bg:C.fail+"18",border:C.fail,text:"💥 강화 실패 -1",tc:C.fail},
   };
   const cost=scroll==="normal"?500:2000;
   const stockKey=scroll==="normal"?"normal":"adv";
-
   const doEnh=()=>{
     if(gold<cost){alert("골드가 부족합니다!");return;}
     if((scrolls[stockKey]||0)<=0){alert("주문서가 없습니다!");return;}
     if(lv>=15) return;
-    onSpendGold(cost); onUseScroll(stockKey);
-    const r=Math.random()*100; let oc;
+    onSpendGold(cost);onUseScroll(stockKey);
+    const r=Math.random()*100;let oc;
     if(r<prob){setItem(i=>({...i,enhance:i.enhance+1}));oc="success";}
     else if(lv>=9){oc=Math.random()*100<FK[lv]?"stay":"fail";if(oc==="fail")setItem(i=>({...i,enhance:Math.max(0,i.enhance-1)}));}
     else oc="stay";
     setOutcome(oc);
     setTimeout(()=>{onUpdateItem({...item,enhance:oc==="success"?lv+1:oc==="fail"?Math.max(0,lv-1):lv});setOutcome(null);},1400);
   };
-  const st=calcStat(item.atk||item.def||0,item.grade,item.enhance,"weapon"===item.type?"weapon":"armor");
-
+  const st=calcStat(item.atk||item.def||0,item.grade,item.enhance,item.type==="weapon"?"weapon":"armor");
   return(
-    <div style={{position:"fixed",inset:0,zIndex:999,background:"rgba(0,0,0,.75)",
-      display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
+    <div style={{position:"fixed",inset:0,zIndex:999,background:"rgba(0,0,0,.75)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
       <div style={{width:390,background:C.bg1,borderRadius:"16px 16px 0 0",maxHeight:"90vh",
         overflow:"hidden",display:"flex",flexDirection:"column",border:`1px solid ${C.bdr1}`,borderBottom:"none"}}>
         <div style={{padding:"12px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",
@@ -1016,21 +812,16 @@ function EnhModal({item:initItem,onClose,gold,onSpendGold,scrolls,onUseScroll,on
         <div style={{overflowY:"auto",padding:"16px"}}>
           <div style={{background:`radial-gradient(circle at 50% 60%,${gc}18,${C.bg2} 70%)`,
             border:`2px solid ${outcome?OC[outcome]?.border:gc}`,borderRadius:8,padding:"16px",
-            textAlign:"center",marginBottom:14,position:"relative",
-            display:"flex",flexDirection:"column",alignItems:"center",gap:8}}>
-            <img src={item.img} alt={item.name} style={{width:70,height:70,objectFit:"contain"}}
-              onError={e=>{e.target.style.display="none";}}/>
-            <div style={{fontSize:16,fontWeight:800,color:gc}}>
-              {item.name} <span style={{color:C.goldL}}>+{item.enhance}</span>
-            </div>
+            textAlign:"center",marginBottom:14,position:"relative",display:"flex",flexDirection:"column",alignItems:"center",gap:8}}>
+            <img src={item.img} alt={item.name} style={{width:70,height:70,objectFit:"contain"}} onError={e=>{e.target.style.display="none";}}/>
+            <div style={{fontSize:16,fontWeight:800,color:gc}}>{item.name} <span style={{color:C.goldL}}>+{item.enhance}</span></div>
             <Pill grade={item.grade}/>
             <div style={{fontSize:10,color:C.t2}}>
               {item.type==="weapon"?`⚔ 공격력 ${st.atk} | 💥 치명타 ${st.crit}%`:`🛡 방어력 ${st.def} | 💨 회피 ${st.eva}%`}
             </div>
             {outcome&&(
-              <div style={{position:"absolute",inset:0,background:OC[outcome]?.bg,
-                display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:8,
-                borderRadius:6}}>
+              <div style={{position:"absolute",inset:0,background:OC[outcome]?.bg,display:"flex",flexDirection:"column",
+                alignItems:"center",justifyContent:"center",gap:8,borderRadius:6}}>
                 <div style={{fontSize:48}}>{outcome==="success"?"✨":outcome==="fail"?"💥":"🔶"}</div>
                 <div style={{fontSize:22,fontWeight:800,color:OC[outcome]?.tc}}>{OC[outcome]?.text}</div>
               </div>
@@ -1041,11 +832,10 @@ function EnhModal({item:initItem,onClose,gold,onSpendGold,scrolls,onUseScroll,on
             <span style={{fontSize:18,fontWeight:800,color:prob>=70?C.succ:prob>=40?C.warn:C.fail}}>{lv<15?`${prob}%`:"MAX"}</span>
           </div>
           <div style={{height:6,background:C.bg2,borderRadius:99,overflow:"hidden",marginBottom:14}}>
-            <div style={{width:`${prob}%`,height:"100%",borderRadius:99,transition:"width .4s",
-              background:prob>=70?C.succ:prob>=40?C.warn:C.fail}}/>
+            <div style={{width:`${prob}%`,height:"100%",borderRadius:99,transition:"width .4s",background:prob>=70?C.succ:prob>=40?C.warn:C.fail}}/>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
-            {[["normal","일반","500 G","일반~레어"],["adv","고급","2,000 G","에픽~신화"]].map(([t,nm,pr,rng])=>(
+            {[["normal","일반","500 G"],["adv","고급","2,000 G"]].map(([t,nm,pr])=>(
               <button key={t} onClick={()=>setScroll(t)} style={{
                 border:`2px solid ${scroll===t?C.gold:C.bdr1}`,borderRadius:5,padding:"10px 8px",
                 textAlign:"center",cursor:"pointer",background:scroll===t?C.bg3:C.bg2}}>
@@ -1059,8 +849,7 @@ function EnhModal({item:initItem,onClose,gold,onSpendGold,scrolls,onUseScroll,on
           <button onClick={doEnh} disabled={lv>=15||!!outcome} style={{
             width:"100%",padding:"14px",borderRadius:4,border:"none",
             background:lv>=15||outcome?C.bg2:`linear-gradient(135deg,${C.goldD},${C.gold})`,
-            color:lv>=15||outcome?C.t3:"#000",fontSize:15,fontWeight:800,
-            cursor:lv>=15||outcome?"default":"pointer"}}>
+            color:lv>=15||outcome?C.t3:"#000",fontSize:15,fontWeight:800,cursor:lv>=15||outcome?"default":"pointer"}}>
             {lv>=15?"◆ 최대 강화 완료":`⚡ 강화 (${cost.toLocaleString()} G)`}
           </button>
         </div>
@@ -1069,17 +858,12 @@ function EnhModal({item:initItem,onClose,gold,onSpendGold,scrolls,onUseScroll,on
   );
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 상점 팝업 — 사진 3 스타일
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ━━━━ ShopModal ━━━━
 function ShopModal({onClose,gold,onSpendGold,onAddScrolls}){
   const [tab,setTab]=useState("weapon");
   const [qty,setQty]=useState({normal:1,adv:1});
   const [toast,setToast]=useState(null);
-
   const showToast=msg=>{setToast(msg);setTimeout(()=>setToast(null),2000);};
-
-  // 탭별 아이콘 이미지
   const ITEMS={
     weapon:[
       {nm:"무기 강화 주문서",img:CONSUMABLES[0].img,sub:"일반~레어 무기 강화",price:500,type:"normal",isPremium:false},
@@ -1094,205 +878,106 @@ function ShopModal({onClose,gold,onSpendGold,onAddScrolls}){
       {nm:"프리미엄 장신구 강화 주문서",img:CONSUMABLES[2].img,sub:"에픽~신화 장신구 강화",price:2000,type:"adv",isPremium:true},
     ],
   };
-
   const buy=(item)=>{
-    const q=qty[item.type];
-    const total=item.price*q;
+    const q=qty[item.type],total=item.price*q;
     if(gold<total){showToast("골드가 부족합니다!");return;}
     onSpendGold(total);onAddScrolls(item.type,q);
     showToast(`${item.nm} ${q}개 구매 완료!`);
   };
-
   return(
-    <div style={{position:"fixed",inset:0,zIndex:999,background:"rgba(0,0,0,.82)",
-      display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
-      <style>{`
-        @keyframes shopSlideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
-        .shop-tab-btn { transition: all .2s; }
-        .shop-tab-btn:hover { filter: brightness(1.15); }
-        .qty-btn { transition: all .15s; }
-        .qty-btn:active { transform: scale(.92); }
-        .buy-btn { transition: all .2s; }
-        .buy-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
-        .buy-btn:active { transform: translateY(0); }
-      `}</style>
-
-      <div style={{
-        width:390,
-        background:"linear-gradient(180deg,#1c1a14 0%,#141210 30%,#0e0c08 100%)",
-        borderRadius:"20px 20px 0 0",
-        maxHeight:"90vh",overflow:"hidden",display:"flex",flexDirection:"column",
-        border:"1px solid rgba(200,168,74,.4)",borderBottom:"none",
-        boxShadow:"0 -8px 40px rgba(0,0,0,.8), 0 -2px 0 rgba(200,168,74,.5)",
-        animation:"shopSlideUp .25s ease",
-      }}>
-        {/* 상단 장식 이미지 (배너처럼) */}
+    <div style={{position:"fixed",inset:0,zIndex:999,background:"rgba(0,0,0,.82)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
+      <style>{`.qty-btn{transition:all .15s}.qty-btn:active{transform:scale(.92)}.buy-btn{transition:all .2s}.buy-btn:hover{filter:brightness(1.1)}`}</style>
+      <div style={{width:390,background:"linear-gradient(180deg,#1c1a14 0%,#141210 30%,#0e0c08 100%)",
+        borderRadius:"20px 20px 0 0",maxHeight:"90vh",overflow:"hidden",display:"flex",flexDirection:"column",
+        border:"1px solid rgba(200,168,74,.4)",borderBottom:"none",boxShadow:"0 -8px 40px rgba(0,0,0,.8)"}}>
         <div style={{position:"relative",height:56,overflow:"hidden",flexShrink:0}}>
-          <div style={{position:"absolute",inset:0,
-            background:"linear-gradient(180deg,rgba(200,168,74,.08) 0%,rgba(200,168,74,.04) 100%)"}}/>
-          {/* 상단 골드 라인 */}
-          <div style={{position:"absolute",top:0,left:0,right:0,height:2,
-            background:"linear-gradient(90deg,transparent,rgba(200,168,74,.7),transparent)"}}/>
-          <div style={{
-            position:"absolute",inset:0,display:"flex",alignItems:"center",
-            justifyContent:"space-between",padding:"0 16px",
-          }}>
-            {/* 상점 아이콘 + 타이틀 */}
+          <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(200,168,74,.08),rgba(200,168,74,.04))"}}/>
+          <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,transparent,rgba(200,168,74,.7),transparent)"}}/>
+          <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 16px"}}>
             <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <img src="./images/상점.png" alt="" style={{width:28,height:28,objectFit:"contain",
-                filter:"drop-shadow(0 2px 8px rgba(180,100,255,.5))"}}
+              <img src="./images/상점.png" alt="" style={{width:28,height:28,objectFit:"contain",filter:"drop-shadow(0 2px 8px rgba(180,100,255,.5))"}}
                 onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:22px'>🛒</span>");}}/>
-              <span style={{fontSize:16,fontWeight:800,color:C.goldL,letterSpacing:".03em"}}>강화 주문서 상점</span>
+              <span style={{fontSize:16,fontWeight:800,color:C.goldL}}>강화 주문서 상점</span>
             </div>
-            {/* 골드 잔액 */}
             <div style={{display:"flex",alignItems:"center",gap:6}}>
-              <img src="./images/골드.png" alt="" style={{width:20,height:20,objectFit:"contain",
-                filter:"drop-shadow(0 1px 6px rgba(200,168,74,.8))"}}
+              <img src="./images/골드.png" alt="" style={{width:20,height:20,objectFit:"contain"}}
                 onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span>💰</span>");}}/>
               <span style={{fontSize:13,fontWeight:800,color:C.goldL}}>{gold.toLocaleString()} G</span>
-              <button onClick={onClose} style={{
-                marginLeft:6,width:28,height:28,borderRadius:6,
+              <button onClick={onClose} style={{marginLeft:6,width:28,height:28,borderRadius:6,
                 background:"rgba(255,255,255,.08)",border:"1px solid rgba(255,255,255,.12)",
-                color:C.t2,fontSize:14,cursor:"pointer",
-                display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+                color:C.t2,fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
             </div>
           </div>
         </div>
-
-        {/* 탭 영역 — 사진3 스타일 (탭 버튼에 아이콘+텍스트) */}
-        <div style={{
-          display:"flex",gap:6,padding:"10px 14px 0",
-          background:"rgba(0,0,0,.3)",
-          borderBottom:"1px solid rgba(200,168,74,.2)",
-          flexShrink:0,
-        }}>
+        <div style={{display:"flex",gap:6,padding:"10px 14px 0",background:"rgba(0,0,0,.3)",
+          borderBottom:"1px solid rgba(200,168,74,.2)",flexShrink:0}}>
           {[["weapon","⚔ 무기"],["armor","🛡 방어구"],["accessory","🔗 장신구"]].map(([t,lb])=>(
-            <button key={t} className="shop-tab-btn" onClick={()=>setTab(t)} style={{
-              flex:1,padding:"9px 0 8px",borderRadius:"6px 6px 0 0",
-              fontSize:11,fontWeight:700,border:"none",cursor:"pointer",
-              background:tab===t
-                ?"linear-gradient(180deg,rgba(200,168,74,.2),rgba(200,168,74,.08))"
-                :"rgba(255,255,255,.04)",
+            <button key={t} onClick={()=>setTab(t)} style={{
+              flex:1,padding:"9px 0 8px",borderRadius:"6px 6px 0 0",fontSize:11,fontWeight:700,border:"none",cursor:"pointer",
+              background:tab===t?"linear-gradient(180deg,rgba(200,168,74,.2),rgba(200,168,74,.08))":"rgba(255,255,255,.04)",
               borderTop:tab===t?`2px solid ${C.gold}`:"2px solid transparent",
               borderLeft:tab===t?"1px solid rgba(200,168,74,.3)":"1px solid transparent",
               borderRight:tab===t?"1px solid rgba(200,168,74,.3)":"1px solid transparent",
-              color:tab===t?C.goldL:"rgba(255,255,255,.45)",
-              marginBottom:tab===t?"-1px":0,
-            }}>{lb}</button>
+              color:tab===t?C.goldL:"rgba(255,255,255,.45)",marginBottom:tab===t?"-1px":0}}>{lb}</button>
           ))}
         </div>
-
         <div style={{overflowY:"auto",padding:"14px",flex:1}}>
           {(ITEMS[tab]||[]).map((it,i)=>(
             <div key={i} style={{
-              background:it.isPremium
-                ?"linear-gradient(135deg,rgba(120,40,180,.2),rgba(60,20,100,.3))"
-                :"linear-gradient(135deg,rgba(200,168,74,.08),rgba(160,128,34,.05))",
-              border:it.isPremium
-                ?"2px solid rgba(180,80,255,.5)"
-                :"2px solid rgba(200,168,74,.35)",
-              borderRadius:10,padding:"14px",marginBottom:12,
-              boxShadow:it.isPremium
-                ?"0 4px 20px rgba(180,80,255,.15), inset 0 1px 0 rgba(255,255,255,.04)"
-                :"0 4px 20px rgba(200,168,74,.1), inset 0 1px 0 rgba(255,255,255,.04)",
-              position:"relative",overflow:"hidden",
-            }}>
-              {/* 상단 빛 효과 */}
+              background:it.isPremium?"linear-gradient(135deg,rgba(120,40,180,.2),rgba(60,20,100,.3))":"linear-gradient(135deg,rgba(200,168,74,.08),rgba(160,128,34,.05))",
+              border:it.isPremium?"2px solid rgba(180,80,255,.5)":"2px solid rgba(200,168,74,.35)",
+              borderRadius:10,padding:"14px",marginBottom:12,position:"relative",overflow:"hidden"}}>
               <div style={{position:"absolute",top:0,left:0,right:0,height:1,
-                background:it.isPremium
-                  ?"linear-gradient(90deg,transparent,rgba(180,80,255,.6),transparent)"
-                  :"linear-gradient(90deg,transparent,rgba(200,168,74,.6),transparent)"}}/>
-
-              {/* 아이템 헤더 */}
+                background:it.isPremium?"linear-gradient(90deg,transparent,rgba(180,80,255,.6),transparent)":"linear-gradient(90deg,transparent,rgba(200,168,74,.6),transparent)"}}/>
               <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:14}}>
-                <div style={{
-                  width:52,height:52,borderRadius:8,flexShrink:0,
+                <div style={{width:52,height:52,borderRadius:8,flexShrink:0,
                   background:it.isPremium?"rgba(120,40,180,.3)":"rgba(200,168,74,.1)",
                   border:`2px solid ${it.isPremium?"rgba(180,80,255,.6)":"rgba(200,168,74,.5)"}`,
-                  display:"flex",alignItems:"center",justifyContent:"center",
-                  boxShadow:it.isPremium?"0 0 16px rgba(180,80,255,.3)":"0 0 12px rgba(200,168,74,.2)",
-                }}>
+                  display:"flex",alignItems:"center",justifyContent:"center"}}>
                   <img src={it.img} alt={it.nm} style={{width:"85%",height:"85%",objectFit:"contain"}}
                     onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:26px'>📜</span>");}}/>
                 </div>
                 <div style={{flex:1}}>
-                  <div style={{
-                    fontSize:14,fontWeight:800,marginBottom:4,
-                    color:it.isPremium?"#d080ff":C.goldL,
-                    textShadow:it.isPremium?"0 0 8px rgba(180,80,255,.4)":"0 0 6px rgba(200,168,74,.3)",
-                  }}>{it.nm}</div>
-                  <div style={{fontSize:10,color:"rgba(255,255,255,.45)",marginBottom:0}}>{it.sub}</div>
+                  <div style={{fontSize:14,fontWeight:800,marginBottom:4,color:it.isPremium?"#d080ff":C.goldL}}>{it.nm}</div>
+                  <div style={{fontSize:10,color:"rgba(255,255,255,.45)"}}>{it.sub}</div>
                 </div>
                 <div style={{textAlign:"right",flexShrink:0}}>
-                  <div style={{
-                    fontSize:22,fontWeight:900,lineHeight:1,
-                    color:it.isPremium?"#d080ff":C.goldL,
-                    textShadow:it.isPremium?"0 0 10px rgba(180,80,255,.5)":"0 0 8px rgba(200,168,74,.4)",
-                  }}>{it.price.toLocaleString()}</div>
+                  <div style={{fontSize:22,fontWeight:900,lineHeight:1,color:it.isPremium?"#d080ff":C.goldL}}>{it.price.toLocaleString()}</div>
                   <div style={{fontSize:9,color:"rgba(255,255,255,.35)",marginTop:2}}>G / 개</div>
                 </div>
               </div>
-
-              {/* 구분선 */}
               <div style={{height:1,background:it.isPremium?"rgba(180,80,255,.2)":"rgba(200,168,74,.15)",marginBottom:12}}/>
-
-              {/* 수량 조절 + 구매 버튼 */}
               <div style={{display:"flex",alignItems:"center",gap:8}}>
-                {/* 수량 버튼들 */}
                 <div style={{display:"flex",alignItems:"center",gap:4}}>
                   {[-10,-1,1,10].map(d=>(
                     <button key={d} className="qty-btn"
                       onClick={()=>setQty(q=>({...q,[it.type]:Math.max(1,Math.min(99,(q[it.type]||1)+d))}))}
-                      style={{
-                        width:d===1||d===-1?30:36,height:30,borderRadius:5,cursor:"pointer",
+                      style={{width:d===1||d===-1?30:36,height:30,borderRadius:5,cursor:"pointer",
                         background:it.isPremium?"rgba(120,40,180,.3)":"rgba(200,168,74,.1)",
                         border:`1px solid ${it.isPremium?"rgba(180,80,255,.4)":"rgba(200,168,74,.3)"}`,
-                        color:it.isPremium?"#d080ff":C.goldL,
-                        fontSize:d===1||d===-1?15:10,fontWeight:800,
-                      }}>
+                        color:it.isPremium?"#d080ff":C.goldL,fontSize:d===1||d===-1?15:10,fontWeight:800}}>
                       {d>0?`+${d}`:d}</button>
                   ))}
-                  <span style={{
-                    fontSize:18,fontWeight:900,minWidth:30,textAlign:"center",
-                    color:it.isPremium?"#d080ff":C.goldL,
-                  }}>{qty[it.type]||1}</span>
+                  <span style={{fontSize:18,fontWeight:900,minWidth:30,textAlign:"center",color:it.isPremium?"#d080ff":C.goldL}}>{qty[it.type]||1}</span>
                 </div>
-
-                {/* 구매 버튼 */}
                 <button className="buy-btn" onClick={()=>buy(it)} style={{
                   flex:1,padding:"11px 8px",borderRadius:7,border:"none",cursor:"pointer",
-                  background:it.isPremium
-                    ?"linear-gradient(135deg,#7722cc,#a040e8)"
-                    :"linear-gradient(135deg,#b8920a,#e8c84a)",
-                  color:it.isPremium?"#fff":"#0a0800",
-                  fontSize:13,fontWeight:800,
-                  boxShadow:it.isPremium
-                    ?"0 4px 16px rgba(180,80,255,.4)"
-                    :"0 4px 16px rgba(200,168,74,.4)",
-                  letterSpacing:".02em",
-                }}>
+                  background:it.isPremium?"linear-gradient(135deg,#7722cc,#a040e8)":"linear-gradient(135deg,#b8920a,#e8c84a)",
+                  color:it.isPremium?"#fff":"#0a0800",fontSize:13,fontWeight:800}}>
                   {((qty[it.type]||1)*it.price).toLocaleString()} G 구매
                 </button>
               </div>
             </div>
           ))}
-
-          {toast&&(
-            <div style={{
-              background:C.succ+"18",border:`1px solid ${C.succ}`,borderRadius:8,
-              padding:"12px 14px",textAlign:"center",fontSize:12,color:C.succ,fontWeight:700,
-              marginTop:8,
-            }}>{toast}</div>
-          )}
+          {toast&&<div style={{background:C.succ+"18",border:`1px solid ${C.succ}`,borderRadius:8,
+            padding:"12px 14px",textAlign:"center",fontSize:12,color:C.succ,fontWeight:700,marginTop:8}}>{toast}</div>}
         </div>
       </div>
     </div>
   );
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 랭킹 팝업
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ━━━━ RankModal ━━━━
 function RankModal({onClose,myScore,myName,myChar}){
   const DEMO=[
     {rank:1,nick:"DragonSlayer",char:"아스칼론",score:328400},
@@ -1307,8 +992,7 @@ function RankModal({onClose,myScore,myName,myChar}){
   const MEDAL=["🥇","🥈","🥉"];
   const myRankData=DEMO.find(d=>d.isMe);
   return(
-    <div style={{position:"fixed",inset:0,zIndex:999,background:"rgba(0,0,0,.75)",
-      display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
+    <div style={{position:"fixed",inset:0,zIndex:999,background:"rgba(0,0,0,.75)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
       <div style={{width:390,background:C.bg1,borderRadius:"16px 16px 0 0",maxHeight:"88vh",
         overflow:"hidden",display:"flex",flexDirection:"column",border:`1px solid ${C.bdr1}`,borderBottom:"none"}}>
         <div style={{padding:"12px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",
@@ -1325,8 +1009,7 @@ function RankModal({onClose,myScore,myName,myChar}){
           <CBox gold style={{padding:"12px 14px",marginBottom:14}}>
             <div style={{display:"flex",alignItems:"center",gap:12}}>
               <div style={{width:44,height:44,background:C.bg0,borderRadius:6,flexShrink:0,
-                display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,
-                border:`1px solid ${C.goldD}55`}}>
+                display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,border:`1px solid ${C.goldD}55`}}>
                 {CHARS.find(c=>c.name===myChar)?.emoji||"⚔"}
               </div>
               <div style={{flex:1}}>
@@ -1386,9 +1069,7 @@ function RankModal({onClose,myScore,myName,myChar}){
   );
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 메인 앱
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ━━━━ App ━━━━
 export default function App(){
   const [screen,setScreen]=useState("title");
   const [charId,setCharId]=useState(null);
@@ -1402,9 +1083,7 @@ export default function App(){
   const [enhItem,setEnhItem]=useState(null);
   const [showRank,setShowRank]=useState(false);
   const [showShop,setShowShop]=useState(false);
-
   const char=CHARS.find(c=>c.id===charId);
-
   const totalScore=useMemo(()=>{
     const slots=[equipped.weapon,equipped.helmet,equipped.armor,equipped.pants,
       equipped.boots,equipped.cloak,equipped.belt,equipped.ring,equipped.earrings];
@@ -1413,7 +1092,6 @@ export default function App(){
       return acc+st.atk*3+st.def*2+st.mdef*2+st.crit*100+st.eva*100;
     },0);
   },[inventory,equipped]);
-
   const handleSelect=(id,name)=>{setCharId(id);setCharName(name);setScreen("inv");};
   const addItem=item=>setInventory(inv=>[...inv,item]);
   const addGold=amount=>setGold(g=>g+amount);
@@ -1431,15 +1109,14 @@ export default function App(){
       else if(item.cat==="부츠") slot="boots";
       else slot="armor";
     } else if(item.type==="accessory"){
-      if(item.cat==="부츠")       slot="boots";
-      else if(item.cat==="반지")  slot="ring";
-      else if(item.cat==="귀걸이")slot="earrings";
+      if(item.cat==="부츠") slot="boots";
+      else if(item.cat==="반지") slot="ring";
+      else if(item.cat==="귀걸이") slot="earrings";
       else slot="ring";
     }
     setEquipped(e=>({...e,[slot]:item.uid}));
   };
   const sellItem=(uid,price)=>{setGold(g=>g+price);setInventory(inv=>inv.filter(i=>i.uid!==uid));};
-
   return(
     <div style={{background:"#111214",minHeight:"100vh",padding:"0",
       fontFamily:"'Black Han Sans','Apple SD Gothic Neo','Noto Sans KR',sans-serif"}}>
@@ -1451,8 +1128,8 @@ export default function App(){
       `}</style>
       <div style={{maxWidth:390,margin:"0 auto",position:"relative"}}>
         {screen==="title"&&<TitleScreen onNew={()=>setScreen("char")} onLoad={()=>handleSelect("CHR_001","모험가")}/>}
-        {screen==="char" &&<CharScreen onBack={()=>setScreen("title")} onSelect={handleSelect}/>}
-        {screen==="inv"  &&<InvScreen
+        {screen==="char"&&<CharScreen onBack={()=>setScreen("title")} onSelect={handleSelect}/>}
+        {screen==="inv"&&<InvScreen
           charId={charId||"CHR_001"} charName={charName||"모험가"}
           gold={gold} scrolls={scrolls} dailyLeft={dailyLeft}
           onChest={()=>setShowChest(true)} onShop={()=>setShowShop(true)}
