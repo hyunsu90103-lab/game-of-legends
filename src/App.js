@@ -268,14 +268,15 @@ function CharScreen({onBack,onSelect}){
       </div>
       <div style={{display:"flex",background:"linear-gradient(160deg,#1a1230,#0d0e12)",borderBottom:`1px solid ${C.bdr1}`}}>
         {/* 좌: 모션 */}
-        <div style={{width:"52%",height:420,position:"relative",overflow:"hidden",background:C.bg0,flexShrink:0}}>
+        <div style={{width:"52%",height:320,position:"relative",overflow:"hidden",background:C.bg0,flexShrink:0}}>
           {char?(
             <>
-              <img src={char.img} alt={char.name||""}
-                style={{width:"100%",height:"100%",objectFit:"contain",objectPosition:"center bottom",position:"absolute",inset:0}}
+              <img id={`char-img-${char.id}`} src={char.img} alt={char.name||""}
+                style={{width:"100%",height:"100%",objectFit:"contain",objectPosition:"center bottom",position:"absolute",inset:0,zIndex:1}}
                 onError={e=>{e.target.style.visibility="hidden";}}/>
               <video key={char.id} autoPlay loop muted playsInline
                 style={{width:"100%",height:"100%",objectFit:"contain",position:"absolute",inset:0,zIndex:2}}
+                onLoadedData={e=>{const img=document.getElementById(`char-img-${char.id}`);if(img)img.style.display="none";}}
                 onError={e=>{e.target.style.display="none";}}>
                 <source src={char.motion} type="video/mp4"/>
               </video>
@@ -530,14 +531,18 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
           <div style={{display:"flex",gap:4,marginBottom:8}}>
             {[["weapon","무기","./images/무기.png"],["armor","방어구","./images/방어구.png"],["accessory","장신구","./images/장신구.png"]].map(([t,lb,ic])=>(
               <button key={t} onClick={()=>{setTab(t);setSelItem(null);}} style={{
-                flex:1,padding:"7px 0",borderRadius:3,border:"none",
-                background:tab===t?C.bg3:C.bg2,outline:`1px solid ${tab===t?C.gold+"66":C.bdr1}`,
-                cursor:"pointer",borderBottom:tab===t?`2px solid ${C.gold}`:"2px solid transparent",
-                display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3}}>
-                <img src={ic} alt={lb} style={{width:22,height:22,objectFit:"contain",
-                  filter:tab===t?"drop-shadow(0 0 4px rgba(200,168,74,.6))":"grayscale(0.3) opacity(0.7)"}}
+                flex:1,padding:"10px 6px",borderRadius:5,border:"none",
+                background:tab===t?C.bg3:C.bg2,
+                outline:`1px solid ${tab===t?C.gold+"88":C.bdr1}`,
+                cursor:"pointer",
+                borderBottom:tab===t?`2px solid ${C.gold}`:"2px solid transparent",
+                display:"flex",flexDirection:"row",alignItems:"center",justifyContent:"center",gap:7,
+                whiteSpace:"nowrap"}}>
+                <img src={ic} alt={lb} style={{
+                  width:20,height:20,objectFit:"contain",flexShrink:0,
+                  filter:tab===t?"drop-shadow(0 0 4px rgba(200,168,74,.7)) brightness(1.2)":"brightness(0.55)"}}
                   onError={e=>{e.target.style.display="none";}}/>
-                <span style={{fontSize:9,fontWeight:700,color:tab===t?C.goldL:C.t2}}>{lb}</span>
+                <span style={{fontSize:11,fontWeight:700,color:tab===t?C.goldL:C.t2}}>{lb}</span>
               </button>
             ))}
           </div>
@@ -595,24 +600,34 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
   const char=CHARS.find(c=>c.id===charId)||CHARS[0];
 
   const PROBS=[
-    {g:"n",l:"일반",p:40,c:C.n},{g:"m",l:"마술",p:28,c:C.m},{g:"r",l:"베르어",p:18,c:C.r},
-    {g:"e",l:"에픽",p:9,c:C.e},{g:"l",l:"레전드",p:4,c:C.l},{g:"my",l:"신화",p:1,c:C.my},
+    {g:"n",l:"일반",p:58.9949,c:C.n},{g:"m",l:"마술",p:28,c:C.m},{g:"r",l:"베르어",p:12,c:C.r},
+    {g:"e",l:"에픽",p:1,c:C.e},{g:"l",l:"레전드",p:0.005,c:C.l},{g:"my",l:"신화",p:0.0001,c:C.my},
+  ];
+  const PROBS_DISPLAY=[
+    {g:"n",l:"일반",p:"58.99%",c:C.n},{g:"m",l:"마술",p:"28%",c:C.m},{g:"r",l:"베르어",p:"12%",c:C.r},
+    {g:"e",l:"에픽",p:"1%",c:C.e},{g:"l",l:"레전드",p:"0.005%",c:C.l},{g:"my",l:"신화",p:"0.0001%",c:C.my},
   ];
   const GOLD_TIERS=[{min:200,max:999,w:40},{min:1000,max:4999,w:30},{min:5000,max:14999,w:15},
     {min:15000,max:29999,w:8},{min:30000,max:49999,w:4},{min:50000,max:79999,w:2},{min:80000,max:100000,w:1}];
 
   const wRand=arr=>{let r=Math.random()*arr.reduce((s,i)=>s+(i.w||i.p),0);for(const i of arr){r-=(i.w||i.p);if(r<=0)return i;}return arr[arr.length-1];};
 
-  const rollItem=()=>{
-    const gw=wRand(PROBS);
-    const pool=[
-      ...rawWeapons.filter(w=>w.cls===char.weaponClass&&gradeMap[w.grade]===gw.g).map(w=>({...w,type:"weapon"})),
-      ...rawArmors.filter(a=>gradeMap[a.grade]===gw.g).map(a=>({...a,type:"armor"})),
-      ...rawAccs.filter(a=>gradeMap[a.grade]===gw.g).map(a=>({...a,type:"accessory"})),
-    ];
+  const rollItem=(idx=0)=>{
+    // 등급 뽑기 - 빈 pool이면 재시도 (최대 5번 다른 등급으로)
+    let gw, pool, tries=0;
+    do {
+      gw=wRand(PROBS);
+      pool=[
+        ...rawWeapons.filter(w=>w.cls===char.weaponClass&&gradeMap[w.grade]===gw.g).map(w=>({...w,type:"weapon"})),
+        ...rawArmors.filter(a=>gradeMap[a.grade]===gw.g).map(a=>({...a,type:"armor"})),
+        ...rawAccs.filter(a=>gradeMap[a.grade]===gw.g).map(a=>({...a,type:"accessory"})),
+      ];
+      tries++;
+    } while(!pool.length && tries<5);
     if(!pool.length) return null;
     const picked=pool[Math.floor(Math.random()*pool.length)];
-    return {...picked,uid:`${picked.id}_${Date.now()}`,enhance:0};
+    // uid는 호출시각+인덱스로 중복 방지
+    return {...picked,uid:`${picked.id}_${Date.now()}_${idx}_${Math.random().toString(36).slice(2,7)}`,enhance:0};
   };
 
   const doOpen=(count=1)=>{
@@ -623,7 +638,8 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
       const results=[];
       const ts=Date.now();
       for(let i=0;i<times;i++){
-        const isGold=Math.random()<.25;
+        // 1회뽑기만 골드 가능(30%), 10회연속은 무조건 아이템
+        const isGold=count===1&&Math.random()<.30;
         if(isGold){
           const tier=wRand(GOLD_TIERS);
           const amount=Math.floor(Math.random()*(tier.max-tier.min+1))+tier.min;
@@ -632,20 +648,24 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
         } else {
           let item=null;
           let retry=0;
-          while(!item&&retry<10){item=rollItem();retry++;}
+          // 최대 20회 재시도로 반드시 아이템 뽑기
+          while(!item&&retry<20){item=rollItem();retry++;}
           if(item){
-            const safeItem={...item,uid:`${item.id}_${ts}_${i}`};
-            results.push({type:"item",item:safeItem});
-            onAddItem(safeItem);
+            // uid는 rollItem에서 이미 고유하게 생성됨
+            results.push({type:"item",item});
+            onAddItem(item);
           } else {
-            results.push({type:"gold",amount:500});
-            onAddGold(500);
+            // 극히 드문 경우 골드 대체
+            const tier=wRand(GOLD_TIERS);
+            const amount=Math.floor(Math.random()*(tier.max-tier.min+1))+tier.min;
+            results.push({type:"gold",amount});
+            onAddGold(amount);
           }
         }
       }
       setDailyLeft(d=>d-times);
       setResult(results[results.length-1]);
-      setHist(h=>[...results.map(r=>({...r,time:new Date().toLocaleTimeString("ko",{hour:"2-digit",minute:"2-digit"})})).reverse(),...h].slice(0,8));
+      setHist(h=>[...results.map(r=>({...r,time:new Date().toLocaleTimeString("ko",{hour:"2-digit",minute:"2-digit"})})).reverse(),...h].slice(0,20));
       setOpening(false);
     },700);
   };
@@ -657,21 +677,14 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
       <div style={{width:390,background:"linear-gradient(180deg,#1a1a2e 0%,#0f0f1e 30%,#0a0a14 100%)",
         borderRadius:"20px 20px 0 0",maxHeight:"92vh",overflow:"hidden",display:"flex",flexDirection:"column",
         border:"1px solid rgba(200,168,74,.35)",borderBottom:"none",boxShadow:"0 -8px 40px rgba(0,0,0,.8)"}}>
-        <div style={{position:"relative",textAlign:"center"}}>
-          <div style={{position:"absolute",top:-28,left:"50%",transform:"translateX(-50%)",width:56,height:56,zIndex:10,
-            background:"radial-gradient(circle,#2a2a50,#12121f)",borderRadius:"50%",border:"2px solid rgba(200,168,74,.6)",
-            display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 20px rgba(200,168,74,.4)"}}>
-            <span style={{fontSize:22}}>🏆</span>
-          </div>
-          <div style={{background:"linear-gradient(90deg,rgba(200,168,74,.05),rgba(200,168,74,.15),rgba(200,168,74,.05))",
-            borderBottom:"1px solid rgba(200,168,74,.2)",padding:"6px 16px 8px",
-            display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-            <div style={{width:28}}/>
-            <div style={{fontSize:16,fontWeight:800,color:C.goldL,textShadow:"0 0 12px rgba(200,168,74,.5)"}}>전설의 보물상자</div>
-            <button onClick={onClose} style={{width:28,height:28,borderRadius:6,background:"rgba(255,255,255,.08)",
-              border:"1px solid rgba(255,255,255,.12)",color:C.t2,fontSize:14,cursor:"pointer",
-              display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
-          </div>
+        <div style={{background:"linear-gradient(90deg,rgba(200,168,74,.05),rgba(200,168,74,.15),rgba(200,168,74,.05))",
+          borderBottom:"1px solid rgba(200,168,74,.2)",padding:"12px 16px",
+          display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
+          <div style={{width:28}}/>
+          <div style={{fontSize:16,fontWeight:800,color:C.goldL,textShadow:"0 0 12px rgba(200,168,74,.5)"}}>전설의 보물상자</div>
+          <button onClick={onClose} style={{width:28,height:28,borderRadius:6,background:"rgba(255,255,255,.08)",
+            border:"1px solid rgba(255,255,255,.12)",color:C.t2,fontSize:14,cursor:"pointer",
+            display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
         </div>
         <div style={{overflowY:"auto",padding:"0 16px 24px",flex:1}}>
           <div style={{textAlign:"center",padding:"20px 0 8px"}}>
@@ -725,14 +738,14 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
           </div>
           <div style={{background:"rgba(255,255,255,.03)",border:"1px solid rgba(255,255,255,.07)",borderRadius:8,padding:"12px 14px",marginBottom:16}}>
             <div style={{fontSize:10,color:C.goldL,fontWeight:700,marginBottom:10}}>◆ 드랍이 재미있다</div>
-            {PROBS.map(x=>(
+            {PROBS_DISPLAY.map(x=>(
               <div key={x.g} style={{display:"flex",alignItems:"center",gap:10,marginBottom:7}}>
                 <div style={{width:8,height:8,borderRadius:"50%",background:x.c,flexShrink:0}}/>
                 <span style={{fontSize:11,color:C.t1,minWidth:38}}>{x.l}</span>
                 <div style={{flex:1,height:5,background:"rgba(255,255,255,.06)",borderRadius:99,overflow:"hidden"}}>
-                  <div style={{width:`${x.p*1.8}%`,height:"100%",background:x.c,borderRadius:99}}/>
+                  <div style={{width:`${Math.min(100,parseFloat(x.p)*1.5)}%`,height:"100%",background:x.c,borderRadius:99}}/>
                 </div>
-                <span style={{fontSize:11,fontWeight:800,color:x.c,minWidth:34,textAlign:"right"}}>{x.p} %</span>
+                <span style={{fontSize:10,fontWeight:800,color:x.c,minWidth:50,textAlign:"right"}}>{x.p}</span>
               </div>
             ))}
           </div>
