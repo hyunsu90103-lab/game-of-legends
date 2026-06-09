@@ -638,8 +638,8 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
       const results=[];
       const ts=Date.now();
       for(let i=0;i<times;i++){
-        // 1회뽑기만 골드 가능(30%), 10회연속은 무조건 아이템
-        const isGold=count===1&&Math.random()<.30;
+        // 30% 확률로 골드 (1회/10회 모두 동일)
+        const isGold=Math.random()<.30;
         if(isGold){
           const tier=wRand(GOLD_TIERS);
           const amount=Math.floor(Math.random()*(tier.max-tier.min+1))+tier.min;
