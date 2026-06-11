@@ -266,9 +266,9 @@ function CharScreen({onBack,onSelect}){
         <span style={{fontSize:14,fontWeight:700}}>영웅 선택</span>
         <span style={{marginLeft:"auto",fontSize:11,color:C.t3}}>7명의 전설적 영웅</span>
       </div>
-      <div style={{display:"flex",background:"linear-gradient(160deg,#1a1230,#0d0e12)",borderBottom:`1px solid ${C.bdr1}`}}>
+      <div style={{display:"flex",background:"linear-gradient(160deg,#1a1230,#0d0e12)",minHeight:"calc(100vh - 50px)"}}>
         {/* 좌: 모션 */}
-        <div style={{width:"52%",height:320,position:"relative",overflow:"hidden",background:C.bg0,flexShrink:0}}>
+        <div style={{width:"52%",minHeight:"calc(100vh - 50px)",position:"relative",overflow:"hidden",background:C.bg0,flexShrink:0}}>
           {char?(
             <>
               <img id={`char-img-${char.id}`} src={char.img} alt={char.name||""}
@@ -297,7 +297,8 @@ function CharScreen({onBack,onSelect}){
         </div>
         {/* 우: 캐릭터 목록 3열 */}
         <div style={{width:"48%",flexShrink:0,background:"linear-gradient(180deg,#0f0e18,#0a0912)",
-          padding:"10px 8px",display:"flex",flexDirection:"column",gap:6,overflowY:"auto"}}>
+          padding:"10px 8px",display:"flex",flexDirection:"column",gap:6,overflowY:"auto",
+          minHeight:"calc(100vh - 50px)"}}>
           <div style={{fontSize:9,color:C.gold,letterSpacing:".1em",marginBottom:2}}>◆ 영웅 선택</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5,marginBottom:6}}>
             {CHARS.map(c=>(
@@ -531,18 +532,18 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
           <div style={{display:"flex",gap:4,marginBottom:8}}>
             {[["weapon","무기","./images/무기.png"],["armor","방어구","./images/방어구.png"],["accessory","장신구","./images/장신구.png"]].map(([t,lb,ic])=>(
               <button key={t} onClick={()=>{setTab(t);setSelItem(null);}} style={{
-                flex:1,padding:"10px 6px",borderRadius:5,border:"none",
+                flex:1,padding:"11px 8px",borderRadius:6,border:"none",
                 background:tab===t?C.bg3:C.bg2,
                 outline:`1px solid ${tab===t?C.gold+"88":C.bdr1}`,
                 cursor:"pointer",
                 borderBottom:tab===t?`2px solid ${C.gold}`:"2px solid transparent",
-                display:"flex",flexDirection:"row",alignItems:"center",justifyContent:"center",gap:7,
+                display:"flex",flexDirection:"row",alignItems:"center",justifyContent:"center",gap:8,
                 whiteSpace:"nowrap"}}>
                 <img src={ic} alt={lb} style={{
-                  width:20,height:20,objectFit:"contain",flexShrink:0,
-                  filter:tab===t?"drop-shadow(0 0 4px rgba(200,168,74,.7)) brightness(1.2)":"brightness(0.55)"}}
+                  width:26,height:26,objectFit:"contain",flexShrink:0,
+                  filter:tab===t?"brightness(1.3) drop-shadow(0 0 4px rgba(200,168,74,.7))":"brightness(0.7)"}}
                   onError={e=>{e.target.style.display="none";}}/>
-                <span style={{fontSize:11,fontWeight:700,color:tab===t?C.goldL:C.t2}}>{lb}</span>
+                <span style={{fontSize:13,fontWeight:700,color:tab===t?C.goldL:C.t2}}>{lb}</span>
               </button>
             ))}
           </div>
@@ -721,19 +722,28 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
           )}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:20}}>
             <button onClick={()=>doOpen(1)} disabled={opening||dailyLeft<=0} style={{
-              padding:"14px 8px",borderRadius:8,border:"none",cursor:dailyLeft>0&&!opening?"pointer":"default",
-              background:dailyLeft>0&&!opening?"linear-gradient(135deg,#b8920a,#e8c84a)":"rgba(255,255,255,.05)",
-              color:dailyLeft>0&&!opening?"#000":"rgba(255,255,255,.25)",
-              display:"flex",alignItems:"center",justifyContent:"center",gap:8,fontSize:14,fontWeight:800}}>
-              <span style={{fontSize:18}}>🛡</span>{opening?"열는 중...":"1회 택배"}
+              background:"none",border:"none",padding:0,cursor:dailyLeft>0&&!opening?"pointer":"default",
+              opacity:dailyLeft>0&&!opening?1:0.4}}>
+              <img src="./images/1회뽑기.png" alt="1회뽑기"
+                style={{width:"100%",height:"auto",display:"block",
+                  filter:"drop-shadow(0 4px 12px rgba(200,168,74,.4))"}}
+                onError={e=>{
+                  e.target.style.display="none";
+                  e.target.parentElement.style.cssText="background:linear-gradient(135deg,#b8920a,#e8c84a);border-radius:8px;padding:14px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#000";
+                  e.target.parentElement.insertAdjacentHTML("beforeend",opening?"열는 중...":"1회 뽑기");
+                }}/>
             </button>
             <button onClick={()=>doOpen(10)} disabled={opening||dailyLeft<=0} style={{
-              padding:"14px 8px",borderRadius:8,cursor:dailyLeft>0&&!opening?"pointer":"default",
-              background:dailyLeft>0&&!opening?"linear-gradient(135deg,#1a2a4a,#2a3a6a)":"rgba(255,255,255,.05)",
-              border:`2px solid ${dailyLeft>0&&!opening?"rgba(100,150,255,.5)":"rgba(255,255,255,.08)"}`,
-              color:dailyLeft>0&&!opening?C.t1:"rgba(255,255,255,.25)",
-              display:"flex",alignItems:"center",justifyContent:"center",gap:8,fontSize:14,fontWeight:800}}>
-              <span style={{fontSize:18}}>🎯</span>10회 연속
+              background:"none",border:"none",padding:0,cursor:dailyLeft>0&&!opening?"pointer":"default",
+              opacity:dailyLeft>0&&!opening?1:0.4}}>
+              <img src="./images/10회뽑기.png" alt="10회뽑기"
+                style={{width:"100%",height:"auto",display:"block",
+                  filter:"drop-shadow(0 4px 12px rgba(80,120,255,.4))"}}
+                onError={e=>{
+                  e.target.style.display="none";
+                  e.target.parentElement.style.cssText="background:linear-gradient(135deg,#1a2a4a,#2a3a6a);border:2px solid rgba(100,150,255,.5);border-radius:8px;padding:14px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#e8e4d8";
+                  e.target.parentElement.insertAdjacentHTML("beforeend","10회 뽑기");
+                }}/>
             </button>
           </div>
           <div style={{background:"rgba(255,255,255,.03)",border:"1px solid rgba(255,255,255,.07)",borderRadius:8,padding:"12px 14px",marginBottom:16}}>
@@ -751,23 +761,37 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
           </div>
           {hist.length>0&&(
             <>
-              <div style={{fontSize:9,color:C.gold,letterSpacing:".1em",marginBottom:8}}>◆ 오픈 이력</div>
-              {hist.map((h,i)=>(
-                <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"7px 0",borderBottom:`1px solid ${C.bdr0}`}}>
-                  <div style={{width:32,height:32,background:C.bg2,borderRadius:5,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,overflow:"hidden",
-                    border:`1px solid ${h.type==="gold"?C.goldD+"55":GC[gradeMap[h.item?.grade||"n"]||"n"]+"44"}`}}>
-                    {h.type==="gold"
-                      ?<img src="./images/골드.png" alt="" style={{width:"90%",height:"90%",objectFit:"contain"}} onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:16px'>💰</span>");}}/>
-                      :<img src={h.item?.img} alt="" style={{width:"90%",height:"90%",objectFit:"contain"}} onError={e=>{e.target.style.display="none";}}/>}
-                  </div>
-                  <div style={{flex:1}}>
-                    <div style={{fontSize:11,fontWeight:600,color:h.type==="gold"?C.goldL:GC[gradeMap[h.item?.grade||"n"]||"n"]}}>
-                      {h.type==="gold"?`${h.amount.toLocaleString()} G`:h.item?.name}</div>
-                    {h.type==="item"&&<Pill grade={h.item?.grade||"Common"} sm/>}
-                  </div>
-                  <span style={{fontSize:10,color:C.t3}}>{h.time}</span>
-                </div>
-              ))}
+              <div style={{fontSize:10,color:C.gold,letterSpacing:".1em",marginBottom:10,fontWeight:700}}>◆ 뽑기 결과</div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:6,marginBottom:8}}>
+                {hist.map((h,i)=>{
+                  const g=gradeMap[h.item?.grade||"n"]||"n";
+                  const bc=h.type==="gold"?C.goldD:GC[g];
+                  return(
+                    <div key={i} style={{
+                      background:C.bg2,borderRadius:6,
+                      border:`1.5px solid ${bc}55`,
+                      display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
+                      padding:"6px 4px",gap:3,
+                      boxShadow:`0 0 8px ${bc}22`,
+                      position:"relative",overflow:"hidden",
+                      aspectRatio:"1",
+                    }}>
+                      <div style={{position:"absolute",inset:0,background:`radial-gradient(circle at 50% 80%,${bc}18,transparent 70%)`,pointerEvents:"none"}}/>
+                      {h.type==="gold"
+                        ?<img src="./images/골드.png" alt="" style={{width:"60%",height:"60%",objectFit:"contain",position:"relative",zIndex:1}}
+                            onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:20px'>💰</span>");}}/>
+                        :<img src={h.item?.img} alt="" style={{width:"65%",height:"65%",objectFit:"contain",position:"relative",zIndex:1}}
+                            onError={e=>{e.target.style.display="none";}}/>}
+                      <div style={{position:"absolute",bottom:0,left:0,right:0,height:2,background:bc,zIndex:2}}/>
+                      <div style={{fontSize:7,color:bc,fontWeight:700,textAlign:"center",lineHeight:1.2,
+                        overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",width:"100%",
+                        padding:"0 2px",position:"relative",zIndex:1}}>
+                        {h.type==="gold"?`${h.amount.toLocaleString()}G`:h.item?.name?.slice(0,5)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </>
           )}
         </div>
