@@ -266,9 +266,9 @@ function CharScreen({onBack,onSelect}){
         <span style={{fontSize:14,fontWeight:700}}>영웅 선택</span>
         <span style={{marginLeft:"auto",fontSize:11,color:C.t3}}>7명의 전설적 영웅</span>
       </div>
-      <div style={{display:"flex",background:"linear-gradient(160deg,#1a1230,#0d0e12)",minHeight:"calc(100vh - 50px)"}}>
+      <div style={{display:"flex",background:"linear-gradient(160deg,#1a1230,#0d0e12)",height:"calc(100vh - 50px)",overflow:"hidden"}}>
         {/* 좌: 모션 */}
-        <div style={{width:"52%",minHeight:"calc(100vh - 50px)",position:"relative",overflow:"hidden",background:C.bg0,flexShrink:0}}>
+        <div style={{width:"52%",height:"100%",position:"relative",overflow:"hidden",background:C.bg0,flexShrink:0}}>
           {char?(
             <>
               <img id={`char-img-${char.id}`} src={char.img} alt={char.name||""}
@@ -280,12 +280,7 @@ function CharScreen({onBack,onSelect}){
                 onError={e=>{e.target.style.display="none";}}>
                 <source src={char.motion} type="video/mp4"/>
               </video>
-              <div style={{position:"absolute",bottom:0,left:0,right:0,height:60,
-                background:"linear-gradient(transparent,rgba(0,0,0,.85))",pointerEvents:"none",zIndex:3}}/>
-              <div style={{position:"absolute",bottom:10,left:0,right:0,textAlign:"center",zIndex:4}}>
-                <div style={{fontSize:14,fontWeight:800,color:C.goldL}}>{char.name}</div>
-                <div style={{fontSize:10,color:C.t2}}>{char.emoji} {char.role}</div>
-              </div>
+
             </>
           ):(
             <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",
@@ -298,7 +293,7 @@ function CharScreen({onBack,onSelect}){
         {/* 우: 캐릭터 목록 3열 */}
         <div style={{width:"48%",flexShrink:0,background:"linear-gradient(180deg,#0f0e18,#0a0912)",
           padding:"10px 8px",display:"flex",flexDirection:"column",gap:6,overflowY:"auto",
-          minHeight:"calc(100vh - 50px)"}}>
+          height:"100%"}}>
           <div style={{fontSize:9,color:C.gold,letterSpacing:".1em",marginBottom:2}}>◆ 영웅 선택</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5,marginBottom:6}}>
             {CHARS.map(c=>(
@@ -326,7 +321,7 @@ function CharScreen({onBack,onSelect}){
               width:"100%",padding:"13px",borderRadius:4,border:"none",
               background:sel?`linear-gradient(135deg,${C.goldD},${C.gold})`:C.bg2,
               color:sel?"#000":C.t3,fontSize:14,fontWeight:800,cursor:sel?"pointer":"default"}}>
-              {sel?`${char?.name} 선택 → 이름 정하기`:"캐릭터를 먼저 선택하세요"}</button>
+              {sel?"이름 정하기":"캐릭터를 먼저 선택하세요"}</button>
           ):(
             <div>
               <input value={name} onChange={e=>setName(e.target.value)} placeholder="닉네임..." autoFocus
@@ -952,14 +947,22 @@ function ShopModal({onClose,gold,onSpendGold,onAddScrolls}){
         </div>
         <div style={{display:"flex",gap:6,padding:"10px 14px 0",background:"rgba(0,0,0,.3)",
           borderBottom:"1px solid rgba(200,168,74,.2)",flexShrink:0}}>
-          {[["weapon","⚔ 무기"],["armor","🛡 방어구"],["accessory","🔗 장신구"]].map(([t,lb])=>(
+          {[["weapon","무기","./images/무기.png"],["armor","방어구","./images/방어구.png"],["accessory","장신구","./images/장신구.png"]].map(([t,lb,ic])=>(
             <button key={t} onClick={()=>setTab(t)} style={{
-              flex:1,padding:"9px 0 8px",borderRadius:"6px 6px 0 0",fontSize:11,fontWeight:700,border:"none",cursor:"pointer",
+              flex:1,padding:"9px 6px 8px",borderRadius:"6px 6px 0 0",border:"none",cursor:"pointer",
               background:tab===t?"linear-gradient(180deg,rgba(200,168,74,.2),rgba(200,168,74,.08))":"rgba(255,255,255,.04)",
               borderTop:tab===t?`2px solid ${C.gold}`:"2px solid transparent",
               borderLeft:tab===t?"1px solid rgba(200,168,74,.3)":"1px solid transparent",
               borderRight:tab===t?"1px solid rgba(200,168,74,.3)":"1px solid transparent",
-              color:tab===t?C.goldL:"rgba(255,255,255,.45)",marginBottom:tab===t?"-1px":0}}>{lb}</button>
+              marginBottom:tab===t?"-1px":0,
+              display:"flex",flexDirection:"row",alignItems:"center",justifyContent:"center",gap:6,whiteSpace:"nowrap"}}>
+              <img src={ic} alt={lb} style={{
+                width:22,height:22,objectFit:"contain",flexShrink:0,
+                mixBlendMode:"screen",
+                filter:tab===t?"brightness(1.4) drop-shadow(0 0 4px rgba(200,168,74,.7))":"brightness(0.8)"}}
+                onError={e=>{e.target.style.display="none";}}/>
+              <span style={{fontSize:11,fontWeight:700,color:tab===t?C.goldL:"rgba(255,255,255,.45)"}}>{lb}</span>
+            </button>
           ))}
         </div>
         <div style={{overflowY:"auto",padding:"14px",flex:1}}>
@@ -971,12 +974,9 @@ function ShopModal({onClose,gold,onSpendGold,onAddScrolls}){
               <div style={{position:"absolute",top:0,left:0,right:0,height:1,
                 background:it.isPremium?"linear-gradient(90deg,transparent,rgba(180,80,255,.6),transparent)":"linear-gradient(90deg,transparent,rgba(200,168,74,.6),transparent)"}}/>
               <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:14}}>
-                <div style={{width:52,height:52,borderRadius:8,flexShrink:0,
-                  background:it.isPremium?"rgba(120,40,180,.3)":"rgba(200,168,74,.1)",
-                  border:`2px solid ${it.isPremium?"rgba(180,80,255,.6)":"rgba(200,168,74,.5)"}`,
-                  display:"flex",alignItems:"center",justifyContent:"center"}}>
-                  <img src={it.img} alt={it.nm} style={{width:"85%",height:"85%",objectFit:"contain"}}
-                    onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:26px'>📜</span>");}}/>
+                <div style={{width:64,height:64,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  <img src={it.img} alt={it.nm} style={{width:"100%",height:"100%",objectFit:"contain"}}
+                    onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:36px'>📜</span>");}}/>
                 </div>
                 <div style={{flex:1}}>
                   <div style={{fontSize:14,fontWeight:800,marginBottom:4,color:it.isPremium?"#d080ff":C.goldL}}>{it.nm}</div>
