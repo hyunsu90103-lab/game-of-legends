@@ -541,7 +541,8 @@ function InvScreen({charId,charName,gold,scrolls,dailyLeft,onChest,onShop,onRank
                 whiteSpace:"nowrap"}}>
                 <img src={ic} alt={lb} style={{
                   width:26,height:26,objectFit:"contain",flexShrink:0,
-                  filter:tab===t?"brightness(1.3) drop-shadow(0 0 4px rgba(200,168,74,.7))":"brightness(0.7)"}}
+                  mixBlendMode:"screen",
+                  filter:tab===t?"brightness(1.4) drop-shadow(0 0 4px rgba(200,168,74,.7))":"brightness(0.8)"}}
                   onError={e=>{e.target.style.display="none";}}/>
                 <span style={{fontSize:13,fontWeight:700,color:tab===t?C.goldL:C.t2}}>{lb}</span>
               </button>
@@ -666,7 +667,10 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
       }
       setDailyLeft(d=>d-times);
       setResult(results[results.length-1]);
-      setHist(h=>[...results.map(r=>({...r,time:new Date().toLocaleTimeString("ko",{hour:"2-digit",minute:"2-digit"})})).reverse(),...h].slice(0,20));
+      // 누적 방식: 새 결과를 앞에 추가, 기존 결과 유지 (최대 20개)
+      const ts2=new Date().toLocaleTimeString("ko",{hour:"2-digit",minute:"2-digit"});
+      const newEntries=results.map(r=>({...r,time:ts2})).reverse();
+      setHist(h=>[...newEntries,...h].slice(0,20));
       setOpening(false);
     },700);
   };
@@ -903,16 +907,16 @@ function ShopModal({onClose,gold,onSpendGold,onAddScrolls}){
   const showToast=msg=>{setToast(msg);setTimeout(()=>setToast(null),2000);};
   const ITEMS={
     weapon:[
-      {nm:"무기 강화 주문서",img:CONSUMABLES[0].img,sub:"일반~레어 무기 강화",price:500,type:"normal",isPremium:false},
-      {nm:"프리미엄 무기 강화 주문서",img:CONSUMABLES[0].img,sub:"에픽~신화 무기 강화",price:2000,type:"adv",isPremium:true},
+      {nm:"무기 강화 주문서",img:"./images/일반무기강화주문서.png",sub:"일반~레어 무기 강화",price:500,type:"normal",isPremium:false},
+      {nm:"프리미엄 무기 강화 주문서",img:"./images/고급무기강화주문서.png",sub:"에픽~신화 무기 강화",price:2000,type:"adv",isPremium:true},
     ],
     armor:[
-      {nm:"방어구 강화 주문서",img:CONSUMABLES[1].img,sub:"일반~레어 방어구 강화",price:500,type:"normal",isPremium:false},
-      {nm:"프리미엄 방어구 강화 주문서",img:CONSUMABLES[1].img,sub:"에픽~신화 방어구 강화",price:2000,type:"adv",isPremium:true},
+      {nm:"방어구 강화 주문서",img:"./images/일반방어구강화주문서.png",sub:"일반~레어 방어구 강화",price:500,type:"normal",isPremium:false},
+      {nm:"프리미엄 방어구 강화 주문서",img:"./images/고급방어구강화주문서.png",sub:"에픽~신화 방어구 강화",price:2000,type:"adv",isPremium:true},
     ],
     accessory:[
-      {nm:"장신구 강화 주문서",img:CONSUMABLES[2].img,sub:"일반~레어 장신구 강화",price:500,type:"normal",isPremium:false},
-      {nm:"프리미엄 장신구 강화 주문서",img:CONSUMABLES[2].img,sub:"에픽~신화 장신구 강화",price:2000,type:"adv",isPremium:true},
+      {nm:"장신구 강화 주문서",img:"./images/일반장신구강화주문서.png",sub:"일반~레어 장신구 강화",price:500,type:"normal",isPremium:false},
+      {nm:"프리미엄 장신구 강화 주문서",img:"./images/고급장신구강화주문서.png",sub:"에픽~신화 장신구 강화",price:2000,type:"adv",isPremium:true},
     ],
   };
   const buy=(item)=>{
