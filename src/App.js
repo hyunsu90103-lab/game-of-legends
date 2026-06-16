@@ -318,10 +318,22 @@ function CharScreen({onBack,onSelect}){
           </div>
           {!naming?(
             <button onClick={()=>sel&&setNaming(true)} disabled={!sel} style={{
-              width:"100%",padding:"13px",borderRadius:4,border:"none",
-              background:sel?`linear-gradient(135deg,${C.goldD},${C.gold})`:C.bg2,
-              color:sel?"#000":C.t3,fontSize:14,fontWeight:800,cursor:sel?"pointer":"default"}}>
-              {sel?"이름 정하기":"캐릭터를 먼저 선택하세요"}</button>
+              width:"100%",background:"none",border:"none",padding:0,
+              cursor:sel?"pointer":"default",opacity:sel?1:0.4,display:"block"}}>
+              {sel?(
+                <img src="./images/캐릭터명생성.png" alt="캐릭터명 설정"
+                  style={{width:"100%",height:"auto",display:"block",
+                    filter:"drop-shadow(0 4px 14px rgba(100,150,255,.5))"}}
+                  onError={e=>{
+                    e.target.style.display="none";
+                    e.target.parentElement.style.cssText="background:linear-gradient(135deg,#c8a84a,#8a6820);border-radius:8px;padding:14px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#000;width:100%";
+                    e.target.parentElement.insertAdjacentHTML("beforeend","캐릭터명 설정");
+                  }}/>
+              ):(
+                <div style={{background:C.bg2,borderRadius:4,padding:"13px",textAlign:"center",
+                  fontSize:14,fontWeight:800,color:C.t3}}>캐릭터를 먼저 선택하세요</div>
+              )}
+            </button>
           ):(
             <div>
               <input value={name} onChange={e=>setName(e.target.value)} placeholder="닉네임..." autoFocus
@@ -594,6 +606,7 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
   const [result,setResult]=useState(null);
   const [opening,setOpening]=useState(false);
   const [hist,setHist]=useState([]);
+  const [selResult,setSelResult]=useState(null);
   const char=CHARS.find(c=>c.id===charId)||CHARS[0];
 
   const PROBS=[
@@ -601,7 +614,7 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
     {g:"e",l:"에픽",p:1,c:C.e},{g:"l",l:"레전드",p:0.005,c:C.l},{g:"my",l:"신화",p:0.0001,c:C.my},
   ];
   const PROBS_DISPLAY=[
-    {g:"n",l:"일반",p:"58.99%",c:C.n},{g:"m",l:"마술",p:"28%",c:C.m},{g:"r",l:"베르어",p:"12%",c:C.r},
+    {g:"n",l:"일반",p:"58.99%",c:C.n},{g:"m",l:"매직",p:"28%",c:C.m},{g:"r",l:"레어",p:"12%",c:C.r},
     {g:"e",l:"에픽",p:"1%",c:C.e},{g:"l",l:"레전드",p:"0.005%",c:C.l},{g:"my",l:"신화",p:"0.0001%",c:C.my},
   ];
   const GOLD_TIERS=[{min:200,max:999,w:40},{min:1000,max:4999,w:30},{min:5000,max:14999,w:15},
@@ -720,35 +733,28 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
             </div>
           )}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:20}}>
-            <button onClick={()=>doOpen(1)} disabled={opening||dailyLeft<=0} style={{
-              background:"none",border:"none",padding:0,cursor:dailyLeft>0&&!opening?"pointer":"default",
-              opacity:dailyLeft>0&&!opening?1:0.4,
-              height:64,display:"flex",alignItems:"center",justifyContent:"center"}}>
-              <img src="./images/1회뽑기.png" alt="1회뽑기"
-                style={{width:"100%",height:"100%",objectFit:"contain",display:"block",
-                  filter:"drop-shadow(0 4px 12px rgba(200,168,74,.4))"}}
-                onError={e=>{
-                  e.target.style.display="none";
-                  e.target.parentElement.style.cssText="height:64px;background:linear-gradient(135deg,#b8920a,#e8c84a);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#000;width:100%";
-                  e.target.parentElement.insertAdjacentHTML("beforeend",opening?"열는 중...":"1회 뽑기");
-                }}/>
-            </button>
-            <button onClick={()=>doOpen(10)} disabled={opening||dailyLeft<=0} style={{
-              background:"none",border:"none",padding:0,cursor:dailyLeft>0&&!opening?"pointer":"default",
-              opacity:dailyLeft>0&&!opening?1:0.4,
-              height:64,display:"flex",alignItems:"center",justifyContent:"center"}}>
-              <img src="./images/10회뽑기.png" alt="10회뽑기"
-                style={{width:"100%",height:"100%",objectFit:"contain",display:"block",
-                  filter:"drop-shadow(0 4px 12px rgba(80,120,255,.4))"}}
-                onError={e=>{
-                  e.target.style.display="none";
-                  e.target.parentElement.style.cssText="height:64px;background:linear-gradient(135deg,#1a2a4a,#2a3a6a);border:2px solid rgba(100,150,255,.5);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#e8e4d8;width:100%";
-                  e.target.parentElement.insertAdjacentHTML("beforeend","10회 뽑기");
-                }}/>
-            </button>
+            {[
+              {count:1,src:"./images/1회뽑기.png",alt:"1회뽑기",fallback:"1회 뽑기"},
+              {count:10,src:"./images/10회뽑기.png",alt:"10회뽑기",fallback:"10회 뽑기"},
+            ].map(({count,src,alt,fallback})=>(
+              <button key={count} onClick={()=>doOpen(count)} disabled={opening||dailyLeft<=0} style={{
+                background:"transparent",border:"none",padding:0,
+                cursor:dailyLeft>0&&!opening?"pointer":"default",
+                opacity:dailyLeft>0&&!opening?1:0.4,
+                width:"100%",aspectRatio:"2.8/1",
+                display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <img src={src} alt={alt}
+                  style={{width:"100%",height:"100%",objectFit:"contain",display:"block"}}
+                  onError={e=>{
+                    e.target.style.display="none";
+                    e.target.parentElement.style.cssText=`background:${count===1?"linear-gradient(135deg,#b8920a,#e8c84a)":"linear-gradient(135deg,#1a2a4a,#2a3a6a)"};border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:${count===1?"#000":"#e8e4d8"};width:100%;aspect-ratio:2.8/1`;
+                    e.target.parentElement.insertAdjacentHTML("beforeend",fallback);
+                  }}/>
+              </button>
+            ))}
           </div>
           <div style={{background:"rgba(255,255,255,.03)",border:"1px solid rgba(255,255,255,.07)",borderRadius:8,padding:"12px 14px",marginBottom:16}}>
-            <div style={{fontSize:10,color:C.goldL,fontWeight:700,marginBottom:10}}>◆ 드랍이 재미있다</div>
+            <div style={{fontSize:10,color:C.goldL,fontWeight:700,marginBottom:10}}>◆ 드랍확률</div>
             {PROBS_DISPLAY.map(x=>(
               <div key={x.g} style={{display:"flex",alignItems:"center",gap:10,marginBottom:7}}>
                 <div style={{width:8,height:8,borderRadius:"50%",background:x.c,flexShrink:0}}/>
@@ -767,15 +773,16 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
                 {hist.map((h,i)=>{
                   const g=gradeMap[h.item?.grade||"n"]||"n";
                   const bc=h.type==="gold"?C.goldD:GC[g];
+                  const isSelected=selResult===i;
                   return(
-                    <div key={i} style={{
-                      background:C.bg2,borderRadius:6,
-                      border:`1.5px solid ${bc}55`,
+                    <div key={i} onClick={()=>setSelResult(isSelected?null:i)} style={{
+                      background:isSelected?C.bg3:C.bg2,borderRadius:6,
+                      border:`1.5px solid ${isSelected?C.gold:bc+"55"}`,
                       display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
-                      padding:"6px 4px",gap:3,
-                      boxShadow:`0 0 8px ${bc}22`,
-                      position:"relative",overflow:"hidden",
-                      aspectRatio:"1",
+                      padding:"6px 4px",gap:3,cursor:"pointer",
+                      boxShadow:isSelected?`0 0 12px ${C.goldD}66`:`0 0 8px ${bc}22`,
+                      position:"relative",overflow:"hidden",aspectRatio:"1",
+                      transition:"all .15s",
                     }}>
                       <div style={{position:"absolute",inset:0,background:`radial-gradient(circle at 50% 80%,${bc}18,transparent 70%)`,pointerEvents:"none"}}/>
                       {h.type==="gold"
@@ -793,6 +800,42 @@ function ChestModal({onClose,charId,onAddItem,onAddGold,dailyLeft,setDailyLeft})
                   );
                 })}
               </div>
+              {selResult!==null&&hist[selResult]&&(
+                <div style={{background:C.bg2,border:`1px solid ${C.gold}44`,borderRadius:8,
+                  padding:"10px 12px",marginBottom:8,animation:"fadeUp .2s ease"}}>
+                  {hist[selResult].type==="gold"?(
+                    <div style={{display:"flex",alignItems:"center",gap:10}}>
+                      <img src="./images/골드.png" alt="" style={{width:36,height:36,objectFit:"contain"}}
+                        onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:24px'>💰</span>");}}/>
+                      <div>
+                        <div style={{fontSize:13,fontWeight:800,color:C.goldL}}>{hist[selResult].amount.toLocaleString()} G</div>
+                        <div style={{fontSize:10,color:C.t3}}>골드 획득</div>
+                      </div>
+                    </div>
+                  ):(()=>{
+                    const it=hist[selResult].item;
+                    const g=gradeMap[it?.grade||"n"]||"n";
+                    return(
+                      <div style={{display:"flex",alignItems:"center",gap:10}}>
+                        <img src={it?.img} alt="" style={{width:44,height:44,objectFit:"contain",borderRadius:4,
+                          border:`1px solid ${GC[g]}44`,background:C.bg0,padding:2}}
+                          onError={e=>{e.target.style.display="none";}}/>
+                        <div style={{flex:1,minWidth:0}}>
+                          <div style={{fontSize:12,fontWeight:800,color:GC[g],
+                            overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{it?.name}</div>
+                          <div style={{display:"flex",gap:4,marginTop:3,alignItems:"center"}}>
+                            <Pill grade={it?.grade||"Common"} sm/>
+                            <span style={{fontSize:9,color:C.t3}}>{it?.type==="weapon"?"무기":it?.type==="armor"?"방어구":"장신구"}</span>
+                          </div>
+                          <div style={{fontSize:9,color:C.t2,marginTop:3}}>
+                            {it?.type==="weapon"?`⚔ ATK ${it?.atk||0}`:`🛡 DEF ${it?.def||0}`}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
             </>
           )}
         </div>
@@ -1025,88 +1068,124 @@ function ShopModal({onClose,gold,onSpendGold,onAddScrolls}){
 // ━━━━ RankModal ━━━━
 function RankModal({onClose,myScore,myName,myChar}){
   const DEMO=[
-    {rank:1,nick:"DragonSlayer",char:"아스칼론",score:328400},
-    {rank:2,nick:"DarkWitch99",char:"세르민느",score:302300},
-    {rank:3,nick:"RocketRacoon",char:"로켓",score:287800},
-    {rank:4,nick:"ArrowGod",char:"에일린",score:241200},
-    {rank:5,nick:"IronValkyrie",char:"발키리",score:198700},
-    {rank:6,nick:"VoidMaster",char:"벨리아르",score:184500},
-    {rank:7,nick:"HolyKnight",char:"카이렌",score:162300},
-    {rank:247,nick:myName,char:myChar,score:myScore,isMe:true},
+    {rank:1,nick:"DragonSlayer",char:"아스칼론",score:328400,img:"./images/1.(캐릭터)아스칼론.png"},
+    {rank:2,nick:"DarkWitch99",char:"세르민느",score:302300,img:"./images/1.(캐릭터)세르민느.png"},
+    {rank:3,nick:"RocketRacoon",char:"로켓",score:287800,img:"./images/1.(캐릭터)로켓.png"},
+    {rank:4,nick:"ArrowGod",char:"에일린",score:241200,img:"./images/1.(캐릭터)에일린.png"},
+    {rank:5,nick:"IronValkyrie",char:"발키리",score:198700,img:"./images/1.(캐릭터)발키리.png"},
+    {rank:6,nick:"VoidMaster",char:"벨리아르",score:184500,img:"./images/1.(캐릭터)벨리아르.png"},
+    {rank:7,nick:"HolyKnight",char:"카이렌",score:162300,img:"./images/1.(캐릭터)카이렌.png"},
+    {rank:247,nick:myName,char:myChar,score:myScore,img:CHARS.find(c=>c.name===myChar)?.img||"",isMe:true},
   ];
-  const MEDAL=["🥇","🥈","🥉"];
   const myRankData=DEMO.find(d=>d.isMe);
+  const MEDAL_COLOR=["#FFD700","#C0C0C0","#CD7F32"];
+  const MEDAL_BG=["rgba(255,215,0,.15)","rgba(192,192,192,.12)","rgba(205,127,50,.12)"];
   return(
-    <div style={{position:"fixed",inset:0,zIndex:999,background:"rgba(0,0,0,.75)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
-      <div style={{width:390,background:C.bg1,borderRadius:"16px 16px 0 0",maxHeight:"88vh",
-        overflow:"hidden",display:"flex",flexDirection:"column",border:`1px solid ${C.bdr1}`,borderBottom:"none"}}>
-        <div style={{padding:"12px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",
-          borderBottom:`1px solid ${C.bdr1}`,background:C.bg0}}>
-          <div style={{display:"flex",alignItems:"center",gap:8}}>
-            <span style={{fontSize:16}}>🏆</span>
-            <span style={{fontSize:15,fontWeight:700}}>전체 랭킹</span>
+    <div style={{position:"fixed",inset:0,zIndex:999,background:"rgba(0,0,0,.85)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
+      <div style={{width:390,background:"linear-gradient(180deg,#1a1410 0%,#0e0c08 100%)",
+        borderRadius:"20px 20px 0 0",maxHeight:"90vh",
+        overflow:"hidden",display:"flex",flexDirection:"column",
+        border:"1px solid rgba(200,168,74,.4)",borderBottom:"none",
+        boxShadow:"0 -8px 40px rgba(0,0,0,.8), 0 -2px 0 rgba(200,168,74,.5)"}}>
+        {/* 헤더 */}
+        <div style={{padding:"14px 16px 10px",display:"flex",alignItems:"center",justifyContent:"space-between",
+          background:"linear-gradient(90deg,rgba(200,168,74,.05),rgba(200,168,74,.15),rgba(200,168,74,.05))",
+          borderBottom:"1px solid rgba(200,168,74,.25)"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <img src="./images/랭킹.png" alt="" style={{width:28,height:28,objectFit:"contain",
+              filter:"drop-shadow(0 2px 8px rgba(80,140,255,.6))"}}
+              onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:22px'>🏆</span>");}}/>
+            <span style={{fontSize:16,fontWeight:800,color:C.goldL,letterSpacing:".03em"}}>전체 랭킹</span>
           </div>
-          <button onClick={onClose} style={{width:28,height:28,borderRadius:4,background:C.bg2,
-            border:`1px solid ${C.bdr1}`,color:C.t2,fontSize:14,cursor:"pointer",
+          <button onClick={onClose} style={{width:28,height:28,borderRadius:6,background:"rgba(255,255,255,.08)",
+            border:"1px solid rgba(255,255,255,.12)",color:C.t2,fontSize:14,cursor:"pointer",
             display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
         </div>
-        <div style={{overflowY:"auto",padding:"14px"}}>
-          <CBox gold style={{padding:"12px 14px",marginBottom:14}}>
-            <div style={{display:"flex",alignItems:"center",gap:12}}>
-              <div style={{width:44,height:44,background:C.bg0,borderRadius:6,flexShrink:0,
-                display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,border:`1px solid ${C.goldD}55`}}>
-                {CHARS.find(c=>c.name===myChar)?.emoji||"⚔"}
-              </div>
-              <div style={{flex:1}}>
-                <div style={{fontSize:12,color:C.t2,marginBottom:2}}>{myName} · {myChar}</div>
-                <div style={{fontSize:16,fontWeight:800}}>{myScore.toLocaleString()} <span style={{fontSize:11,color:C.t3}}>pt</span></div>
-              </div>
-              <div style={{textAlign:"right"}}>
-                <div style={{fontSize:9,color:C.t3,marginBottom:1}}>내 순위</div>
-                <div style={{fontFamily:"monospace",fontSize:28,fontWeight:800,color:C.goldL,lineHeight:1}}>#247</div>
-              </div>
+        {/* 내 정보 */}
+        <div style={{padding:"10px 14px",borderBottom:"1px solid rgba(255,255,255,.06)",
+          background:"rgba(200,168,74,.04)"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <div style={{width:40,height:40,borderRadius:8,overflow:"hidden",flexShrink:0,
+              background:C.bg2,border:`1px solid ${C.goldD}55`}}>
+              <img src={myRankData?.img} alt="" style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"top"}}
+                onError={e=>{e.target.style.display="none";}}/>
             </div>
-          </CBox>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:6,marginBottom:14}}>
+            <div style={{flex:1}}>
+              <div style={{fontSize:12,fontWeight:700,color:C.goldL}}>{myName}</div>
+              <div style={{fontSize:9,color:C.t3}}>{myChar}</div>
+            </div>
+            <div style={{textAlign:"right"}}>
+              <div style={{fontSize:9,color:C.t3}}>내 순위</div>
+              <div style={{fontSize:22,fontWeight:900,color:C.goldL,lineHeight:1}}>#247</div>
+              <div style={{fontSize:9,color:C.t3}}>{myScore.toLocaleString()} pt</div>
+            </div>
+          </div>
+        </div>
+        <div style={{overflowY:"auto",padding:"12px 14px",flex:1}}>
+          {/* TOP3 */}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:14}}>
             {DEMO.filter(d=>!d.isMe).slice(0,3).map((d,i)=>(
-              <div key={d.rank} style={{background:C.bg2,borderRadius:6,padding:"10px 6px",textAlign:"center",
-                border:`1px solid ${[C.gold+"88","rgba(192,192,192,.35)","rgba(205,127,50,.35)"][i]}`}}>
-                <div style={{fontSize:20,marginBottom:5}}>{MEDAL[i]}</div>
-                <div style={{width:36,height:36,borderRadius:"50%",background:C.bg0,
-                  border:`2px solid ${[C.gold,"silver","#cd7f32"][i]}`,display:"flex",alignItems:"center",
-                  justifyContent:"center",margin:"0 auto 6px",fontSize:18}}>
-                  {CHARS.find(c=>c.name===d.char)?.emoji||"⚔"}
+              <div key={d.rank} style={{
+                background:MEDAL_BG[i],borderRadius:8,padding:"10px 6px",textAlign:"center",
+                border:`1px solid ${MEDAL_COLOR[i]}55`,position:"relative",overflow:"hidden"}}>
+                <div style={{position:"absolute",top:0,left:0,right:0,height:2,
+                  background:`linear-gradient(90deg,transparent,${MEDAL_COLOR[i]},transparent)`}}/>
+                <div style={{fontSize:18,marginBottom:6,color:MEDAL_COLOR[i],fontWeight:900}}>
+                  {["1","2","3"][i]}위
                 </div>
-                <div style={{fontSize:10,fontWeight:700,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{d.nick}</div>
-                <div style={{fontSize:9,color:C.t2,marginBottom:4}}>{d.char}</div>
-                <div style={{fontSize:11,fontWeight:800,color:C.goldL}}>{d.score.toLocaleString()}</div>
+                <div style={{width:48,height:48,borderRadius:8,overflow:"hidden",margin:"0 auto 6px",
+                  border:`2px solid ${MEDAL_COLOR[i]}88`,background:C.bg0}}>
+                  <img src={d.img} alt={d.char} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"top"}}
+                    onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend",`<div style='font-size:24px;display:flex;align-items:center;justify-content:center;height:100%'>${CHARS.find(c=>c.name===d.char)?.emoji||"⚔"}</div>`);}}/>
+                </div>
+                <div style={{fontSize:10,fontWeight:700,color:C.t1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{d.nick}</div>
+                <div style={{fontSize:8,color:C.t3,marginBottom:4}}>{d.char}</div>
+                <div style={{fontSize:12,fontWeight:800,color:MEDAL_COLOR[i]}}>{d.score.toLocaleString()}</div>
               </div>
             ))}
           </div>
-          <div style={{display:"flex",flexDirection:"column",gap:2}}>
-            {DEMO.filter(d=>!d.isMe).slice(3).concat([myRankData]).filter(Boolean).map(d=>(
-              <div key={d.rank} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 10px",
-                borderRadius:4,background:d.isMe?C.bg3:C.bg2,
-                border:`1px solid ${d.isMe?C.gold+"55":C.bdr0}`,
-                boxShadow:d.isMe?`0 0 8px ${C.goldD}55`:"none"}}>
-                <span style={{fontFamily:"monospace",fontSize:12,fontWeight:700,minWidth:34,color:d.isMe?C.goldL:C.t3}}>#{d.rank}</span>
-                <div style={{width:30,height:30,borderRadius:"50%",background:C.bg0,
-                  border:`1px solid ${d.isMe?C.gold+"55":C.bdr1}`,display:"flex",
-                  alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>
-                  {CHARS.find(c=>c.name===d.char)?.emoji||"⚔"}
+          {/* 4위~ 목록 */}
+          <div style={{display:"flex",flexDirection:"column",gap:3}}>
+            {DEMO.filter(d=>!d.isMe).slice(3).map(d=>(
+              <div key={d.rank} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",
+                borderRadius:6,background:C.bg2,border:`1px solid ${C.bdr0}`}}>
+                <span style={{fontSize:13,fontWeight:800,color:C.t3,minWidth:24}}>#{d.rank}</span>
+                <div style={{width:32,height:32,borderRadius:6,overflow:"hidden",flexShrink:0,
+                  background:C.bg0,border:`1px solid ${C.bdr1}`}}>
+                  <img src={d.img} alt="" style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"top"}}
+                    onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend",`<div style='font-size:16px;display:flex;align-items:center;justify-content:center;height:100%'>${CHARS.find(c=>c.name===d.char)?.emoji||"⚔"}</div>`);}}/>
                 </div>
-                <div style={{flex:1}}>
-                  <div style={{fontSize:11,fontWeight:600,color:d.isMe?C.goldL:C.t1}}>
-                    {d.nick}{d.isMe&&<span style={{background:C.goldD+"55",color:C.goldL,borderRadius:3,
-                      padding:"1px 5px",fontSize:8,fontWeight:800,marginLeft:5}}>나</span>}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:11,fontWeight:600,color:C.t1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{d.nick}</div>
                   <div style={{fontSize:9,color:C.t3}}>{d.char}</div>
                 </div>
                 <div style={{textAlign:"right"}}>
-                  <div style={{fontSize:12,fontWeight:700,color:d.isMe?C.goldL:C.t1}}>{d.score.toLocaleString()}</div>
-                  <div style={{fontSize:9,color:C.t3}}>pt</div>
+                  <div style={{fontSize:11,fontWeight:700,color:C.t1}}>{d.score.toLocaleString()}</div>
+                  <div style={{fontSize:8,color:C.t3}}>pt</div>
                 </div>
               </div>
             ))}
+          </div>
+          {/* 내 정보 하단 고정 */}
+          <div style={{marginTop:8,padding:"9px 10px",borderRadius:6,
+            background:C.bg3,border:`1px solid ${C.gold}55`,
+            boxShadow:`0 0 10px ${C.goldD}44`,display:"flex",alignItems:"center",gap:8}}>
+            <span style={{fontSize:13,fontWeight:800,color:C.goldL,minWidth:24}}>#247</span>
+            <div style={{width:32,height:32,borderRadius:6,overflow:"hidden",flexShrink:0,
+              background:C.bg0,border:`1px solid ${C.goldD}55`}}>
+              <img src={myRankData?.img} alt="" style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"top"}}
+                onError={e=>{e.target.style.display="none";}}/>
+            </div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:11,fontWeight:700,color:C.goldL,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                {myName}<span style={{background:C.goldD+"55",color:C.goldL,borderRadius:3,padding:"1px 4px",fontSize:8,marginLeft:4}}>나</span>
+              </div>
+              <div style={{fontSize:9,color:C.t3}}>{myChar}</div>
+            </div>
+            <div style={{textAlign:"right"}}>
+              <div style={{fontSize:11,fontWeight:700,color:C.goldL}}>{myScore.toLocaleString()}</div>
+              <div style={{fontSize:8,color:C.t3}}>pt</div>
+            </div>
           </div>
         </div>
       </div>
