@@ -926,8 +926,10 @@ function EnhModal({item:initItem,onClose,gold,onSpendGold,scrolls,onUseScroll,on
                   border:`2px solid ${scroll===t?C.gold:C.bdr1}`,borderRadius:5,padding:"10px 8px",
                   textAlign:"center",cursor:"pointer",background:scroll===t?C.bg3:C.bg2,
                   display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
-                  <div style={{width:52,height:52,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                    <img src={img} alt={nm} style={{width:"100%",height:"100%",objectFit:"contain"}}
+                  <div style={{width:52,height:52,display:"flex",alignItems:"center",justifyContent:"center",
+                    background:t==="adv"?"linear-gradient(135deg,#2a1040,#1a0828)":"linear-gradient(135deg,#2a1e08,#1a1208)",
+                    borderRadius:6,border:`1px solid ${t==="adv"?"rgba(180,80,255,.3)":"rgba(200,168,74,.3)"}`}}>
+                    <img src={img} alt={nm} style={{width:"88%",height:"88%",objectFit:"contain"}}
                       onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:28px'>📜</span>");}}/>
                   </div>
                   <div style={{fontSize:10,fontWeight:700,color:scroll===t?C.goldL:C.t1}}>{nm} 주문서</div>
@@ -1030,9 +1032,12 @@ function ShopModal({onClose,gold,onSpendGold,onAddScrolls}){
                 background:it.isPremium?"linear-gradient(90deg,transparent,rgba(180,80,255,.6),transparent)":"linear-gradient(90deg,transparent,rgba(200,168,74,.6),transparent)"}}/>
               <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:14}}>
                 <div style={{width:70,height:70,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",
-                  background:"transparent"}}>
-                  <img src={it.img} alt={it.nm} style={{width:"100%",height:"100%",objectFit:"contain",
-                    imageRendering:"auto"}}
+                  background:it.isPremium
+                    ?"linear-gradient(135deg,#2a1040,#1a0828)"
+                    :"linear-gradient(135deg,#2a1e08,#1a1208)",
+                  borderRadius:8,
+                  border:`1px solid ${it.isPremium?"rgba(180,80,255,.3)":"rgba(200,168,74,.3)"}`}}>
+                  <img src={it.img} alt={it.nm} style={{width:"88%",height:"88%",objectFit:"contain"}}
                     onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:36px'>📜</span>");}}/>
                 </div>
                 <div style={{flex:1}}>
