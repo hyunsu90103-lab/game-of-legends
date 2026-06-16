@@ -916,16 +916,26 @@ function EnhModal({item:initItem,onClose,gold,onSpendGold,scrolls,onUseScroll,on
             <div style={{width:`${prob}%`,height:"100%",borderRadius:99,transition:"width .4s",background:prob>=70?C.succ:prob>=40?C.warn:C.fail}}/>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
-            {[["normal","일반","500 G"],["adv","고급","2,000 G"]].map(([t,nm,pr])=>(
-              <button key={t} onClick={()=>setScroll(t)} style={{
-                border:`2px solid ${scroll===t?C.gold:C.bdr1}`,borderRadius:5,padding:"10px 8px",
-                textAlign:"center",cursor:"pointer",background:scroll===t?C.bg3:C.bg2}}>
-                <div style={{fontSize:20,marginBottom:3}}>📜</div>
-                <div style={{fontSize:11,fontWeight:700,color:scroll===t?C.goldL:C.t1,marginBottom:1}}>{nm} 주문서</div>
-                <div style={{fontSize:13,fontWeight:800,color:scroll===t?C.goldL:C.gold}}>{pr}</div>
-                <div style={{fontSize:9,color:C.t3,marginTop:1}}>보유 {scrolls[t]||0}개</div>
-              </button>
-            ))}
+            {(()=>{
+              const itemType=item.type==="weapon"?"무기":item.type==="armor"?"방어구":"장신구";
+              return [
+                {t:"normal",nm:"일반",pr:"500 G",img:`./images/일반${itemType}강화주문서.png`},
+                {t:"adv",nm:"고급",pr:"2,000 G",img:`./images/고급${itemType}강화주문서.png`},
+              ].map(({t,nm,pr,img})=>(
+                <button key={t} onClick={()=>setScroll(t)} style={{
+                  border:`2px solid ${scroll===t?C.gold:C.bdr1}`,borderRadius:5,padding:"10px 8px",
+                  textAlign:"center",cursor:"pointer",background:scroll===t?C.bg3:C.bg2,
+                  display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
+                  <div style={{width:52,height:52,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                    <img src={img} alt={nm} style={{width:"100%",height:"100%",objectFit:"contain"}}
+                      onError={e=>{e.target.style.display="none";e.target.insertAdjacentHTML("afterend","<span style='font-size:28px'>📜</span>");}}/>
+                  </div>
+                  <div style={{fontSize:10,fontWeight:700,color:scroll===t?C.goldL:C.t1}}>{nm} 주문서</div>
+                  <div style={{fontSize:12,fontWeight:800,color:scroll===t?C.goldL:C.gold}}>{pr}</div>
+                  <div style={{fontSize:9,color:C.t3}}>보유 {scrolls[t]||0}개</div>
+                </button>
+              ));
+            })()}
           </div>
           <button onClick={doEnh} disabled={lv>=15||!!outcome} style={{
             width:"100%",padding:"14px",borderRadius:4,border:"none",
